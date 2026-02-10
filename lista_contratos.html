@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Giovana Morais | Contratos</title>
+    
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#1a73e8">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Giovana Contrato">
+    <link rel="apple-touch-icon" href="calendar.png">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    
+    <style>
+        :root {
+            --google-blue: #1a73e8;
+            --border-color: #dadce0;
+            --bg-main: #ffffff;
+            --text-main: #3c4043;
+            --text-muted: #70757a;
+            --sidebar-bg: #ffffff;
+            --header-bg: #ffffff;
+            --card-bg: #f8f9fa;
+        }
+
+        [data-theme="dark"] {
+            --bg-main: #121212;
+            --text-main: #e8eaed;
+            --text-muted: #bdc1c6;
+            --border-color: #3c4043;
+            --sidebar-bg: #1e1e1e;
+            --header-bg: #1e1e1e;
+            --card-bg: #2d2d2d;
+            color-scheme: dark;
+        }
+
+        body { 
+            background-color: var(--bg-main); 
+            color: var(--text-main);
+            font-family: 'Roboto', sans-serif; 
+            transition: background 0.3s ease, color 0.3s ease;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            margin: 0;
+        }
+
+        h4, h5, h6, .fw-bold { color: var(--text-main) !important; }
+        .text-muted { color: var(--text-muted) !important; }
+
+        .app-container { display: flex; flex: 1; overflow: hidden; }
+        .main-content { flex: 1; overflow-y: auto; padding: 20px; background: var(--bg-main); }
+
+        .sidebar {
+            width: 260px;
+            border-right: 1px solid var(--border-color);
+            background: var(--sidebar-bg);
+            padding: 20px;
+        }
+
+        .header-top {
+            height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 16px;
+            border-bottom: 1px solid var(--border-color);
+            background: var(--header-bg);
+            z-index: 1030;
+        }
+
+        .contract-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 15px;
+            transition: transform 0.2s, box-shadow 0.2s;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .contract-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        .file-icon { font-size: 2.5rem; color: #d93025; margin-bottom: 10px; }
+        .theme-toggle { cursor: pointer; padding: 10px; border-radius: 50%; color: var(--text-main); }
+        .list-group-item { color: var(--text-main) !important; }
+
+        @media (max-width: 768px) { .sidebar { display: none; } }
+
+        .skeleton {
+            background: var(--border-color);
+            opacity: 0.5;
+            border-radius: 5px;
+            animation: pulse 1.5s infinite;
+        }
+        @keyframes pulse { 0% { opacity: 0.3; } 50% { opacity: 0.7; } 100% { opacity: 0.3; } }
+    </style>
+</head>
+<body data-theme="light">
+
+    <header class="header-top shadow-sm">
+        <div class="d-flex align-items-center">
+            <button class="btn d-md-none me-2 theme-toggle" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileSidebar">
+                <i class="bi bi-list fs-3"></i>
+            </button>
+            <i class="bi bi-file-earmark-pdf-fill text-danger fs-4 me-2"></i>
+            <h5 class="mb-0 fw-bold">Contratos | <span class="text-secondary fw-normal">Giovana Morais</span></h5>
+        </div>
+        <div class="d-flex align-items-center gap-1">
+            <a href="index.html" class="theme-toggle"><i class="bi bi-house fs-4"></i></a>
+            <div class="theme-toggle" id="themeBtn"><i class="bi bi-moon-stars fs-4" id="themeIcon"></i></div>
+        </div>
+    </header>
+
+    <div class="app-container">
+        <aside class="sidebar d-none d-md-flex flex-column">
+            <nav class="list-group list-group-flush">
+                <a href="index.html" class="list-group-item list-group-item-action border-0 bg-transparent rounded-3 mb-1">
+                <i class="bi bi-calendar-check me-3"></i>Agenda
+                </a>
+                <a href="contrato.html" class="list-group-item list-group-item-action border-0 bg-transparent rounded-3 mb-1">
+                    <i class="bi bi-file-earmark-text me-3"></i>Contrato
+                </a>
+                <a href="lista_contratos.html" class="list-group-item list-group-item-action border-0 bg-primary text-white rounded-3 mb-1">
+                    <i class="bi bi-file-earmark-check me-3"></i>Lista Contratos
+                </a>
+                <a href="enviar_contrato.html" class="list-group-item list-group-item-action border-0 bg-transparent rounded-3">
+                    <i class="bi bi-send me-3"></i>Enviar Contrato
+                </a>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h4 class="fw-bold mb-0">Arquivos Assinados</h4>
+                <button class="btn btn-outline-primary btn-sm rounded-pill" onclick="loadContracts()">
+                    <i class="bi bi-arrow-clockwise me-1"></i> Atualizar
+                </button>
+            </div>
+
+            <div class="row g-3" id="contractsGrid">
+                <div class="col-6 col-md-4 col-lg-3"><div class="skeleton" style="height: 160px;"></div></div>
+                <div class="col-6 col-md-4 col-lg-3"><div class="skeleton" style="height: 160px;"></div></div>
+            </div>
+        </main>
+    </div>
+
+    <div class="offcanvas offcanvas-start" tabindex="-1" id="mobileSidebar" style="width: 280px; background: var(--sidebar-bg); color: var(--text-main);">
+        <div class="offcanvas-header border-bottom">
+            <h5 class="offcanvas-title fw-bold">Giovana Morais</h5>
+            <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas"></button>
+        </div>
+        <div class="offcanvas-body">
+            <div class="list-group list-group-flush">
+                <a href="index.html" class="list-group-item list-group-item-action border-0 bg-transparent py-3">
+                    <i class="bi bi-calendar-check me-3 fs-5"></i>Contrato
+                </a>
+                <a href="lista_contratos.html" class="list-group-item list-group-item-action border-0 bg-transparent py-3">
+                    <i class="bi bi-file-earmark-text me-3 fs-5"></i>Contratos
+                </a>
+                <a href="enviar_contrato.html" class="list-group-item list-group-item-action border-0 bg-transparent py-3">
+                    <i class="bi bi-send me-3 fs-5"></i>Enviar Contrato
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        const grid = document.getElementById('contractsGrid');
+        const themeBtn = document.getElementById('themeBtn');
+        const themeIcon = document.getElementById('themeIcon');
+
+        // Tema
+        const savedTheme = localStorage.getItem('theme_nath') || 'light';
+        document.body.setAttribute('data-theme', savedTheme);
+        themeIcon.className = savedTheme === 'light' ? 'bi bi-moon-stars fs-4' : 'bi bi-sun fs-4';
+
+        themeBtn.addEventListener('click', () => {
+            const current = document.body.getAttribute('data-theme');
+            const newTheme = current === 'light' ? 'dark' : 'light';
+            document.body.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme_nath', newTheme);
+            themeIcon.className = newTheme === 'light' ? 'bi bi-moon-stars fs-4' : 'bi bi-sun fs-4';
+        });
+
+        // Função para carregar contratos do GitHub
+        async function loadContracts() {
+    const USER = 'psigiovana';
+    const REPO = 'contratos-assinados';
+    const PATH = 'contratos'; 
+    const url = `https://api.github.com/repos/${USER}/${REPO}/contents/${PATH}`;
+    
+    try {
+        const response = await fetch(url);
+        if (!response.ok) throw new Error('Erro ao acessar repositório');
+
+        const files = await response.json();
+        grid.innerHTML = '';
+
+        const pdfFiles = files.filter(file => file.name.toLowerCase().endsWith('.pdf'));
+
+        if (pdfFiles.length === 0) {
+            grid.innerHTML = '<div class="col-12 text-center py-5 text-muted"><i class="bi bi-folder2-open fs-1 d-block mb-2"></i>Nenhum contrato encontrado.</div>';
+            return;
+        }
+
+        pdfFiles.forEach(file => {
+            const rawUrl = file.download_url;
+            
+            // Usamos o visualizador do Google para contornar o download automático
+            const viewUrl = `https://docs.google.com/viewer?url=${encodeURIComponent(rawUrl)}&embedded=true`;
+
+            const card = `
+                <div class="col-6 col-md-4 col-lg-3">
+                    <div class="contract-card shadow-sm">
+                        <div class="text-center">
+                            <i class="bi bi-file-pdf file-icon"></i>
+                            <h6 class="text-truncate fw-bold px-2" title="${file.name}">${file.name}</h6>
+                            <p class="small text-muted mb-3">PDF Assinado</p>
+                        </div>
+                        <div class="d-grid gap-2">
+                            <a href="${viewUrl}" target="_blank" class="btn btn-primary btn-sm rounded-pill">
+                                <i class="bi bi-eye-fill me-1"></i> Visualizar
+                            </a>
+                            <a href="${rawUrl}" download="${file.name}" class="btn btn-outline-secondary btn-sm rounded-pill">
+                                <i class="bi bi-download me-1"></i> Baixar
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            `;
+            grid.innerHTML += card;
+        });
+    } catch (error) {
+        console.error(error);
+        grid.innerHTML = '<div class="col-12 text-center py-5 text-danger">Erro ao carregar arquivos do GitHub.</div>';
+    }
+}
+
+        document.addEventListener('DOMContentLoaded', loadContracts);
+    </script>
+</body>
+</html>
