@@ -335,7 +335,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const stringData = JSON.stringify(events);
         localStorage.setItem('appointments_nath', stringData);
 
-        fetch("https://giovana-contratos.onrender.com/salvar-agenda", {
+        fetch("https://sistema-giovana.onrender.com/salvar-agenda", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: stringData
@@ -350,7 +350,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         try {
-            const res = await fetch("https://azdevcoder.github.io/giovana-contratos/dados/agendamentos.json?t=" + Date.now());
+            const res = await fetch("https://azdevcoder.github.io/sistema_giovana/dados/agendamentos.json?t=" + Date.now());
             if (res.ok) {
                 const serverData = await res.json();
                 if (!localData || JSON.stringify(serverData) !== localData) {
@@ -431,4 +431,5 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 </body>
 </html>
+
 
