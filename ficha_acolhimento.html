@@ -5,34 +5,35 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Ficha de Acolhimento - Psicóloga Giovana</title>
 <style>
-    body { font-family: Arial, sans-serif; background: #f3e8db; padding: 20px; text-align: center; color: #333; }
-    .container { background: #fff; padding: 30px; max-width: 800px; margin: auto; border-radius: 10px; box-shadow: 0 0 15px rgba(0,0,0,0.1); text-align: left; }
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f3e8db; padding: 20px; text-align: center; color: #333; }
+    .container { background: #fff; padding: 40px; max-width: 800px; margin: auto; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); text-align: left; }
     
-    h2 { color: #000000; text-align: center; text-transform: uppercase; margin-bottom: 20px; }
-    h3 { color: #555; border-bottom: 2px solid #f3e8db; padding-bottom: 5px; margin-top: 30px; font-size: 1.1em; }
+    h2 { color: #d68c98; text-align: center; text-transform: uppercase; margin-bottom: 25px; letter-spacing: 1px; }
+    h3 { color: #555; border-bottom: 2px solid #f3e8db; padding-bottom: 8px; margin-top: 35px; font-size: 1.1em; }
     
-    label { font-size: 0.9em; font-weight: bold; display: block; margin-top: 10px; }
-    input, select, textarea { padding: 10px; margin: 5px 0 15px 0; width: 100%; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; }
-    textarea { resize: vertical; height: 80px; }
+    label { font-size: 0.9em; font-weight: bold; display: block; margin-top: 12px; color: #444; }
+    input, select, textarea { padding: 12px; margin: 5px 0 15px 0; width: 100%; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; background-color: #fafafa; transition: 0.3s; }
+    input:focus, textarea:focus { border-color: #d68c98; outline: none; background-color: #fff; }
+    textarea { resize: vertical; height: 100px; font-family: inherit; }
     
-    /* Layout em colunas para campos menores */
-    .row { display: flex; gap: 15px; flex-wrap: wrap; }
+    .row { display: flex; gap: 20px; flex-wrap: wrap; }
     .col-half { flex: 1; min-width: 200px; }
     .col-third { flex: 1; min-width: 150px; }
     
-    button { width: 100%; padding: 15px; background: #f3e8db; color: black; font-weight: bold; font-size: 16px; border: none; border-radius: 5px; cursor: pointer; transition: 0.3s; margin-top: 20px; }
-    button:hover { background: #a35e4c; color: white; }
-    button:disabled { background: #ccc; cursor: not-allowed; }
+    button { width: 100%; padding: 16px; background: #f3e8db; color: #444; font-weight: bold; font-size: 16px; border: 1px solid #e0d0c0; border-radius: 6px; cursor: pointer; transition: 0.3s; margin-top: 30px; text-transform: uppercase; letter-spacing: 1px; }
+    button:hover { background: #d68c98; color: white; border-color: #d68c98; }
+    button:disabled { background: #ccc; cursor: not-allowed; border-color: #ccc; }
     
-    .spinner { display: inline-block; width: 16px; height: 16px; border: 2px solid white; border-top: 2px solid #ffaddd; border-radius: 50%; animation: spin 0.8s linear infinite; vertical-align: middle; margin-right: 8px; }
+    .spinner { display: inline-block; width: 16px; height: 16px; border: 2px solid white; border-top: 2px solid #333; border-radius: 50%; animation: spin 0.8s linear infinite; vertical-align: middle; margin-right: 8px; }
     @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     
-    iframe { width: 100%; height: 600px; border: 1px solid #ddd; margin-top: 25px; display: none; }
+    iframe { width: 100%; height: 700px; border: 1px solid #ddd; margin-top: 30px; border-radius: 8px; display: none; background: #eee; }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/pdf-lib/dist/pdf-lib.min.js"></script>
 </head>
 <body>
-<img src="banner_assinatura.png" alt="Banner de Assinatura" style="max-width: 30%;">
+
+<img src="banner_assinatura.png" alt="Banner" style="max-width: 200px; margin-bottom: 20px; border-radius: 5px;">
 
 <div class="container">
     <h2>Ficha de Acolhimento</h2>
@@ -40,7 +41,7 @@
         
         <h3>1. Identificação Pessoal</h3>
         <label>Nome Completo:</label>
-        <input type="text" id="nome" required>
+        <input type="text" id="nome" required placeholder="Digite seu nome completo">
         
         <div class="row">
             <div class="col-half">
@@ -54,12 +55,12 @@
         </div>
 
         <label>Endereço Completo:</label>
-        <input type="text" id="endereco">
+        <input type="text" id="endereco" placeholder="Rua, número, bairro, cidade">
 
         <div class="row">
             <div class="col-third">
                 <label>Profissão:</label>
-                <input type="text" id="profissao"required>
+                <input type="text" id="profissao" required>
             </div>
             <div class="col-third">
                 <label>Religião:</label>
@@ -74,11 +75,11 @@
         <div class="row">
             <div class="col-half">
                 <label>Telefone / WhatsApp:</label>
-                <input type="text" id="telefone" required>
+                <input type="text" id="telefone" required placeholder="(XX) XXXXX-XXXX">
             </div>
             <div class="col-half">
                 <label>E-mail:</label>
-                <input type="email" id="email"required>
+                <input type="email" id="email" required>
             </div>
         </div>
 
@@ -105,10 +106,10 @@
 
         <h3>3. Queixa Principal</h3>
         <label>Descreva a queixa principal:</label>
-        <textarea id="queixa"></textarea>
+        <textarea id="queixa" placeholder="O que te trouxe à terapia?"></textarea>
 
         <label>Evolução da queixa (Como começou?):</label>
-        <textarea id="evolucao"required></textarea>
+        <textarea id="evolucao" required></textarea>
 
         <label>O início foi repentino ou gradual?</label>
         <select id="inicioTipo" required>
@@ -122,7 +123,7 @@
 
         <h3>4. Medicamentos</h3>
         <label>Faz uso de medicamentos?</label>
-        <select id="usoMedicamento"required>
+        <select id="usoMedicamento" required>
             <option value="Não">Não</option>
             <option value="Sim">Sim</option>
         </select>
@@ -141,135 +142,205 @@
     const btn = document.getElementById("btnEnviar");
     const pdfViewer = document.getElementById("pdfViewer");
     
-    // Configurações Globais
+    // Configurações
     const contatoWhatsApp = "5544997112467"; 
-    const nomeArquivoPDF = "FichaTemplate.pdf"; // Nome do seu arquivo PDF base
-
+    
     function gerarHash() { return Math.floor(10000 + Math.random() * 9000); }
+
+    // Função auxiliar para quebrar texto longo em linhas no PDF
+    function wordWrap(text, maxChars) {
+        if (!text) return [""];
+        const words = text.split(' ');
+        let lines = [];
+        let currentLine = words[0];
+
+        for (let i = 1; i < words.length; i++) {
+            if (currentLine.length + 1 + words[i].length <= maxChars) {
+                currentLine += " " + words[i];
+            } else {
+                lines.push(currentLine);
+                currentLine = words[i];
+            }
+        }
+        lines.push(currentLine);
+        return lines;
+    }
 
     form.addEventListener("submit", async (e) => {
         e.preventDefault();
         btn.disabled = true;
         const originalText = btn.textContent;
-        btn.innerHTML = '<span class="spinner"></span> Processando...';
-
-        // Coleta de Dados
-        const dados = {
-            nome: document.getElementById("nome").value,
-            nomeSocial: document.getElementById("nomeSocial").value,
-            nascimento: document.getElementById("nascimento").value.split('-').reverse().join('/'),
-            endereco: document.getElementById("endereco").value,
-            profissao: document.getElementById("profissao").value,
-            religiao: document.getElementById("religiao").value,
-            escolaridade: document.getElementById("escolaridade").value,
-            telefone: document.getElementById("telefone").value,
-            email: document.getElementById("email").value,
-            
-            paiNome: document.getElementById("paiNome").value,
-            paiIdade: document.getElementById("paiIdade").value,
-            paiProfissao: document.getElementById("paiProfissao").value,
-            paiEscolaridade: document.getElementById("paiEscolaridade").value,
-            
-            maeNome: document.getElementById("maeNome").value,
-            maeIdade: document.getElementById("maeIdade").value,
-            maeProfissao: document.getElementById("maeProfissao").value,
-            maeEscolaridade: document.getElementById("maeEscolaridade").value,
-            paisEndereco: document.getElementById("paisEndereco").value,
-
-            queixa: document.getElementById("queixa").value,
-            evolucao: document.getElementById("evolucao").value,
-            inicioTipo: document.getElementById("inicioTipo").value,
-            sintomas: document.getElementById("sintomas").value,
-            usoMedicamento: document.getElementById("usoMedicamento").value,
-            quaisMedicamentos: document.getElementById("quaisMedicamentos").value
-        };
+        btn.innerHTML = '<span class="spinner"></span> Gerando PDF...';
 
         try {
-            // 1. Carregar o PDF base
-            const res = await fetch(nomeArquivoPDF);
-            if (!res.ok) throw new Error(`Arquivo ${nomeArquivoPDF} não encontrado na pasta.`);
-            const existingPdfBytes = await res.arrayBuffer();
-            const pdfDoc = await PDFLib.PDFDocument.load(existingPdfBytes);
-            const font = await pdfDoc.embedFont(PDFLib.StandardFonts.Helvetica);
+            // 1. CRIAR PDF DO ZERO (Resolve o problema de CORS)
+            const pdfDoc = await PDFLib.PDFDocument.create();
+            const page = pdfDoc.addPage([595.28, 841.89]); // Tamanho A4
+            const { width, height } = page.getSize();
             
-            // Pega a primeira página
-            const pages = pdfDoc.getPages();
-            const page = pages[0];
-            const { height } = page.getSize();
-            const size = 10; // Tamanho da fonte
+            // Fontes
+            const fontRegular = await pdfDoc.embedFont(PDFLib.StandardFonts.Helvetica);
+            const fontBold = await pdfDoc.embedFont(PDFLib.StandardFonts.HelveticaBold);
 
-            // === PREENCHIMENTO DO PDF ===
-            // DICA: Ajuste os valores de X e Y para alinhar com as linhas do seu PDF
-            // X = Horizontal (esquerda p/ direita), Y = Vertical (baixo p/ cima)
+            // Variáveis de controle de posição
+            let y = height - 50; 
+            const margin = 50;
+            const lineHeight = 15;
+            const fontSize = 10;
+            const titleSize = 16;
+            const subtitleSize = 12;
 
-            // Dados Pessoais
-            page.drawText(dados.nome, { x: 130, y: height - 120, size, font });
-            if(dados.nomeSocial) page.drawText(dados.nomeSocial, { x: 130, y: height - 140, size, font });
-            page.drawText(dados.nascimento, { x: 450, y: height - 140, size, font });
+            // === DESENHAR O CABEÇALHO ===
+            page.drawText('FICHA DE ACOLHIMENTO', { x: margin, y, size: titleSize, font: fontBold, color: PDFLib.rgb(0.2, 0.2, 0.2) });
+            y -= 25;
+            page.drawText('Psicóloga Giovana', { x: margin, y, size: subtitleSize, font: fontRegular, color: PDFLib.rgb(0.5, 0.5, 0.5) });
+            page.drawLine({ start: { x: margin, y: y - 10 }, end: { x: width - margin, y: y - 10 }, thickness: 1, color: PDFLib.rgb(0.8, 0.8, 0.8) });
+            y -= 40;
+
+            // Função Helper para desenhar campos Label + Valor
+            const drawField = (label, value, isFullLine = false) => {
+                // Desenha Label
+                page.drawText(label, { x: margin, y, size: fontSize, font: fontBold });
+                
+                // Desenha Valor
+                const valueText = value ? String(value).toUpperCase() : "-";
+                // Ajuste simples de tabulação
+                const valueX = margin + (label.length * 6) + 10; 
+                
+                if (isFullLine) {
+                    // Texto longo (quebra de linha simples)
+                    const lines = wordWrap(valueText, 85);
+                    lines.forEach((line, index) => {
+                        if (index === 0) {
+                            page.drawText(line, { x: valueX, y, size: fontSize, font: fontRegular });
+                        } else {
+                            y -= lineHeight;
+                            page.drawText(line, { x: margin, y, size: fontSize, font: fontRegular });
+                        }
+                    });
+                } else {
+                    page.drawText(valueText, { x: valueX, y, size: fontSize, font: fontRegular });
+                }
+                y -= lineHeight * 1.5; // Pula linha
+            };
+
+            // Função para desenhar Título de Seção
+            const drawSection = (title) => {
+                y -= 10;
+                page.drawText(title, { x: margin, y, size: subtitleSize, font: fontBold, color: PDFLib.rgb(0, 0, 0) });
+                y -= 5;
+                page.drawLine({ start: { x: margin, y: y }, end: { x: width - margin, y: y }, thickness: 0.5, color: PDFLib.rgb(0.6, 0.6, 0.6) });
+                y -= 20;
+            };
+
+            // === 1. IDENTIFICAÇÃO PESSOAL ===
+            drawSection("1. IDENTIFICAÇÃO PESSOAL");
+            drawField("Nome:", document.getElementById("nome").value);
             
-            page.drawText(dados.endereco, { x: 80, y: height - 165, size, font });
-            page.drawText(dados.profissao, { x: 80, y: height - 185, size, font });
-            page.drawText(dados.religiao, { x: 250, y: height - 185, size, font });
-            page.drawText(dados.escolaridade, { x: 400, y: height - 185, size, font });
-            page.drawText(dados.telefone, { x: 80, y: height - 205, size, font });
-            page.drawText(dados.email, { x: 250, y: height - 205, size, font });
-
-            // Dados dos Pais
-            page.drawText(dados.paiNome, { x: 100, y: height - 250, size, font });
-            page.drawText(dados.paiIdade, { x: 350, y: height - 250, size, font });
-            page.drawText(dados.paiProfissao, { x: 420, y: height - 250, size, font });
+            const nasc = document.getElementById("nascimento").value.split('-').reverse().join('/');
+            drawField("Data Nasc:", nasc);
+            if(document.getElementById("nomeSocial").value) drawField("Nome Social:", document.getElementById("nomeSocial").value);
             
-            page.drawText(dados.maeNome, { x: 100, y: height - 275, size, font });
-            page.drawText(dados.maeIdade, { x: 350, y: height - 275, size, font });
-            page.drawText(dados.maeProfissao, { x: 420, y: height - 275, size, font });
+            drawField("Endereço:", document.getElementById("endereco").value, true);
+            drawField("Profissão:", document.getElementById("profissao").value);
+            drawField("Religião:", document.getElementById("religiao").value);
+            drawField("Escolaridade:", document.getElementById("escolaridade").value);
+            drawField("Telefone:", document.getElementById("telefone").value);
+            drawField("E-mail:", document.getElementById("email").value);
+
+            // === 2. PAIS ===
+            drawSection("2. IDENTIFICAÇÃO DOS PAIS");
             
-            page.drawText(dados.paisEndereco, { x: 100, y: height - 300, size, font });
+            // Pai
+            page.drawText("PAI:", { x: margin, y, size: fontSize, font: fontBold }); y -= lineHeight;
+            drawField("Nome:", document.getElementById("paiNome").value);
+            page.drawText(`Idade: ${document.getElementById("paiIdade").value}   Profissão: ${document.getElementById("paiProfissao").value}   Escolaridade: ${document.getElementById("paiEscolaridade").value}`, { x: margin, y, size: fontSize, font: fontRegular });
+            y -= lineHeight * 2;
 
-            // Queixa e Sintomas (Deslocados mais para baixo)
-            // Se o texto for longo, ele não quebra linha sozinho. Para textos longos seria ideal usar drawText com maxWidth (biblioteca avançada) ou quebras manuais.
-            page.drawText(dados.queixa, { x: 50, y: height - 380, size, font });
-            page.drawText(dados.evolucao, { x: 50, y: height - 450, size, font });
-            page.drawText(dados.inicioTipo, { x: 150, y: height - 480, size, font });
-            page.drawText(dados.sintomas, { x: 50, y: height - 520, size, font });
+            // Mãe
+            page.drawText("MÃE:", { x: margin, y, size: fontSize, font: fontBold }); y -= lineHeight;
+            drawField("Nome:", document.getElementById("maeNome").value);
+            page.drawText(`Idade: ${document.getElementById("maeIdade").value}   Profissão: ${document.getElementById("maeProfissao").value}   Escolaridade: ${document.getElementById("maeEscolaridade").value}`, { x: margin, y, size: fontSize, font: fontRegular });
+            y -= lineHeight * 2;
 
-            // Medicamentos
-            page.drawText(dados.usoMedicamento, { x: 180, y: height - 600, size, font });
-            page.drawText(dados.quaisMedicamentos, { x: 250, y: height - 600, size, font });
+            drawField("Endereço dos Pais:", document.getElementById("paisEndereco").value, true);
 
+            // === 3. QUEIXA ===
+            // Verifica se precisa de nova página
+            if (y < 200) { page = pdfDoc.addPage([595.28, 841.89]); y = height - 50; }
+            
+            drawSection("3. QUEIXA PRINCIPAL");
+            
+            page.drawText("Queixa Principal:", { x: margin, y, size: fontSize, font: fontBold }); 
+            y -= lineHeight;
+            wordWrap(document.getElementById("queixa").value, 90).forEach(line => {
+                page.drawText(line, { x: margin, y, size: fontSize, font: fontRegular });
+                y -= lineHeight;
+            });
+            y -= 10;
 
-            // Salvar PDF
+            page.drawText("Evolução (Como começou):", { x: margin, y, size: fontSize, font: fontBold }); 
+            y -= lineHeight;
+            wordWrap(document.getElementById("evolucao").value, 90).forEach(line => {
+                page.drawText(line, { x: margin, y, size: fontSize, font: fontRegular });
+                y -= lineHeight;
+            });
+            y -= 10;
+
+            drawField("Início:", document.getElementById("inicioTipo").value);
+
+            page.drawText("Sintomas Atuais:", { x: margin, y, size: fontSize, font: fontBold }); 
+            y -= lineHeight;
+            wordWrap(document.getElementById("sintomas").value, 90).forEach(line => {
+                page.drawText(line, { x: margin, y, size: fontSize, font: fontRegular });
+                y -= lineHeight;
+            });
+            y -= 20;
+
+            // === 4. MEDICAMENTOS ===
+            drawSection("4. MEDICAMENTOS");
+            drawField("Usa Medicamentos?", document.getElementById("usoMedicamento").value);
+            drawField("Quais:", document.getElementById("quaisMedicamentos").value, true);
+
+            // Rodapé
+            page.drawText(`Documento gerado em: ${new Date().toLocaleString()}`, { x: margin, y: 30, size: 8, font: fontRegular, color: PDFLib.rgb(0.6, 0.6, 0.6) });
+
+            // 2. FINALIZAR E EXIBIR
             const pdfBytes = await pdfDoc.save();
             const pdfBlob = new Blob([pdfBytes], { type: "application/pdf" });
             const localUrl = URL.createObjectURL(pdfBlob);
             
-            // Mostrar no Iframe
             pdfViewer.style.display = "block";
             pdfViewer.src = localUrl;
 
-            // === Upload Backend (igual referência) ===
+            // 3. UPLOAD E DOWNLOAD
             const hash = gerarHash();
-            const nomeFinal = `${hash}_Ficha_${dados.nome.split(" ")[0]}.pdf`;
+            const nomeFinal = `${hash}_Ficha_${document.getElementById("nome").value.split(" ")[0]}.pdf`;
             const base64 = await blobParaBase64(pdfBlob);
             
-            // Nota: Se você não tiver configurado o backend para receber 'Ficha', 
-            // isso pode dar erro ou salvar na mesma pasta dos contratos.
-            await fetch("https://ficha-acolhimento.onrender.com/upload", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ nomeArquivo: nomeFinal, conteudoBase64: base64 })
-            });
+            // Envio para o Backend (mesma lógica anterior)
+            // Se o backend der erro, o script continua para baixar o arquivo localmente
+            try {
+                await fetch("https://ficha-acolhimento.onrender.com/upload", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ nomeArquivo: nomeFinal, conteudoBase64: base64 })
+                });
+            } catch (backendErr) {
+                console.warn("Backend não acessível ou erro de upload, mas o PDF foi gerado.", backendErr);
+            }
 
-            // Download
+            // Download Automático
             const link = document.createElement('a');
             link.href = localUrl;
             link.download = nomeFinal;
             link.click();
 
             // WhatsApp
-            const msg = encodeURIComponent(`Olá Giovana, preenchi a Ficha de Acolhimento.\nPaciente: ${dados.nome}`);
+            const msg = encodeURIComponent(`Olá Giovana, preenchi a Ficha de Acolhimento.\nPaciente: ${document.getElementById("nome").value}`);
             window.open(`https://wa.me/${contatoWhatsApp}?text=${msg}`, "_blank");
 
-            alert("Ficha enviada e baixada com sucesso!");
+            alert("Ficha gerada com sucesso!");
 
         } catch (err) {
             console.error(err);
