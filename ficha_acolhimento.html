@@ -147,37 +147,33 @@
 
     function gerarHash() { return Math.floor(10000 + Math.random() * 9000); }
 
-    // === NOVA FUNÇÃO DE QUEBRA DE LINHA MELHORADA ===
-    function quebrarTexto(texto, limiteCaracteres) {
-        if (!texto) return [""];
-        
-        // 1. Divide primeiro pelos "Enters" (quebra de parágrafo do usuário)
-        const paragrafos = texto.split('\n');
-        let linhasFinais = [];
+    // === NOVA FUNÇÃO INTELIGENTE DE QUEBRA DE LINHA ===
+    // Mede o tamanho real do texto baseado na fonte e no limite de largura da página
+    function wrapText(text, maxWidth, font, fontSize) {
+        if (!text) return [""];
+        const paragraphs = text.split('\n');
+        let lines = [];
 
-        paragrafos.forEach(paragrafo => {
-            // Se o parágrafo for vazio (linha em branco), adiciona espaço
-            if (paragrafo.trim() === "") {
-                linhasFinais.push(""); 
-                return;
-            }
+        for (const paragraph of paragraphs) {
+            const words = paragraph.split(' ');
+            let currentLine = "";
 
-            // 2. Divide parágrafos longos em linhas menores
-            const palavras = paragrafo.split(' ');
-            let linhaAtual = palavras[0];
+            for (const word of words) {
+                // Testa se a palavra cabe na linha atual
+                const testLine = currentLine ? currentLine + " " + word : word;
+                const width = font.widthOfTextAtSize(testLine, fontSize);
 
-            for (let i = 1; i < palavras.length; i++) {
-                if (linhaAtual.length + 1 + palavras[i].length <= limiteCaracteres) {
-                    linhaAtual += " " + palavras[i];
+                if (width <= maxWidth) {
+                    currentLine = testLine;
                 } else {
-                    linhasFinais.push(linhaAtual);
-                    linhaAtual = palavras[i];
+                    // Se não couber, salva a linha anterior e começa uma nova
+                    if (currentLine) lines.push(currentLine);
+                    currentLine = word;
                 }
             }
-            linhasFinais.push(linhaAtual);
-        });
-
-        return linhasFinais;
+            if (currentLine) lines.push(currentLine);
+        }
+        return lines;
     }
 
     form.addEventListener("submit", async (e) => {
@@ -188,7 +184,7 @@
 
         try {
             const pdfDoc = await PDFLib.PDFDocument.create();
-            let page = pdfDoc.addPage([595.28, 841.89]); // A4
+            let page = pdfDoc.addPage([595.28, 841.89]); // A4 (Largura ~595 pts)
             const { width, height } = page.getSize();
             
             const fontRegular = await pdfDoc.embedFont(PDFLib.StandardFonts.Helvetica);
@@ -197,13 +193,14 @@
             // Variáveis de layout
             let y = height - 50; 
             const margin = 50;
-            const lineHeight = 14; // Altura entre linhas
+            const contentWidth = width - (margin * 2); // Largura útil (~495 pts)
+            const lineHeight = 14; 
             const fontSize = 10;
 
             // Função para desenhar linhas e atualizar o Y automaticamente
             const escreverLinhas = (linhas) => {
                 linhas.forEach(linha => {
-                    // Verifica se a página acabou
+                    // Verifica se a página acabou (rodapé)
                     if (y < 40) { 
                         page = pdfDoc.addPage([595.28, 841.89]); 
                         y = height - 50; 
@@ -218,9 +215,9 @@
             const drawField = (label, value) => {
                 const valorLimpo = value ? String(value).toUpperCase() : "-";
                 page.drawText(label, { x: margin, y, size: fontSize, font: fontBold });
-                // Posiciona o valor logo após o label (estimativa de largura: 6px por letra)
-                const labelWidth = label.length * 5.5; 
-                page.drawText(valorLimpo, { x: margin + labelWidth + 10, y, size: fontSize, font: fontRegular });
+                
+                const labelWidth = fontBold.widthOfTextAtSize(label, fontSize);
+                page.drawText(valorLimpo, { x: margin + labelWidth + 5, y, size: fontSize, font: fontRegular });
                 y -= lineHeight * 1.5;
             };
 
@@ -247,10 +244,10 @@
             drawField("Data Nasc:", nasc);
             if(document.getElementById("nomeSocial").value) drawField("Nome Social:", document.getElementById("nomeSocial").value);
             
-            // Endereço (pode ser longo, então usamos a quebra)
+            // Endereço (usando a quebra inteligente)
             page.drawText("Endereço:", { x: margin, y, size: fontSize, font: fontBold });
             y -= lineHeight;
-            escreverLinhas(quebrarTexto(document.getElementById("endereco").value, 95));
+            escreverLinhas(wrapText(document.getElementById("endereco").value, contentWidth, fontRegular, fontSize));
 
             drawField("Profissão:", document.getElementById("profissao").value);
             drawField("Religião:", document.getElementById("religiao").value);
@@ -273,33 +270,29 @@
 
             page.drawText("Endereço dos Pais:", { x: margin, y, size: fontSize, font: fontBold });
             y -= lineHeight;
-            escreverLinhas(quebrarTexto(document.getElementById("paisEndereco").value, 95));
+            escreverLinhas(wrapText(document.getElementById("paisEndereco").value, contentWidth, fontRegular, fontSize));
 
-            // === 3. QUEIXA (Aqui é onde o texto costuma ser grande) ===
-            // Verifica espaço antes de começar a seção grande
+            // === 3. QUEIXA ===
             if (y < 250) { page = pdfDoc.addPage([595.28, 841.89]); y = height - 50; }
             
             drawSection("3. QUEIXA PRINCIPAL");
             
-            // Queixa
             page.drawText("Descreva a queixa principal:", { x: margin, y, size: fontSize, font: fontBold });
             y -= lineHeight;
-            // Limite de 95 caracteres por linha
-            escreverLinhas(quebrarTexto(document.getElementById("queixa").value, 95));
+            // Aqui usamos o wrapText passando a largura máxima (contentWidth)
+            escreverLinhas(wrapText(document.getElementById("queixa").value, contentWidth, fontRegular, fontSize));
             y -= 10;
 
-            // Evolução
             page.drawText("Evolução (Como começou):", { x: margin, y, size: fontSize, font: fontBold });
             y -= lineHeight;
-            escreverLinhas(quebrarTexto(document.getElementById("evolucao").value, 95));
+            escreverLinhas(wrapText(document.getElementById("evolucao").value, contentWidth, fontRegular, fontSize));
             y -= 10;
 
             drawField("Início:", document.getElementById("inicioTipo").value);
 
-            // Sintomas
             page.drawText("Sintomas atuais:", { x: margin, y, size: fontSize, font: fontBold });
             y -= lineHeight;
-            escreverLinhas(quebrarTexto(document.getElementById("sintomas").value, 95));
+            escreverLinhas(wrapText(document.getElementById("sintomas").value, contentWidth, fontRegular, fontSize));
 
             // === 4. MEDICAMENTOS ===
             if (y < 100) { page = pdfDoc.addPage([595.28, 841.89]); y = height - 50; }
@@ -308,7 +301,7 @@
             
             page.drawText("Quais:", { x: margin, y, size: fontSize, font: fontBold });
             y -= lineHeight;
-            escreverLinhas(quebrarTexto(document.getElementById("quaisMedicamentos").value, 95));
+            escreverLinhas(wrapText(document.getElementById("quaisMedicamentos").value, contentWidth, fontRegular, fontSize));
 
             // === FINALIZAÇÃO ===
             page.drawText(`Gerado em: ${new Date().toLocaleString()}`, { x: margin, y: 30, size: 8, font: fontRegular, color: PDFLib.rgb(0.6, 0.6, 0.6) });
@@ -363,5 +356,3 @@
 
 </body>
 </html>
-
-
