@@ -232,7 +232,7 @@
     const USER = 'psigiovana';
     const REPO = 'contratos-assinados';
     const PATH = 'contratos'; 
-    const url = `https://api.github.com/repos/${USER}/${REPO}/contents/${PATH}`;
+    const url = `https://api.github.com/repos/${USER}/${REPO}/${PATH}`;
     
     try {
         const response = await fetch(url);
@@ -285,3 +285,4 @@
     </script>
 </body>
 </html>
+
