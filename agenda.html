@@ -127,6 +127,20 @@
         .offcanvas-title { color: #ffffff !important; }
 
         .modal-title { color: #000000; }
+
+        .list-group-item { color: var(--text-main) !important; }
+        .list-group-item.active-menu {
+            background-color: rgba(26, 115, 232, 0.1) !important;
+            color: #1a73e8 !important; /* Azul Google */
+            font-weight: bold;
+            border-right: 3px solid #1a73e8;
+        }
+        
+        [data-theme="dark"] .list-group-item.active-menu {
+            color: #8ab4f8 !important; /* Azul claro para modo escuro */
+            border-right: 3px solid #8ab4f8;
+        }
+
     </style>
 </head>
 <body data-theme="light">
@@ -154,22 +168,28 @@
             </button>
             <nav class="list-group list-group-flush">
                 <a href="index.html" class="list-group-item list-group-item-action border-0 bg-transparent rounded-3 mb-1">
-                <i class="bi bi-calendar-check me-3"></i>Agenda
+                    <i class="bi bi-grid-1x2 me-3"></i>Visão Geral
+                </a>
+                <a href="agenda.html" class="list-group-item list-group-item-action border-0 bg-transparent rounded-3 mb-1 active-menu">
+                    <i class="bi bi-calendar-check me-3"></i>Agenda
+                </a>
+                <a href="financeiro.html" class="list-group-item list-group-item-action border-0 bg-transparent rounded-3 mb-1">
+                    <i class="bi bi-wallet2 me-3"></i>Financeiro
                 </a>
                 <a href="ficha_acolhimento.html" class="list-group-item list-group-item-action border-0 bg-transparent rounded-3" target="_blank">
                     <i class="bi bi-clipboard2-heart me-3"></i>Ficha de Acolhimento
                 </a>
-                <a href="lista_fichas.html" class="list-group-item list-group-item-action border-0 bg-transparent rounded-3 active-menu">
+                <a href="lista_fichas.html" class="list-group-item list-group-item-action border-0 bg-transparent rounded-3">
                     <i class="bi bi-card-list me-3"></i>Lista Fichas
                 </a>
                 <a href="contrato.html" class="list-group-item list-group-item-action border-0 bg-transparent rounded-3" target="_blank">
                     <i class="bi bi-file-earmark-text me-3"></i>Contrato
                 </a>
-                <a href="lista_contratos.html" class="list-group-item list-group-item-action border-0 bg-transparent rounded-3">
-                <i class="bi bi-file-earmark-check me-3"></i>Lista Contratos
+                <a href="lista_contratos.html" class="list-group-item list-group-item-action border-0 bg-transparent rounded-3 ">
+                    <i class="bi bi-file-earmark-check me-3"></i>Lista Contratos
                 </a>
-                <a href="enviar_contrato.html" class="list-group-item list-group-item-action border-0 bg-transparent rounded-3" target="_blank">
-                    <i class="bi bi-send me-3"></i>Enviar Contrato
+                <a href="enviar_ficha.html" class="list-group-item list-group-item-action border-0 bg-transparent rounded-3" target="_blank">
+                    <i class="bi bi-send me-3"></i>Enviar Ficha
                 </a>
             </nav>
         </aside>
