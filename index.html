@@ -3,50 +3,43 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Giovana Morais | Agenda</title>
+    <title>Giovana Morais | Dashboard</title>
     
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#1a73e8">
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="Nath Agenda">
-    <link rel="apple-touch-icon" href="agenda.png">
-    <link rel="icon" type="image/png" href="calendar.png">
+    <link rel="icon" type="image/png" href="Logo-Giovana-Morais-_52-x-52-px_.ico">
+
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
-    
-    <script>
-      if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-          navigator.serviceWorker.register('./sw.js?v=3')
-            .then(reg => console.log("PWA Ativo:", reg.scope))
-            .catch(err => console.log("Erro PWA:", err));
-        });
-      }
-    </script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
     <style>
+        /* === VARIÁVEIS DE CORES === */
         :root {
             --google-blue: #1a73e8;
             --border-color: #dadce0;
-            --bg-main: #ffffff;
+            --bg-main: #f0f2f5;
             --text-main: #3c4043;
+            --text-muted: #5f6368;
             --sidebar-bg: #ffffff;
             --header-bg: #ffffff;
-            --modal-bg: #ffffff;
-            --fc-today-bg-color: #e8f0fe; 
+            --card-bg: #ffffff;
+            --chart-grid: rgba(0,0,0,0.05);
+            --chart-text: #3c4043;
         }
 
+        /* Cores Específicas do Modo Escuro */
         [data-theme="dark"] {
-            --bg-main: #121212;
-            --text-main: #e8eaed;
-            --border-color: #3c4043;
-            --sidebar-bg: #1e1e1e;
-            --header-bg: #1e1e1e;
-            --modal-bg: #2d2d2d;
-            --fc-today-bg-color: rgba(26, 115, 232, 0.15);
+            --bg-main: #121212;         /* Fundo Geral: Preto suave */
+            --text-main: #e8eaed;       /* Texto Principal: Branco gelo */
+            --text-muted: #9aa0a6;      /* Texto Secundário: Cinza claro */
+            --border-color: #3c4043;    /* Bordas: Cinza escuro */
+            --sidebar-bg: #1e1e1e;      /* Sidebar: Cinza Material */
+            --header-bg: #1e1e1e;       /* Header: Igual Sidebar */
+            --card-bg: #252525;         /* Cards: Um pouco mais claro que o fundo */
+            --chart-grid: rgba(255,255,255,0.1); /* Grade do gráfico branca */
+            --chart-text: #e8eaed;      /* Texto do gráfico branco */
             color-scheme: dark;
         }
 
@@ -55,12 +48,13 @@
             color: var(--text-main);
             font-family: 'Roboto', sans-serif; 
             overflow: hidden; 
-            transition: background 0.3s ease;
+            transition: background 0.3s ease, color 0.3s ease;
         }
 
+        /* === LAYOUT === */
         .app-container { display: flex; height: 100vh; flex-direction: column; }
         .main-content { display: flex; flex: 1; overflow: hidden; }
-        #calendar { flex: 1; padding: 10px; background: var(--bg-main); }
+        .content-scroll { flex: 1; overflow-y: auto; padding: 20px; }
 
         .sidebar {
             width: 260px;
@@ -82,51 +76,70 @@
             z-index: 1030;
         }
 
-        .fc { --fc-border-color: var(--border-color); font-size: 0.9rem; }
-        .fc .fc-toolbar-title { font-size: 1.2rem; font-weight: 600; }
-        .fc .fc-button-primary { background-color: var(--google-blue); border: none; text-transform: capitalize; }
-        
-        [data-theme="dark"] .text-muted { color: rgba(255, 255, 255, 0.7) !important; }
-        [data-theme="dark"] .text-inherit, [data-theme="dark"] .list-group-item { color: #ffffff !important; }
-
-        .fab {
-            position: fixed; bottom: 20px; right: 20px; width: 56px; height: 56px;
-            border-radius: 16px; background-color: var(--google-blue);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-            display: flex; align-items: center; justify-content: center;
-            z-index: 1000; cursor: pointer; color: white; border: none;
+        /* === CARDS === */
+        .dash-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            height: 100%;
+            transition: transform 0.2s;
         }
+        
+        [data-theme="dark"] .dash-card {
+            box-shadow: none; /* Remove sombra no escuro para ficar mais clean */
+        }
+
+        .dash-card:hover { transform: translateY(-2px); }
+
+        .icon-box {
+            width: 48px; height: 48px;
+            border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+        }
+
+        /* Cores dos Ícones (Mantém legibilidade nos dois temas) */
+        .bg-blue-light { background: rgba(26, 115, 232, 0.15); color: #4285f4; }
+        .bg-green-light { background: rgba(52, 168, 83, 0.15); color: #34a853; }
+        .bg-orange-light { background: rgba(249, 171, 0, 0.15); color: #f9ab00; }
+        .bg-purple-light { background: rgba(161, 66, 244, 0.15); color: #a142f4; }
+        
+        /* Ajuste para ícones no modo escuro ficarem mais brilhantes */
+        [data-theme="dark"] .bg-blue-light { color: #8ab4f8; background: rgba(138, 180, 248, 0.1); }
+        [data-theme="dark"] .bg-green-light { color: #81c995; background: rgba(129, 201, 149, 0.1); }
+        [data-theme="dark"] .bg-orange-light { color: #fdd663; background: rgba(253, 214, 99, 0.1); }
+        [data-theme="dark"] .bg-purple-light { color: #c58af9; background: rgba(197, 138, 249, 0.1); }
+
+        /* === TABELAS E TEXTOS === */
+        .list-group-item { color: var(--text-main) !important; }
+        .list-group-item.active-menu {
+            background-color: rgba(26, 115, 232, 0.1) !important;
+            color: #1a73e8 !important; /* Azul Google */
+            font-weight: bold;
+            border-right: 3px solid #1a73e8;
+        }
+        
+        [data-theme="dark"] .list-group-item.active-menu {
+            color: #8ab4f8 !important; /* Azul claro para modo escuro */
+            border-right: 3px solid #8ab4f8;
+        }
+
+        /* Correção para tabelas no modo escuro */
+        .table { --bs-table-bg: transparent; --bs-table-color: var(--text-main); }
+        .table>:not(caption)>*>* { border-bottom-color: var(--border-color); color: var(--text-main); }
+        
+        /* Correção para textos muted no modo escuro */
+        .text-muted { color: var(--text-muted) !important; }
+
+        /* Botão fechar (X) invertido no modo escuro */
+        [data-theme="dark"] .btn-close { filter: invert(1) grayscale(100%) brightness(200%); }
 
         .theme-toggle { cursor: pointer; padding: 10px; border-radius: 50%; color: var(--text-main); }
-
-        footer {
-            border-top: 1px solid var(--border-color);
-            background: var(--header-bg);
-            padding: 10px;
-            text-align: center;
-            font-size: 0.8rem;
-        }
-        footer p { margin: 0; color: var(--text-main); }
-
-        @media (max-width: 768px) {
-            .sidebar { display: none; }
-            .fc .fc-toolbar { flex-direction: column; gap: 10px; }
-            .fc .fc-toolbar-title { font-size: 1rem; }
-        }
         
-        .fc-timegrid-slot, .fc-daygrid-day {
-            cursor: pointer;
-            -webkit-tap-highlight-color: rgba(26, 115, 232, 0.1);
-        }
-
-        .fc-event { cursor: pointer; }
-        .fc .fc-timegrid-slot { height: 3em !important; }
-        .fc-event-draggable { cursor: move; }
-        .fc-v-event .fc-event-resizer { height: 15px; background: rgba(0,0,0,0.1); }
-
-        .offcanvas-title { color: #ffffff !important; }
-
-        .modal-title { color: #000000; }
+        @media (max-width: 768px) { .sidebar { display: none; } }
     </style>
 </head>
 <body data-theme="light">
@@ -135,38 +148,36 @@
     <header class="header-top shadow-sm">
         <div class="d-flex align-items-center">
             <button class="btn d-md-none me-2 text-inherit" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileSidebar">
-                <i class="bi bi-list fs-3"></i>
+                <i class="bi bi-list fs-3" style="color: var(--text-main);"></i>
             </button>
-            <i class="bi bi-calendar-check-fill text-primary fs-4 me-2"></i>
-            <h5 class="mb-0 fw-bold d-none d-sm-block">Agenda | <span class="text-secondary fw-normal">Giovana Morais</span></h5>
+            <i class="bi bi-grid-1x2-fill text-primary fs-4 me-2"></i>
+            <h5 class="mb-0 fw-bold">Dashboard | <span class="text-secondary fw-normal">Visão Geral</span></h5>
         </div>
         <div class="d-flex align-items-center gap-1">
-            <a href="index.html" class="theme-toggle"><i class="bi bi-house fs-4"></i></a>
-            <a href="lista_contratos.html"><i class="bi bi-file-earmark-text fs-4"></i></a>
             <div class="theme-toggle" id="themeBtn"><i class="bi bi-moon-stars fs-4" id="themeIcon"></i></div>
         </div>
     </header>
 
     <div class="main-content">
         <aside class="sidebar d-none d-md-flex">
-            <button class="btn btn-primary shadow-sm rounded-pill px-4 py-2 mb-4 w-100" onclick="openNewModal()">
-                <i class="bi bi-plus-lg me-2"></i>Criar
-            </button>
             <nav class="list-group list-group-flush">
-                <a href="index.html" class="list-group-item list-group-item-action border-0 bg-transparent rounded-3 mb-1">
-                <i class="bi bi-calendar-check me-3"></i>Agenda
+                <a href="dashboard.html" class="list-group-item list-group-item-action border-0 bg-transparent rounded-3 mb-1 active-menu">
+                    <i class="bi bi-grid-1x2 me-3"></i>Visão Geral
+                </a>
+                <a href="agenda.html" class="list-group-item list-group-item-action border-0 bg-transparent rounded-3 mb-1">
+                    <i class="bi bi-calendar-check me-3"></i>Agenda
                 </a>
                 <a href="ficha_acolhimento.html" class="list-group-item list-group-item-action border-0 bg-transparent rounded-3" target="_blank">
                     <i class="bi bi-clipboard2-heart me-3"></i>Ficha de Acolhimento
                 </a>
-                <a href="lista_fichas.html" class="list-group-item list-group-item-action border-0 bg-transparent rounded-3 active-menu">
+                <a href="lista_fichas.html" class="list-group-item list-group-item-action border-0 bg-transparent rounded-3">
                     <i class="bi bi-card-list me-3"></i>Lista Fichas
                 </a>
                 <a href="contrato.html" class="list-group-item list-group-item-action border-0 bg-transparent rounded-3" target="_blank">
                     <i class="bi bi-file-earmark-text me-3"></i>Contrato
                 </a>
                 <a href="lista_contratos.html" class="list-group-item list-group-item-action border-0 bg-transparent rounded-3">
-                <i class="bi bi-file-earmark-check me-3"></i>Lista Contratos
+                    <i class="bi bi-file-earmark-check me-3"></i>Lista Contratos
                 </a>
                 <a href="enviar_contrato.html" class="list-group-item list-group-item-action border-0 bg-transparent rounded-3" target="_blank">
                     <i class="bi bi-send me-3"></i>Enviar Contrato
@@ -174,273 +185,358 @@
             </nav>
         </aside>
 
-        <main id="calendar"></main>
+        <div class="content-scroll">
+            <div class="container-fluid">
+                
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div>
+                        <h4 class="fw-bold mb-0">Olá, Giovana!</h4>
+                        <p class="text-muted small">Resumo atualizado da sua clínica.</p>
+                    </div>
+                    <button class="btn btn-primary rounded-pill btn-sm" onclick="window.print()">
+                        <i class="bi bi-printer me-2"></i>Imprimir
+                    </button>
+                </div>
+
+                <div class="row g-3 mb-4">
+                    <div class="col-12 col-md-6 col-lg-3">
+                        <div class="dash-card">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <p class="text-muted small fw-bold mb-1">FATURAMENTO (MÊS)</p>
+                                    <h3 class="fw-bold mb-0" id="kpiFaturamento">R$ 0,00</h3>
+                                    <span class="text-muted small" id="kpiMesTexto">Mês Atual</span>
+                                </div>
+                                <div class="icon-box bg-green-light"><i class="bi bi-currency-dollar"></i></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-12 col-md-6 col-lg-3">
+                        <div class="dash-card">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <p class="text-muted small fw-bold mb-1">ATENDIMENTOS (SEMANA)</p>
+                                    <h3 class="fw-bold mb-0" id="kpiAtendimentos">0</h3>
+                                    <span class="text-primary small" id="kpiHojeTexto" style="color: var(--google-blue) !important;">0 hoje</span>
+                                </div>
+                                <div class="icon-box bg-blue-light"><i class="bi bi-calendar-check"></i></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-md-6 col-lg-3">
+                        <div class="dash-card">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <p class="text-muted small fw-bold mb-1">PACIENTES ATIVOS</p>
+                                    <h3 class="fw-bold mb-0" id="kpiPacientes">0</h3>
+                                    <span class="text-muted small">Agendados recentemente</span>
+                                </div>
+                                <div class="icon-box bg-purple-light"><i class="bi bi-people"></i></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-md-6 col-lg-3">
+                        <div class="dash-card">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <p class="text-muted small fw-bold mb-1">FICHAS TOTAIS</p>
+                                    <h3 class="fw-bold mb-0" id="kpiFichas">-</h3>
+                                    <span class="text-warning small"><a href="lista_fichas.html" class="text-warning text-decoration-none">Ver todas</a></span>
+                                </div>
+                                <div class="icon-box bg-orange-light"><i class="bi bi-clipboard-data"></i></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row g-3 mb-4">
+                    <div class="col-12 col-lg-8">
+                        <div class="dash-card">
+                            <h6 class="fw-bold mb-4">Estimativa de Faturamento (Últimos 6 Meses)</h6>
+                            <canvas id="financeChart" style="max-height: 300px;"></canvas>
+                        </div>
+                    </div>
+                    <div class="col-12 col-lg-4">
+                        <div class="dash-card">
+                            <h6 class="fw-bold mb-4">Modalidade de Atendimento</h6>
+                            <canvas id="categoryChart" style="max-height: 250px;"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-12">
+                        <div class="dash-card">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h6 class="fw-bold mb-0">Próximos Atendimentos</h6>
+                                <a href="agenda.html" class="btn btn-sm btn-outline-primary rounded-pill">Ver Agenda</a>
+                            </div>
+                            <div class="table-responsive">
+                                <table class="table align-middle">
+                                    <thead>
+                                        <tr>
+                                            <th class="text-muted small">DATA/HORA</th>
+                                            <th class="text-muted small">PACIENTE</th>
+                                            <th class="text-muted small">TIPO</th>
+                                            <th class="text-muted small text-end">CONTATO</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="tableBody">
+                                        <tr><td colspan="4" class="text-center text-muted">Carregando dados...</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
     </div>
 </div>
 
 <div class="offcanvas offcanvas-start" tabindex="-1" id="mobileSidebar" style="width: 280px; background: var(--sidebar-bg);">
     <div class="offcanvas-header border-bottom">
         <h5 class="offcanvas-title fw-bold">Giovana Morais</h5>
-        <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas"></button>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
     </div>
     <div class="offcanvas-body">
-        <button class="btn btn-primary w-100 rounded-pill mb-4" onclick="openNewModal()" data-bs-dismiss="offcanvas">
-            <i class="bi bi-plus-lg me-2"></i>Novo Agendamento
-        </button>
         <div class="list-group list-group-flush">
-                <a href="index.html" class="list-group-item list-group-item-action border-0 bg-transparent rounded-3 mb-1">
+             <a href="dashboard.html" class="list-group-item list-group-item-action border-0 bg-transparent rounded-3 mb-1 active-menu">
+                <i class="bi bi-grid-1x2 me-3"></i>Visão Geral
+            </a>
+            <a href="agenda.html" class="list-group-item list-group-item-action border-0 bg-transparent rounded-3 mb-1">
                 <i class="bi bi-calendar-check me-3"></i>Agenda
-                </a>
-                <a href="ficha_acolhimento.html" class="list-group-item list-group-item-action border-0 bg-transparent rounded-3" target="_blank">
-                    <i class="bi bi-clipboard2-heart me-3"></i>Ficha de Acolhimento
-                </a>
-                <a href="lista_fichas.html" class="list-group-item list-group-item-action border-0 bg-transparent rounded-3 active-menu">
-                    <i class="bi bi-card-list me-3"></i>Lista Fichas
-                </a>
-                <a href="contrato.html" class="list-group-item list-group-item-action border-0 bg-transparent rounded-3 mb-1" target="_blank">
-                    <i class="bi bi-file-earmark-text me-3"></i>Contrato
-                </a>
-                <a href="lista_contratos.html" class="list-group-item list-group-item-action border-0 bg-transparent rounded-3">
+            </a>
+            <a href="ficha_acolhimento.html" class="list-group-item list-group-item-action border-0 bg-transparent rounded-3" target="_blank">
+                <i class="bi bi-clipboard2-heart me-3"></i>Ficha de Acolhimento
+            </a>
+            <a href="lista_fichas.html" class="list-group-item list-group-item-action border-0 bg-transparent rounded-3">
+                <i class="bi bi-card-list me-3"></i>Lista Fichas
+            </a>
+            <a href="contrato.html" class="list-group-item list-group-item-action border-0 bg-transparent rounded-3" target="_blank">
+                <i class="bi bi-file-earmark-text me-3"></i>Contrato
+            </a>
+            <a href="lista_contratos.html" class="list-group-item list-group-item-action border-0 bg-transparent rounded-3">
                 <i class="bi bi-file-earmark-check me-3"></i>Lista Contratos
-                </a>
-                <a href="enviar_contrato.html" class="list-group-item list-group-item-action border-0 bg-transparent rounded-3" target="_blank">
-                    <i class="bi bi-send me-3"></i>Enviar Contrato
-                </a>
+            </a>
+            <a href="enviar_contrato.html" class="list-group-item list-group-item-action border-0 bg-transparent rounded-3" target="_blank">
+                <i class="bi bi-send me-3"></i>Enviar Contrato
+            </a>
         </div>
     </div>
-</div>
-
-<button class="fab d-md-none shadow" onclick="openNewModal()">
-    <i class="bi bi-plus-lg fs-2"></i>
-</button>
-
-<div class="modal fade" id="appointmentModal" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered modal-fullscreen-sm-down">
-        <div class="modal-content border-0 shadow-lg">
-            <div class="modal-header border-0 pb-0">
-                <h5 class="modal-title fw-bold">Agendamento</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <form id="appointmentForm">
-                    <input type="hidden" id="eventID">
-                    
-                    <div class="mb-4">
-                        <label class="small fw-bold text-muted mb-1">PACIENTE</label>
-                        <input type="text" id="patientName" class="form-control form-control-lg border-0 border-bottom rounded-0 px-0 bg-transparent" placeholder="Nome completo" required>
-                    </div>
-
-                    <div class="mb-4">
-                        <label class="small fw-bold text-muted mb-1">CATEGORIA</label>
-                        <select id="eventColor" class="form-select border-0 border-bottom rounded-0 px-0 bg-transparent" required>
-                            <option value="" data-duration="0">Selecione um atendimento</option>
-                            <option value="#1a73e8" data-duration="50">Terapia Individual Presencial (50min)</option>
-                            <option value="#4285f4" data-duration="50">Terapia Individual Online (50min)</option>
-                            <option value="#34a853" data-duration="90">Terapia Casal Presencial (1h30)</option>
-                            <option value="#0f9d58" data-duration="90">Terapia Casal Online (1h30)</option>
-                            <option value="#f9ab00" data-duration="90">Terapia Familiar Presencial (1h30)</option>
-                            <option value="#fbbc05" data-duration="90">Terapia Familiar Online (1h30)</option>
-                        </select>
-                    </div>
-
-                    <div class="row g-3 mb-4">
-                        <div class="col-6">
-                            <label class="small fw-bold text-muted mb-1">INÍCIO</label>
-                            <input type="datetime-local" id="appointmentStart" class="form-control border-0 border-bottom rounded-0 px-0 bg-transparent" required>
-                        </div>
-                        <div class="col-6">
-                            <label class="small fw-bold text-muted mb-1">FIM</label>
-                            <input type="datetime-local" id="appointmentEnd" class="form-control border-0 border-bottom rounded-0 px-0 bg-transparent" required>
-                        </div>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer border-0">
-                <button type="button" class="btn btn-outline-danger border-0 d-none" id="btnDelete">Excluir</button>
-                <button type="submit" form="appointmentForm" class="btn btn-primary px-5 rounded-pill">Salvar</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div id="toastSuccess" class="alert alert-success shadow-lg" style="display:none; position: fixed; top: 20px; right: 20px; z-index: 9999; border-radius: 50px; padding: 10px 30px;">
-    <i class="bi bi-check-circle-fill me-2"></i> Salvo com sucesso!
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    const calendarEl = document.getElementById('calendar');
-    const modalEl = document.getElementById('appointmentModal');
-    const modal = new bootstrap.Modal(modalEl);
-    const form = document.getElementById('appointmentForm');
-    const btnDelete = document.getElementById('btnDelete');
-    const inputStart = document.getElementById('appointmentStart');
-    const inputEnd = document.getElementById('appointmentEnd');
-    const selectServico = document.getElementById('eventColor');
+    // ================= CONFIGURAÇÕES =================
+    const TABELA_PRECOS = {
+        '#1a73e8': 150, '#4285f4': 150, '#34a853': 200, '#0f9d58': 200, '#f9ab00': 250, '#fbbc05': 250
+    };
 
+    const CONFIG_GITHUB = { user: 'psigiovana', repo: 'contratos-assinados', path: 'fichas' };
+
+    // ================= TEMA (LÓGICA AJUSTADA) =================
     const themeBtn = document.getElementById('themeBtn');
     const themeIcon = document.getElementById('themeIcon');
-    const savedTheme = localStorage.getItem('theme_nath') || 'light';
-    document.body.setAttribute('data-theme', savedTheme);
     
+    function carregarTema() {
+        const savedTheme = localStorage.getItem('theme_nath') || 'light';
+        applyTheme(savedTheme);
+    }
+
+    function applyTheme(theme) {
+        document.body.setAttribute('data-theme', theme);
+        themeIcon.className = theme === 'light' ? 'bi bi-moon-stars fs-4' : 'bi bi-sun fs-4';
+        
+        // Atualiza cores dos gráficos com base nas variáveis CSS
+        if(window.financeChartInstance) {
+            const rootStyle = getComputedStyle(document.body);
+            const textColor = rootStyle.getPropertyValue('--chart-text').trim();
+            const gridColor = rootStyle.getPropertyValue('--chart-grid').trim();
+
+            // Atualiza Gráfico Financeiro
+            window.financeChartInstance.options.scales.x.ticks.color = textColor;
+            window.financeChartInstance.options.scales.y.ticks.color = textColor;
+            window.financeChartInstance.options.scales.y.grid.color = gridColor;
+            window.financeChartInstance.options.scales.x.grid.color = 'transparent';
+            window.financeChartInstance.update();
+
+            // Atualiza Gráfico Categoria (legendas)
+            window.categoryChartInstance.options.plugins.legend.labels.color = textColor;
+            window.categoryChartInstance.update();
+        }
+    }
+
     themeBtn.addEventListener('click', () => {
         const newTheme = document.body.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
-        document.body.setAttribute('data-theme', newTheme);
         localStorage.setItem('theme_nath', newTheme);
-        themeIcon.className = newTheme === 'light' ? 'bi bi-moon-stars fs-4' : 'bi bi-sun fs-4';
+        applyTheme(newTheme);
     });
 
-    function calcularFim() {
-        if (inputStart.value) {
-            const selectedOption = selectServico.options[selectServico.selectedIndex];
-            const duracaoEmMinutos = parseInt(selectedOption.getAttribute('data-duration')) || 60;
-            let start = new Date(inputStart.value);
-            let end = new Date(start.getTime() + (duracaoEmMinutos * 60 * 1000));
-            inputEnd.value = new Date(end - (end.getTimezoneOffset() * 60000)).toISOString().slice(0, 16);
-        }
-    }
-
-    inputStart.addEventListener('change', calcularFim);
-    selectServico.addEventListener('change', calcularFim);
-
-    const calendar = new FullCalendar.Calendar(calendarEl, {
-        initialView: window.innerWidth < 768 ?  'timeGridDay' : 'timeGridWeek',
-        locale: 'pt-br',
-        nowIndicator: true,
-        allDaySlot: false,
-        slotMinTime: '07:00:00',
-        slotMaxTime: '21:00:00',
-        height: '100%',
-        titleFormat: { year: 'numeric', month: '2-digit', day: '2-digit' },
-        selectable: true,
-        editable: true,
-        unselectAuto: true,
-        longPressDelay: 50, // Permite clicar e mover com facilidade
-        headerToolbar: {
-            left: window.innerWidth < 768 ? 'prev,next' : 'prev,next',
-            center: 'title', 
-            right: 'today,dayGridMonth,timeGridWeek,timeGridDay,listWeek'
-        },
-        buttonText: { today: 'Hoje', month: 'Mês', week: 'Semana', day: 'Dia', list: 'Lista' },
-        select: (info) => {
-            openNewModal(info.startStr.slice(0, 16));
-            calendar.unselect();
-        },
-        eventClick: (info) => editEvent(info.event),
-        eventDrop: () => updateStorage(), // Salva ao mover
-        eventResize: () => updateStorage() // Salva ao redimensionar
+    // ================= DADOS E GRÁFICOS =================
+    document.addEventListener('DOMContentLoaded', async () => {
+        carregarTema();
+        await carregarDadosDaAgenda();
+        await carregarContagemFichas();
     });
-    calendar.render();
 
-    function updateStorage() {
-        const events = calendar.getEvents().map(e => ({
-            id: e.id, 
-            title: e.title, 
-            start: e.startStr, 
-            end: e.endStr, 
-            backgroundColor: e.backgroundColor
-        }));
-        
-        const stringData = JSON.stringify(events);
-        localStorage.setItem('appointments_nath', stringData);
-
-        fetch("https://sistema-giovana.onrender.com/salvar-agenda", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: stringData
-        }).catch(e => console.log("Servidor offline, salvo localmente."));
-    }
-
-    async function loadEvents() {
+    async function carregarDadosDaAgenda() {
         const localData = localStorage.getItem('appointments_nath');
-        if (localData) {
-            calendar.removeAllEvents();
-            calendar.addEventSource(JSON.parse(localData));
+        if (!localData) {
+            document.getElementById('tableBody').innerHTML = '<tr><td colspan="4" class="text-center py-4">Nenhum agendamento encontrado.<br><a href="agenda.html">Criar novo</a></td></tr>';
+            return;
         }
 
-        try {
-            const res = await fetch("https://azdevcoder.github.io/giovana-contratos/dados/agendamentos.json?t=" + Date.now());
-            if (res.ok) {
-                const serverData = await res.json();
-                if (!localData || JSON.stringify(serverData) !== localData) {
-                    calendar.removeAllEvents();
-                    calendar.addEventSource(serverData);
-                    localStorage.setItem('appointments_nath', JSON.stringify(serverData));
+        const eventos = JSON.parse(localData);
+        const agora = new Date();
+        const mesAtual = agora.getMonth();
+        const anoAtual = agora.getFullYear();
+
+        let faturamentoMes = 0, atendimentosSemana = 0, atendimentosHoje = 0, pacientesSet = new Set();
+        let contagemTipos = {};
+        let faturamentoPorMes = Array(6).fill(0);
+
+        const inicioSemana = new Date(agora); inicioSemana.setDate(agora.getDate() - agora.getDay()); inicioSemana.setHours(0,0,0,0);
+        const fimSemana = new Date(inicioSemana); fimSemana.setDate(inicioSemana.getDate() + 6); fimSemana.setHours(23,59,59,999);
+
+        eventos.forEach(ev => {
+            const dataEv = new Date(ev.start);
+            const preco = TABELA_PRECOS[ev.backgroundColor] || 0;
+            
+            if (dataEv.getMonth() === mesAtual && dataEv.getFullYear() === anoAtual) faturamentoMes += preco;
+            
+            if (dataEv >= inicioSemana && dataEv <= fimSemana) {
+                atendimentosSemana++;
+                if (dataEv.toDateString() === agora.toDateString()) atendimentosHoje++;
+            }
+            
+            pacientesSet.add(ev.title.split(' - ')[0]);
+            contagemTipos[ev.backgroundColor] = (contagemTipos[ev.backgroundColor] || 0) + 1;
+
+            for (let i = 0; i < 6; i++) {
+                const d = new Date();
+                d.setMonth(d.getMonth() - (5 - i));
+                if (dataEv.getMonth() === d.getMonth() && dataEv.getFullYear() === d.getFullYear()) {
+                    faturamentoPorMes[i] += preco;
                 }
             }
-        } catch (e) {
-            console.log("Usando dados do cache local.");
-        }
-    }
-    loadEvents();
+        });
 
-    window.openNewModal = (date = '') => {
-        form.reset();
-        document.getElementById('eventID').value = '';
-        inputStart.value = date || new Date(new Date().getTime() - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 16);
-        calcularFim();
-        btnDelete.classList.add('d-none');
-        modal.show();
-    };
+        document.getElementById('kpiFaturamento').textContent = faturamentoMes.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+        document.getElementById('kpiAtendimentos').textContent = atendimentosSemana;
+        document.getElementById('kpiHojeTexto').textContent = `${atendimentosHoje} hoje`;
+        document.getElementById('kpiPacientes').textContent = pacientesSet.size;
 
-    function editEvent(event) {
-        document.getElementById('eventID').value = event.id;
-        document.getElementById('patientName').value = event.title.split(' - ')[0];
-        inputStart.value = event.startStr.slice(0, 16);
-        inputEnd.value = event.endStr ? event.endStr.slice(0, 16) : '';
-        document.getElementById('eventColor').value = event.backgroundColor;
-        btnDelete.classList.remove('d-none');
-        modal.show();
-    }
-
-    form.onsubmit = (e) => {
-        e.preventDefault();
-        const id = document.getElementById('eventID').value;
-        const servicoNome = selectServico.options[selectServico.selectedIndex].text;
+        const proximos = eventos.filter(e => new Date(e.start) >= agora).sort((a, b) => new Date(a.start) - new Date(b.start)).slice(0, 5);
+        const tbody = document.getElementById('tableBody');
+        tbody.innerHTML = '';
         
-        const eventData = {
-            id: id || "ID-" + Date.now(),
-            title: document.getElementById('patientName').value + " - " + servicoNome,
-            start: inputStart.value,
-            end: inputEnd.value,
-            backgroundColor: selectServico.value
-        };
-
-        if (id) {
-            const ev = calendar.getEventById(id);
-            if (ev) ev.remove();
+        if (proximos.length === 0) tbody.innerHTML = '<tr><td colspan="4" class="text-center text-muted">Sem próximos atendimentos.</td></tr>';
+        else {
+            proximos.forEach(ev => {
+                const data = new Date(ev.start);
+                const dataFmt = data.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }) + ' ' + data.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+                const nome = ev.title.split(' - ')[0];
+                const tipo = determinarTipoPelaCor(ev.backgroundColor);
+                
+                tbody.innerHTML += `
+                    <tr>
+                        <td class="small fw-bold">${dataFmt}</td>
+                        <td>${nome}</td>
+                        <td><span class="badge rounded-pill text-bg-light border" style="color: ${ev.backgroundColor} !important; border-color: ${ev.backgroundColor} !important">${tipo}</span></td>
+                        <td class="text-end">
+                            <a href="https://wa.me/?text=Olá ${nome}" target="_blank" class="btn btn-sm btn-light text-success rounded-circle"><i class="bi bi-whatsapp"></i></a>
+                        </td>
+                    </tr>`;
+            });
         }
-        
-        calendar.addEvent(eventData);
-        modal.hide();
-        mostrarNotificacao();
-        updateStorage(); 
-    };
 
-    btnDelete.onclick = () => {
-        const id = document.getElementById('eventID').value;
-        const patientName = document.getElementById('patientName').value;
-        if (id && confirm(`Excluir agendamento de ${patientName}?`)) {
-            const ev = calendar.getEventById(id);
-            if (ev) {
-                ev.remove();
-                modal.hide();
-                mostrarNotificacao();
-                updateStorage();
+        gerarGraficos(faturamentoPorMes, contagemTipos);
+        // Aplica o tema aos gráficos logo após criar
+        setTimeout(() => carregarTema(), 100); 
+    }
+
+    async function carregarContagemFichas() {
+        try {
+            const url = `https://api.github.com/repos/${CONFIG_GITHUB.user}/${CONFIG_GITHUB.repo}/contents/${CONFIG_GITHUB.path}`;
+            const res = await fetch(url);
+            if(res.ok) {
+                const arquivos = await res.json();
+                const pdfs = arquivos.filter(f => f.name.endsWith('.pdf'));
+                document.getElementById('kpiFichas').textContent = pdfs.length;
+            } else document.getElementById('kpiFichas').textContent = '0';
+        } catch (e) { document.getElementById('kpiFichas').textContent = '-'; }
+    }
+
+    function determinarTipoPelaCor(cor) {
+        if(cor === '#1a73e8' || cor === '#4285f4') return 'Individual';
+        if(cor === '#34a853' || cor === '#0f9d58') return 'Casal';
+        if(cor === '#f9ab00' || cor === '#fbbc05') return 'Familiar';
+        return 'Outro';
+    }
+
+    function gerarGraficos(dadosFinanceiros, dadosTipos) {
+        const mesesLabels = [];
+        const hoje = new Date();
+        for(let i = 5; i >= 0; i--) {
+            const d = new Date(hoje.getFullYear(), hoje.getMonth() - i, 1);
+            mesesLabels.push(d.toLocaleDateString('pt-BR', { month: 'short' }));
+        }
+
+        const ctxFin = document.getElementById('financeChart').getContext('2d');
+        window.financeChartInstance = new Chart(ctxFin, {
+            type: 'line',
+            data: {
+                labels: mesesLabels,
+                datasets: [{
+                    label: 'Faturamento',
+                    data: dadosFinanceiros,
+                    borderColor: '#1a73e8',
+                    backgroundColor: 'rgba(26, 115, 232, 0.1)',
+                    borderWidth: 2,
+                    fill: true,
+                    tension: 0.3
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: { beginAtZero: true },
+                    x: { grid: { display: false } }
+                }
             }
-        }
-    };
+        });
 
-    function mostrarNotificacao() {
-        const toast = document.getElementById('toastSuccess');
-        toast.style.display = 'block';
-        setTimeout(() => { toast.style.display = 'none'; }, 3000);
+        const ctxCat = document.getElementById('categoryChart').getContext('2d');
+        window.categoryChartInstance = new Chart(ctxCat, {
+            type: 'doughnut',
+            data: {
+                labels: ['Individual', 'Casal', 'Familiar'],
+                datasets: [{
+                    data: [
+                        (dadosTipos['#1a73e8'] || 0) + (dadosTipos['#4285f4'] || 0),
+                        (dadosTipos['#34a853'] || 0) + (dadosTipos['#0f9d58'] || 0),
+                        (dadosTipos['#f9ab00'] || 0) + (dadosTipos['#fbbc05'] || 0)
+                    ],
+                    backgroundColor: ['#1a73e8', '#34a853', '#fbbc05'],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { position: 'bottom' } }
+            }
+        });
     }
-});
 </script>
+
 </body>
 </html>
-
