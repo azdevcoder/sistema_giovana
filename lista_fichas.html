@@ -225,7 +225,7 @@
             const REPO = 'sistema_giovana';
             // ATENÇÃO: Verifique se o nome da pasta no seu GitHub é "fichas" ou "fichas_acolhimento"
             // Se for outra, altere o valor de PATH abaixo:
-            const PATH = 'dados'; 
+            const PATH = 'dados/fichas'; 
             
             const url = `https://api.github.com/repos/${USER}/${REPO}/contents/${PATH}`;
             
@@ -286,4 +286,5 @@
         document.addEventListener('DOMContentLoaded', loadFichas);
     </script>
 </body>
+
 </html>
