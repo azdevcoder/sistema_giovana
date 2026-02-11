@@ -80,14 +80,14 @@
 
         .list-group-item { color: var(--text-main) !important; }
         .list-group-item.active-menu {
-            background-color: rgba(26, 115, 232, 0.1) !important;
-            color: #1a73e8 !important;
+            background-color: rgba(26, 232, 36, 0.1) !important;
+            color: #30a130 !important;
             font-weight: bold;
-            border-right: 3px solid #1a73e8;
+            border-right: 3px solid #30a130;
         }
         [data-theme="dark"] .list-group-item.active-menu {
-            color: #8ab4f8 !important;
-            border-right: 3px solid #8ab4f8;
+            color: #30a130 !important;
+            border-right: 3px solid #30a130;
         }
 
         .theme-toggle { cursor: pointer; padding: 10px; border-radius: 50%; color: var(--text-main); }
@@ -118,7 +118,7 @@
     <header class="header-top shadow-sm">
         <div class="d-flex align-items-center">
             <button class="btn d-md-none me-2 text-inherit" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileSidebar">
-                <i class="bi bi-list fs-3" style="color: var(--text-main);"></i>
+                <i class="bi bi-list fs-3" ></i>
             </button>
             <i class="bi bi-wallet2 text-success fs-4 me-2"></i>
             <h5 class="mb-0 fw-bold">Financeiro | <span class="text-secondary fw-normal">Controle</span></h5>
@@ -134,7 +134,7 @@
                 <i class="bi bi-plus-lg me-2"></i>Novo Lançamento
             </button>
             <nav class="list-group list-group-flush">
-                <a href="dashboard.html" class="list-group-item list-group-item-action border-0 bg-transparent rounded-3 mb-1">
+                <a href="index.html" class="list-group-item list-group-item-action border-0 bg-transparent rounded-3 mb-1">
                     <i class="bi bi-grid-1x2 me-3"></i>Visão Geral
                 </a>
                 <a href="agenda.html" class="list-group-item list-group-item-action border-0 bg-transparent rounded-3 mb-1">
@@ -154,6 +154,12 @@
                 </a>
                 <a href="lista_contratos.html" class="list-group-item list-group-item-action border-0 bg-transparent rounded-3">
                     <i class="bi bi-file-earmark-check me-3"></i>Lista Contratos
+                </a>
+                <a href="enviar_contrato.html" class="list-group-item list-group-item-action border-0 bg-transparent rounded-3" target="_blank">
+                    <i class="bi bi-send me-3"></i>Enviar Contrato
+                </a>
+                <a href="enviar_ficha.html" class="list-group-item list-group-item-action border-0 bg-transparent rounded-3" target="_blank">
+                    <i class="bi bi-send me-3"></i>Enviar Ficha
                 </a>
             </nav>
         </aside>
