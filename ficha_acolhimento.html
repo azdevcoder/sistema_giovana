@@ -253,7 +253,7 @@
             
             // Nota: Se você não tiver configurado o backend para receber 'Ficha', 
             // isso pode dar erro ou salvar na mesma pasta dos contratos.
-            await fetch("https://contratos-assinados.onrender.com/upload", {
+            await fetch("https://ficha-acolhimento.onrender.com/upload", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ nomeArquivo: nomeFinal, conteudoBase64: base64 })
