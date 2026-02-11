@@ -144,26 +144,40 @@
     
     // Configurações
     const contatoWhatsApp = "5544997112467"; 
-    
+
     function gerarHash() { return Math.floor(10000 + Math.random() * 9000); }
 
-    // Função auxiliar para quebrar texto longo em linhas no PDF
-    function wordWrap(text, maxChars) {
-        if (!text) return [""];
-        const words = text.split(' ');
-        let lines = [];
-        let currentLine = words[0];
+    // === NOVA FUNÇÃO DE QUEBRA DE LINHA MELHORADA ===
+    function quebrarTexto(texto, limiteCaracteres) {
+        if (!texto) return [""];
+        
+        // 1. Divide primeiro pelos "Enters" (quebra de parágrafo do usuário)
+        const paragrafos = texto.split('\n');
+        let linhasFinais = [];
 
-        for (let i = 1; i < words.length; i++) {
-            if (currentLine.length + 1 + words[i].length <= maxChars) {
-                currentLine += " " + words[i];
-            } else {
-                lines.push(currentLine);
-                currentLine = words[i];
+        paragrafos.forEach(paragrafo => {
+            // Se o parágrafo for vazio (linha em branco), adiciona espaço
+            if (paragrafo.trim() === "") {
+                linhasFinais.push(""); 
+                return;
             }
-        }
-        lines.push(currentLine);
-        return lines;
+
+            // 2. Divide parágrafos longos em linhas menores
+            const palavras = paragrafo.split(' ');
+            let linhaAtual = palavras[0];
+
+            for (let i = 1; i < palavras.length; i++) {
+                if (linhaAtual.length + 1 + palavras[i].length <= limiteCaracteres) {
+                    linhaAtual += " " + palavras[i];
+                } else {
+                    linhasFinais.push(linhaAtual);
+                    linhaAtual = palavras[i];
+                }
+            }
+            linhasFinais.push(linhaAtual);
+        });
+
+        return linhasFinais;
     }
 
     form.addEventListener("submit", async (e) => {
@@ -173,67 +187,59 @@
         btn.innerHTML = '<span class="spinner"></span> Gerando PDF...';
 
         try {
-            // 1. CRIAR PDF DO ZERO (Resolve o problema de CORS)
             const pdfDoc = await PDFLib.PDFDocument.create();
-            const page = pdfDoc.addPage([595.28, 841.89]); // Tamanho A4
+            let page = pdfDoc.addPage([595.28, 841.89]); // A4
             const { width, height } = page.getSize();
             
-            // Fontes
             const fontRegular = await pdfDoc.embedFont(PDFLib.StandardFonts.Helvetica);
             const fontBold = await pdfDoc.embedFont(PDFLib.StandardFonts.HelveticaBold);
 
-            // Variáveis de controle de posição
+            // Variáveis de layout
             let y = height - 50; 
             const margin = 50;
-            const lineHeight = 15;
+            const lineHeight = 14; // Altura entre linhas
             const fontSize = 10;
-            const titleSize = 16;
-            const subtitleSize = 12;
 
-            // === DESENHAR O CABEÇALHO ===
-            page.drawText('FICHA DE ACOLHIMENTO', { x: margin, y, size: titleSize, font: fontBold, color: PDFLib.rgb(0.2, 0.2, 0.2) });
-            y -= 25;
-            page.drawText('Psicóloga Giovana', { x: margin, y, size: subtitleSize, font: fontRegular, color: PDFLib.rgb(0.5, 0.5, 0.5) });
-            page.drawLine({ start: { x: margin, y: y - 10 }, end: { x: width - margin, y: y - 10 }, thickness: 1, color: PDFLib.rgb(0.8, 0.8, 0.8) });
-            y -= 40;
-
-            // Função Helper para desenhar campos Label + Valor
-            const drawField = (label, value, isFullLine = false) => {
-                // Desenha Label
-                page.drawText(label, { x: margin, y, size: fontSize, font: fontBold });
-                
-                // Desenha Valor
-                const valueText = value ? String(value).toUpperCase() : "-";
-                // Ajuste simples de tabulação
-                const valueX = margin + (label.length * 6) + 10; 
-                
-                if (isFullLine) {
-                    // Texto longo (quebra de linha simples)
-                    const lines = wordWrap(valueText, 85);
-                    lines.forEach((line, index) => {
-                        if (index === 0) {
-                            page.drawText(line, { x: valueX, y, size: fontSize, font: fontRegular });
-                        } else {
-                            y -= lineHeight;
-                            page.drawText(line, { x: margin, y, size: fontSize, font: fontRegular });
-                        }
-                    });
-                } else {
-                    page.drawText(valueText, { x: valueX, y, size: fontSize, font: fontRegular });
-                }
-                y -= lineHeight * 1.5; // Pula linha
+            // Função para desenhar linhas e atualizar o Y automaticamente
+            const escreverLinhas = (linhas) => {
+                linhas.forEach(linha => {
+                    // Verifica se a página acabou
+                    if (y < 40) { 
+                        page = pdfDoc.addPage([595.28, 841.89]); 
+                        y = height - 50; 
+                    }
+                    page.drawText(linha, { x: margin, y, size: fontSize, font: fontRegular });
+                    y -= lineHeight;
+                });
+                y -= 5; // Espaço extra após bloco de texto
             };
 
-            // Função para desenhar Título de Seção
+            // Função para desenhar campos simples (Label: Valor)
+            const drawField = (label, value) => {
+                const valorLimpo = value ? String(value).toUpperCase() : "-";
+                page.drawText(label, { x: margin, y, size: fontSize, font: fontBold });
+                // Posiciona o valor logo após o label (estimativa de largura: 6px por letra)
+                const labelWidth = label.length * 5.5; 
+                page.drawText(valorLimpo, { x: margin + labelWidth + 10, y, size: fontSize, font: fontRegular });
+                y -= lineHeight * 1.5;
+            };
+
+            // Função para Títulos
             const drawSection = (title) => {
                 y -= 10;
-                page.drawText(title, { x: margin, y, size: subtitleSize, font: fontBold, color: PDFLib.rgb(0, 0, 0) });
+                page.drawText(title, { x: margin, y, size: 12, font: fontBold });
                 y -= 5;
-                page.drawLine({ start: { x: margin, y: y }, end: { x: width - margin, y: y }, thickness: 0.5, color: PDFLib.rgb(0.6, 0.6, 0.6) });
+                page.drawLine({ start: { x: margin, y: y }, end: { x: width - margin, y: y }, thickness: 0.5 });
                 y -= 20;
             };
 
-            // === 1. IDENTIFICAÇÃO PESSOAL ===
+            // === CABEÇALHO ===
+            page.drawText('FICHA DE ACOLHIMENTO', { x: margin, y, size: 16, font: fontBold });
+            y -= 25;
+            page.drawText('Psicóloga Giovana', { x: margin, y, size: 12, font: fontRegular, color: PDFLib.rgb(0.4, 0.4, 0.4) });
+            y -= 30;
+
+            // === 1. IDENTIFICAÇÃO ===
             drawSection("1. IDENTIFICAÇÃO PESSOAL");
             drawField("Nome:", document.getElementById("nome").value);
             
@@ -241,7 +247,11 @@
             drawField("Data Nasc:", nasc);
             if(document.getElementById("nomeSocial").value) drawField("Nome Social:", document.getElementById("nomeSocial").value);
             
-            drawField("Endereço:", document.getElementById("endereco").value, true);
+            // Endereço (pode ser longo, então usamos a quebra)
+            page.drawText("Endereço:", { x: margin, y, size: fontSize, font: fontBold });
+            y -= lineHeight;
+            escreverLinhas(quebrarTexto(document.getElementById("endereco").value, 95));
+
             drawField("Profissão:", document.getElementById("profissao").value);
             drawField("Religião:", document.getElementById("religiao").value);
             drawField("Escolaridade:", document.getElementById("escolaridade").value);
@@ -251,61 +261,58 @@
             // === 2. PAIS ===
             drawSection("2. IDENTIFICAÇÃO DOS PAIS");
             
-            // Pai
             page.drawText("PAI:", { x: margin, y, size: fontSize, font: fontBold }); y -= lineHeight;
             drawField("Nome:", document.getElementById("paiNome").value);
             page.drawText(`Idade: ${document.getElementById("paiIdade").value}   Profissão: ${document.getElementById("paiProfissao").value}   Escolaridade: ${document.getElementById("paiEscolaridade").value}`, { x: margin, y, size: fontSize, font: fontRegular });
             y -= lineHeight * 2;
 
-            // Mãe
             page.drawText("MÃE:", { x: margin, y, size: fontSize, font: fontBold }); y -= lineHeight;
             drawField("Nome:", document.getElementById("maeNome").value);
             page.drawText(`Idade: ${document.getElementById("maeIdade").value}   Profissão: ${document.getElementById("maeProfissao").value}   Escolaridade: ${document.getElementById("maeEscolaridade").value}`, { x: margin, y, size: fontSize, font: fontRegular });
             y -= lineHeight * 2;
 
-            drawField("Endereço dos Pais:", document.getElementById("paisEndereco").value, true);
+            page.drawText("Endereço dos Pais:", { x: margin, y, size: fontSize, font: fontBold });
+            y -= lineHeight;
+            escreverLinhas(quebrarTexto(document.getElementById("paisEndereco").value, 95));
 
-            // === 3. QUEIXA ===
-            // Verifica se precisa de nova página
-            if (y < 200) { page = pdfDoc.addPage([595.28, 841.89]); y = height - 50; }
+            // === 3. QUEIXA (Aqui é onde o texto costuma ser grande) ===
+            // Verifica espaço antes de começar a seção grande
+            if (y < 250) { page = pdfDoc.addPage([595.28, 841.89]); y = height - 50; }
             
             drawSection("3. QUEIXA PRINCIPAL");
             
-            page.drawText("Queixa Principal:", { x: margin, y, size: fontSize, font: fontBold }); 
+            // Queixa
+            page.drawText("Descreva a queixa principal:", { x: margin, y, size: fontSize, font: fontBold });
             y -= lineHeight;
-            wordWrap(document.getElementById("queixa").value, 90).forEach(line => {
-                page.drawText(line, { x: margin, y, size: fontSize, font: fontRegular });
-                y -= lineHeight;
-            });
+            // Limite de 95 caracteres por linha
+            escreverLinhas(quebrarTexto(document.getElementById("queixa").value, 95));
             y -= 10;
 
-            page.drawText("Evolução (Como começou):", { x: margin, y, size: fontSize, font: fontBold }); 
+            // Evolução
+            page.drawText("Evolução (Como começou):", { x: margin, y, size: fontSize, font: fontBold });
             y -= lineHeight;
-            wordWrap(document.getElementById("evolucao").value, 90).forEach(line => {
-                page.drawText(line, { x: margin, y, size: fontSize, font: fontRegular });
-                y -= lineHeight;
-            });
+            escreverLinhas(quebrarTexto(document.getElementById("evolucao").value, 95));
             y -= 10;
 
             drawField("Início:", document.getElementById("inicioTipo").value);
 
-            page.drawText("Sintomas Atuais:", { x: margin, y, size: fontSize, font: fontBold }); 
+            // Sintomas
+            page.drawText("Sintomas atuais:", { x: margin, y, size: fontSize, font: fontBold });
             y -= lineHeight;
-            wordWrap(document.getElementById("sintomas").value, 90).forEach(line => {
-                page.drawText(line, { x: margin, y, size: fontSize, font: fontRegular });
-                y -= lineHeight;
-            });
-            y -= 20;
+            escreverLinhas(quebrarTexto(document.getElementById("sintomas").value, 95));
 
             // === 4. MEDICAMENTOS ===
+            if (y < 100) { page = pdfDoc.addPage([595.28, 841.89]); y = height - 50; }
             drawSection("4. MEDICAMENTOS");
             drawField("Usa Medicamentos?", document.getElementById("usoMedicamento").value);
-            drawField("Quais:", document.getElementById("quaisMedicamentos").value, true);
+            
+            page.drawText("Quais:", { x: margin, y, size: fontSize, font: fontBold });
+            y -= lineHeight;
+            escreverLinhas(quebrarTexto(document.getElementById("quaisMedicamentos").value, 95));
 
-            // Rodapé
-            page.drawText(`Documento gerado em: ${new Date().toLocaleString()}`, { x: margin, y: 30, size: 8, font: fontRegular, color: PDFLib.rgb(0.6, 0.6, 0.6) });
+            // === FINALIZAÇÃO ===
+            page.drawText(`Gerado em: ${new Date().toLocaleString()}`, { x: margin, y: 30, size: 8, font: fontRegular, color: PDFLib.rgb(0.6, 0.6, 0.6) });
 
-            // 2. FINALIZAR E EXIBIR
             const pdfBytes = await pdfDoc.save();
             const pdfBlob = new Blob([pdfBytes], { type: "application/pdf" });
             const localUrl = URL.createObjectURL(pdfBlob);
@@ -313,30 +320,24 @@
             pdfViewer.style.display = "block";
             pdfViewer.src = localUrl;
 
-            // 3. UPLOAD E DOWNLOAD
+            // === ENVIOS ===
             const hash = gerarHash();
             const nomeFinal = `${hash}_Ficha_${document.getElementById("nome").value.split(" ")[0]}.pdf`;
             const base64 = await blobParaBase64(pdfBlob);
             
-            // Envio para o Backend (mesma lógica anterior)
-            // Se o backend der erro, o script continua para baixar o arquivo localmente
             try {
                 await fetch("https://ficha-acolhimento.onrender.com/upload", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ nomeArquivo: nomeFinal, conteudoBase64: base64 })
                 });
-            } catch (backendErr) {
-                console.warn("Backend não acessível ou erro de upload, mas o PDF foi gerado.", backendErr);
-            }
+            } catch (e) { console.warn("Upload falhou, seguindo fluxo local."); }
 
-            // Download Automático
             const link = document.createElement('a');
             link.href = localUrl;
             link.download = nomeFinal;
             link.click();
 
-            // WhatsApp
             const msg = encodeURIComponent(`Olá Giovana, preenchi a Ficha de Acolhimento.\nPaciente: ${document.getElementById("nome").value}`);
             window.open(`https://wa.me/${contatoWhatsApp}?text=${msg}`, "_blank");
 
@@ -344,7 +345,7 @@
 
         } catch (err) {
             console.error(err);
-            alert("Erro ao processar: " + err.message);
+            alert("Erro: " + err.message);
         } finally {
             btn.disabled = false;
             btn.textContent = originalText;
@@ -352,10 +353,9 @@
     });
 
     function blobParaBase64(blob) {
-        return new Promise((resolve, reject) => {
+        return new Promise((r) => {
             const reader = new FileReader();
-            reader.onloadend = () => resolve(reader.result.split(",")[1]);
-            reader.onerror = reject;
+            reader.onloadend = () => r(reader.result.split(",")[1]);
             reader.readAsDataURL(blob);
         });
     }
@@ -363,3 +363,4 @@
 
 </body>
 </html>
+
