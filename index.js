@@ -70,7 +70,7 @@ app.post("/upload", async (req, res) => {
 app.post("/salvar-agenda", async (req, res) => {
   try {
     const eventos = req.body; 
-    const path = `dados/agendamentos.json`;
+    const path = `dados/agendamento.json`;
     const url = `https://api.github.com/repos/${GITHUB_REPO}/contents/${encodeURIComponent(path)}`;
 
     const getResp = await fetch(url, {
