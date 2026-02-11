@@ -156,7 +156,10 @@
                 <a href="index.html" class="list-group-item list-group-item-action border-0 bg-transparent rounded-3 mb-1">
                 <i class="bi bi-calendar-check me-3"></i>Agenda
                 </a>
-                <a href="contrato.html" class="list-group-item list-group-item-action border-0 bg-transparent rounded-3">
+                <a href="ficha_acolhimento.html" class="list-group-item list-group-item-action border-0 bg-transparent rounded-3" target="_blank">
+                    <i class="bi bi-clipboard2-heart me-3"></i>Ficha de Acolhimento
+                </a>
+                <a href="contrato.html" class="list-group-item list-group-item-action border-0 bg-transparent rounded-3" target="_blank">
                     <i class="bi bi-file-earmark-text me-3"></i>Contrato
                 </a>
                 <a href="lista_contratos.html" class="list-group-item list-group-item-action border-0 bg-transparent rounded-3">
@@ -185,10 +188,13 @@
                 <a href="index.html" class="list-group-item list-group-item-action border-0 bg-transparent rounded-3 mb-1">
                 <i class="bi bi-calendar-check me-3"></i>Agenda
                 </a>
-                <a href="lista_contratos.html" class="list-group-item list-group-item-action border-0 bg-transparent rounded-3">
-                    <i class="bi bi-file-earmark-text me-3"></i>Contratos
+                <a href="ficha_acolhimento.html" class="list-group-item list-group-item-action border-0 bg-transparent rounded-3" target="_blank">
+                    <i class="bi bi-clipboard2-heart me-3"></i>Ficha de Acolhimento
                 </a>
-                <a href="lista_contratos.html" class="list-group-item list-group-item-action border-0 bg-transparent rounded-3 mb-1">
+                <a href="contrato.html" class="list-group-item list-group-item-action border-0 bg-transparent rounded-3 mb-1" target="_blank">
+                    <i class="bi bi-file-earmark-text me-3"></i>Contrato
+                </a>
+                <a href="lista_contratos.html" class="list-group-item list-group-item-action border-0 bg-transparent rounded-3">
                 <i class="bi bi-file-earmark-check me-3"></i>Lista Contratos
                 </a>
                 <a href="enviar_contrato.html" class="list-group-item list-group-item-action border-0 bg-transparent rounded-3" target="_blank">
@@ -350,7 +356,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         try {
-            const res = await fetch("https://azdevcoder.github.io/sistema_giovana/dados/agendamentos.json?t=" + Date.now());
+            const res = await fetch("https://azdevcoder.github.io/giovana-contratos/dados/agendamentos.json?t=" + Date.now());
             if (res.ok) {
                 const serverData = await res.json();
                 if (!localData || JSON.stringify(serverData) !== localData) {
@@ -431,5 +437,4 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 </body>
 </html>
-
 
