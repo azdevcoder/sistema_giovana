@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Giovana Morais | Financeiro</title>
+    
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#1a73e8">
+    <link rel="icon" type="image/png" href="calendar.png">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+
+    <style>
+        /* === MESMO CSS DO DASHBOARD === */
+        :root {
+            --google-blue: #1a73e8;
+            --border-color: #dadce0;
+            --bg-main: #f0f2f5;
+            --text-main: #3c4043;
+            --text-muted: #5f6368;
+            --sidebar-bg: #ffffff;
+            --header-bg: #ffffff;
+            --card-bg: #ffffff;
+        }
+
+        [data-theme="dark"] {
+            --bg-main: #121212;
+            --text-main: #e8eaed;
+            --text-muted: #9aa0a6;
+            --border-color: #3c4043;
+            --sidebar-bg: #1e1e1e;
+            --header-bg: #1e1e1e;
+            --card-bg: #252525;
+            color-scheme: dark;
+        }
+
+        body { 
+            background-color: var(--bg-main); 
+            color: var(--text-main);
+            font-family: 'Roboto', sans-serif; 
+            overflow: hidden; 
+            transition: background 0.3s ease;
+        }
+
+        .app-container { display: flex; height: 100vh; flex-direction: column; }
+        .main-content { display: flex; flex: 1; overflow: hidden; }
+        .content-scroll { flex: 1; overflow-y: auto; padding: 20px; }
+
+        .sidebar {
+            width: 260px;
+            border-right: 1px solid var(--border-color);
+            background: var(--sidebar-bg);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header-top {
+            height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 16px;
+            border-bottom: 1px solid var(--border-color);
+            background: var(--header-bg);
+            z-index: 1030;
+        }
+
+        .dash-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+        }
+        [data-theme="dark"] .dash-card { box-shadow: none; }
+
+        .list-group-item { color: var(--text-main) !important; }
+        .list-group-item.active-menu {
+            background-color: rgba(26, 115, 232, 0.1) !important;
+            color: #1a73e8 !important;
+            font-weight: bold;
+            border-right: 3px solid #1a73e8;
+        }
+        [data-theme="dark"] .list-group-item.active-menu {
+            color: #8ab4f8 !important;
+            border-right: 3px solid #8ab4f8;
+        }
+
+        .theme-toggle { cursor: pointer; padding: 10px; border-radius: 50%; color: var(--text-main); }
+        .table { --bs-table-bg: transparent; --bs-table-color: var(--text-main); }
+        .table>:not(caption)>*>* { border-bottom-color: var(--border-color); color: var(--text-main); }
+        
+        .fab {
+            position: fixed; bottom: 20px; right: 20px; width: 56px; height: 56px;
+            border-radius: 16px; background-color: var(--google-blue);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            display: flex; align-items: center; justify-content: center;
+            z-index: 1000; cursor: pointer; color: white; border: none;
+        }
+
+        /* Status Badges */
+        .status-paid { background-color: rgba(52, 168, 83, 0.15); color: #34a853; border: 1px solid rgba(52, 168, 83, 0.2); }
+        .status-pending { background-color: rgba(251, 188, 4, 0.15); color: #fbbc04; border: 1px solid rgba(251, 188, 4, 0.2); }
+        
+        [data-theme="dark"] .status-paid { background-color: rgba(52, 168, 83, 0.2); color: #81c995; }
+        [data-theme="dark"] .status-pending { background-color: rgba(253, 214, 99, 0.2); color: #fdd663; }
+
+        @media (max-width: 768px) { .sidebar { display: none; } }
+    </style>
+</head>
+<body data-theme="light">
+
+<div class="app-container">
+    <header class="header-top shadow-sm">
+        <div class="d-flex align-items-center">
+            <button class="btn d-md-none me-2 text-inherit" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileSidebar">
+                <i class="bi bi-list fs-3" style="color: var(--text-main);"></i>
+            </button>
+            <i class="bi bi-wallet2 text-success fs-4 me-2"></i>
+            <h5 class="mb-0 fw-bold">Financeiro | <span class="text-secondary fw-normal">Controle</span></h5>
+        </div>
+        <div class="d-flex align-items-center gap-1">
+            <div class="theme-toggle" id="themeBtn"><i class="bi bi-moon-stars fs-4" id="themeIcon"></i></div>
+        </div>
+    </header>
+
+    <div class="main-content">
+        <aside class="sidebar d-none d-md-flex">
+            <button class="btn btn-success shadow-sm rounded-pill px-4 py-2 mb-4 w-100" onclick="openPaymentModal()">
+                <i class="bi bi-plus-lg me-2"></i>Novo Lançamento
+            </button>
+            <nav class="list-group list-group-flush">
+                <a href="dashboard.html" class="list-group-item list-group-item-action border-0 bg-transparent rounded-3 mb-1">
+                    <i class="bi bi-grid-1x2 me-3"></i>Visão Geral
+                </a>
+                <a href="agenda.html" class="list-group-item list-group-item-action border-0 bg-transparent rounded-3 mb-1">
+                    <i class="bi bi-calendar-check me-3"></i>Agenda
+                </a>
+                <a href="financeiro.html" class="list-group-item list-group-item-action border-0 bg-transparent rounded-3 mb-1 active-menu">
+                    <i class="bi bi-wallet2 me-3"></i>Financeiro
+                </a>
+                <a href="ficha_acolhimento.html" class="list-group-item list-group-item-action border-0 bg-transparent rounded-3" target="_blank">
+                    <i class="bi bi-clipboard2-heart me-3"></i>Ficha de Acolhimento
+                </a>
+                <a href="lista_fichas.html" class="list-group-item list-group-item-action border-0 bg-transparent rounded-3">
+                    <i class="bi bi-card-list me-3"></i>Lista Fichas
+                </a>
+                <a href="contrato.html" class="list-group-item list-group-item-action border-0 bg-transparent rounded-3" target="_blank">
+                    <i class="bi bi-file-earmark-text me-3"></i>Contrato
+                </a>
+                <a href="lista_contratos.html" class="list-group-item list-group-item-action border-0 bg-transparent rounded-3">
+                    <i class="bi bi-file-earmark-check me-3"></i>Lista Contratos
+                </a>
+            </nav>
+        </aside>
+
+        <div class="content-scroll">
+            <div class="container-fluid">
+                
+                <div class="row g-3 mb-4">
+                    <div class="col-12 d-flex justify-content-between align-items-center flex-wrap gap-2">
+                        <div class="d-flex gap-2">
+                            <input type="month" id="filterMonth" class="form-control" onchange="renderFinance()">
+                        </div>
+                        <div class="d-none d-md-block">
+                            <button class="btn btn-outline-secondary btn-sm rounded-pill" onclick="exportData()"><i class="bi bi-download me-1"></i> Exportar</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row g-3 mb-4">
+                    <div class="col-12 col-md-4">
+                        <div class="dash-card py-3">
+                            <p class="text-muted small fw-bold mb-1">RECEBIDO</p>
+                            <h3 class="fw-bold text-success mb-0" id="totalPaid">R$ 0,00</h3>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-4">
+                        <div class="dash-card py-3">
+                            <p class="text-muted small fw-bold mb-1">PENDENTE</p>
+                            <h3 class="fw-bold text-warning mb-0" id="totalPending">R$ 0,00</h3>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-4">
+                        <div class="dash-card py-3">
+                            <p class="text-muted small fw-bold mb-1">TOTAL PREVISTO</p>
+                            <h3 class="fw-bold mb-0" id="totalGeneral">R$ 0,00</h3>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dash-card p-0 overflow-hidden">
+                    <div class="table-responsive">
+                        <table class="table align-middle mb-0 table-hover">
+                            <thead class="bg-light">
+                                <tr>
+                                    <th class="ps-4 text-muted small py-3">DATA</th>
+                                    <th class="text-muted small">PACIENTE</th>
+                                    <th class="text-muted small">DESCRIÇÃO</th>
+                                    <th class="text-muted small">VALOR</th>
+                                    <th class="text-muted small">STATUS</th>
+                                    <th class="text-end pe-4 text-muted small">AÇÕES</th>
+                                </tr>
+                            </thead>
+                            <tbody id="financeTableBody">
+                                </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="paymentModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg" style="background-color: var(--card-bg); color: var(--text-main);">
+            <div class="modal-header border-bottom border-secondary">
+                <h5 class="modal-title fw-bold">Lançamento Financeiro</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="financeForm">
+                    <input type="hidden" id="payId">
+                    
+                    <div class="mb-3">
+                        <label class="small fw-bold text-muted mb-1">PACIENTE</label>
+                        <input type="text" id="payPatient" class="form-control" required placeholder="Nome do paciente">
+                    </div>
+
+                    <div class="row">
+                        <div class="col-6 mb-3">
+                            <label class="small fw-bold text-muted mb-1">DATA</label>
+                            <input type="date" id="payDate" class="form-control" required>
+                        </div>
+                        <div class="col-6 mb-3">
+                            <label class="small fw-bold text-muted mb-1">VALOR (R$)</label>
+                            <input type="number" id="payValue" class="form-control" step="0.01" required placeholder="0,00">
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="small fw-bold text-muted mb-1">DESCRIÇÃO / SERVIÇO</label>
+                        <select id="payService" class="form-select">
+                            <option value="Terapia Individual">Terapia Individual</option>
+                            <option value="Terapia de Casal">Terapia de Casal</option>
+                            <option value="Terapia Familiar">Terapia Familiar</option>
+                            <option value="Outros">Outros</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="small fw-bold text-muted mb-1">STATUS</label>
+                        <select id="payStatus" class="form-select">
+                            <option value="pending">Pendente</option>
+                            <option value="paid">Pago</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer border-0">
+                <button type="button" class="btn btn-outline-danger me-auto d-none" id="btnDeletePay">Excluir</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="submit" form="financeForm" class="btn btn-success px-4">Salvar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<button class="fab d-md-none shadow" onclick="openPaymentModal()">
+    <i class="bi bi-plus-lg fs-2"></i>
+</button>
+
+<div id="toastSuccess" class="alert alert-success shadow-lg" style="display:none; position: fixed; top: 20px; right: 20px; z-index: 9999; border-radius: 50px; padding: 10px 30px;">
+    <i class="bi bi-check-circle-fill me-2"></i> Salvo com sucesso!
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    // === CONFIGURAÇÕES ===
+    const GITHUB_JSON_URL = "https://azdevcoder.github.io/giovana-contratos/dados/pagamentos.json";
+    const API_SAVE_URL = "https://sistema-giovana.onrender.com/salvar-financeiro";
+    
+    let paymentsData = [];
+    const financeForm = document.getElementById('financeForm');
+    const modalEl = document.getElementById('paymentModal');
+    const modal = new bootstrap.Modal(modalEl);
+    const btnDelete = document.getElementById('btnDeletePay');
+
+    // === INICIALIZAÇÃO ===
+    document.addEventListener('DOMContentLoaded', async () => {
+        carregarTema();
+        
+        // Define o mês atual no filtro
+        const today = new Date();
+        const yyyy = today.getFullYear();
+        const mm = String(today.getMonth() + 1).padStart(2, '0');
+        document.getElementById('filterMonth').value = `${yyyy}-${mm}`;
+
+        await loadPayments();
+    });
+
+    // === CARREGAR DADOS (GITHUB + LOCALSTORAGE) ===
+    async function loadPayments() {
+        // Tenta pegar do localStorage primeiro
+        const localData = localStorage.getItem('payments_nath');
+        if(localData) paymentsData = JSON.parse(localData);
+
+        // Tenta atualizar do GitHub (Backend Source)
+        try {
+            const res = await fetch(GITHUB_JSON_URL + "?t=" + Date.now());
+            if(res.ok) {
+                const serverData = await res.json();
+                // Simples lógica: se server tiver mais dados ou for diferente, usa ele
+                // (Para um sistema real, precisaria de verificação de timestamp)
+                if(JSON.stringify(serverData) !== JSON.stringify(paymentsData)) {
+                    paymentsData = serverData;
+                    saveLocal(); // Atualiza local
+                }
+            }
+        } catch(e) { console.log("Usando cache local financeiro"); }
+
+        renderFinance();
+    }
+
+    // === RENDERIZAR TABELA E TOTAIS ===
+    function renderFinance() {
+        const filterValue = document.getElementById('filterMonth').value; // YYYY-MM
+        const tbody = document.getElementById('financeTableBody');
+        tbody.innerHTML = '';
+
+        let totalPaid = 0;
+        let totalPending = 0;
+
+        // Filtra e Ordena (Data Recente primeiro)
+        const filtered = paymentsData.filter(p => p.date.startsWith(filterValue))
+                                     .sort((a,b) => new Date(b.date) - new Date(a.date));
+
+        if(filtered.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="6" class="text-center py-5 text-muted">Nenhum lançamento neste mês.</td></tr>`;
+        } else {
+            filtered.forEach(item => {
+                const val = parseFloat(item.value);
+                if(item.status === 'paid') totalPaid += val;
+                else totalPending += val;
+
+                const dateFmt = new Date(item.date + 'T12:00:00').toLocaleDateString('pt-BR');
+                const badgeClass = item.status === 'paid' ? 'status-paid' : 'status-pending';
+                const statusText = item.status === 'paid' ? 'Pago' : 'Pendente';
+                const money = val.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+
+                const tr = `
+                    <tr onclick="editPayment('${item.id}')" style="cursor:pointer">
+                        <td class="ps-4 fw-bold text-nowrap">${dateFmt}</td>
+                        <td>${item.patient}</td>
+                        <td>${item.service}</td>
+                        <td class="fw-bold">${money}</td>
+                        <td><span class="badge rounded-pill ${badgeClass}">${statusText}</span></td>
+                        <td class="text-end pe-4">
+                            <button class="btn btn-sm btn-light rounded-circle text-muted" title="Editar"><i class="bi bi-pencil"></i></button>
+                        </td>
+                    </tr>
+                `;
+                tbody.innerHTML += tr;
+            });
+        }
+
+        // Atualiza KPIs
+        document.getElementById('totalPaid').textContent = totalPaid.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+        document.getElementById('totalPending').textContent = totalPending.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+        document.getElementById('totalGeneral').textContent = (totalPaid + totalPending).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+    }
+
+    // === ADICIONAR / EDITAR ===
+    window.openPaymentModal = () => {
+        financeForm.reset();
+        document.getElementById('payId').value = '';
+        document.getElementById('payDate').value = new Date().toISOString().slice(0, 10);
+        btnDelete.classList.add('d-none');
+        modal.show();
+    };
+
+    window.editPayment = (id) => {
+        const item = paymentsData.find(p => p.id === id);
+        if(!item) return;
+
+        document.getElementById('payId').value = item.id;
+        document.getElementById('payPatient').value = item.patient;
+        document.getElementById('payDate').value = item.date;
+        document.getElementById('payValue').value = item.value;
+        document.getElementById('payService').value = item.service;
+        document.getElementById('payStatus').value = item.status;
+        
+        btnDelete.classList.remove('d-none');
+        modal.show();
+    };
+
+    financeForm.onsubmit = async (e) => {
+        e.preventDefault();
+        
+        const id = document.getElementById('payId').value || 'PAY-' + Date.now();
+        const newItem = {
+            id: id,
+            patient: document.getElementById('payPatient').value,
+            date: document.getElementById('payDate').value,
+            value: parseFloat(document.getElementById('payValue').value),
+            service: document.getElementById('payService').value,
+            status: document.getElementById('payStatus').value
+        };
+
+        // Atualiza Array Local
+        const index = paymentsData.findIndex(p => p.id === newItem.id);
+        if(index > -1) paymentsData[index] = newItem;
+        else paymentsData.push(newItem);
+
+        await saveData();
+        modal.hide();
+    };
+
+    btnDelete.onclick = async () => {
+        const id = document.getElementById('payId').value;
+        if(confirm("Excluir este lançamento?")) {
+            paymentsData = paymentsData.filter(p => p.id !== id);
+            await saveData();
+            modal.hide();
+        }
+    };
+
+    // === SALVAR DADOS ===
+    async function saveData() {
+        saveLocal();
+        renderFinance();
+        showToast();
+
+        // Envia para o Backend Render
+        try {
+            await fetch(API_SAVE_URL, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(paymentsData)
+            });
+        } catch(e) {
+            console.error("Erro ao salvar no servidor:", e);
+        }
+    }
+
+    function saveLocal() {
+        localStorage.setItem('payments_nath', JSON.stringify(paymentsData));
+    }
+
+    function showToast() {
+        const t = document.getElementById('toastSuccess');
+        t.style.display = 'block';
+        setTimeout(() => t.style.display = 'none', 3000);
+    }
+
+    function exportData() {
+        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(paymentsData, null, 2));
+        const anchor = document.createElement('a');
+        anchor.setAttribute("href", dataStr);
+        anchor.setAttribute("download", "financeiro_backup.json");
+        document.body.appendChild(anchor);
+        anchor.click();
+        anchor.remove();
+    }
+
+    // === TEMA ===
+    const themeBtn = document.getElementById('themeBtn');
+    const themeIcon = document.getElementById('themeIcon');
+    
+    function carregarTema() {
+        const savedTheme = localStorage.getItem('theme_nath') || 'light';
+        document.body.setAttribute('data-theme', savedTheme);
+        themeIcon.className = savedTheme === 'light' ? 'bi bi-moon-stars fs-4' : 'bi bi-sun fs-4';
+    }
+
+    themeBtn.addEventListener('click', () => {
+        const newTheme = document.body.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+        document.body.setAttribute('data-theme', newTheme);
+        localStorage.setItem('theme_nath', newTheme);
+        themeIcon.className = newTheme === 'light' ? 'bi bi-moon-stars fs-4' : 'bi bi-sun fs-4';
+    });
+</script>
+
+</body>
+</html>
