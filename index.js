@@ -75,7 +75,7 @@ app.post("/salvar-agenda", async (req, res) => {
 app.post("/contratos", async (req, res) => {
     try {
         const { nomeArquivo, conteudoBase64 } = req.body;
-        const path = `contratos/contratos-assinados/${nomeArquivo}`;
+        const path = `/contratos/contratos-assinados/${nomeArquivo}`;
         const url = `https://api.github.com/repos/${GITHUB_REPO}/contents/${encodeURIComponent(path)}`;
 
         const getResp = await fetch(url, { headers: { Authorization: `token ${GITHUB_TOKEN}` } });
