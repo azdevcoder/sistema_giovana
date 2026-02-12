@@ -7,7 +7,7 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 3001; // Porta diferente se rodar no mesmo PC
 
-const FRONTEND_ORIGIN = process.env.FRONTEND_ORIGIN || "https://psigiovana.azdevcoder.com.br";
+const FRONTEND_ORIGIN = process.env.FRONTEND_ORIGIN || "https://azdevcoder.github.io";
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
 const GITHUB_REPO = process.env.GITHUB_REPO || "azdevcoder/sistema_giovana";
 const GITHUB_BRANCH = process.env.GITHUB_BRANCH || "main";
@@ -75,7 +75,7 @@ app.post("/salvar-agenda", async (req, res) => {
 app.post("/contratos", async (req, res) => {
     try {
         const { nomeArquivo, conteudoBase64 } = req.body;
-        const path = `/contratos/contratos-assinados/${nomeArquivo}`;
+        const path = `contratos/contratos-assinados/${nomeArquivo}`;
         const url = `https://api.github.com/repos/${GITHUB_REPO}/contents/${encodeURIComponent(path)}`;
 
         const getResp = await fetch(url, { headers: { Authorization: `token ${GITHUB_TOKEN}` } });
