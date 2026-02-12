@@ -21,7 +21,7 @@ app.use(cors({ origin: FRONTEND_ORIGIN }));
 app.use(express.json({ limit: "30mb" }));
 
 // --- BUSCAR FICHAS ---
-app.get("/fichas/:nomeFicha?", async (req, res) => {
+app.get("/dados/fichas/:nomeFicha?", async (req, res) => {
   try {
     const { nomeFicha } = req.params;
     const path = nomeFicha ? `dados/fichas/${nomeFicha}` : `dados/fichas`;
