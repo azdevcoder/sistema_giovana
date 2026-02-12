@@ -27,7 +27,7 @@ app.get("/health", (req, res) => res.json({ ok: true }));
 app.get("/contratos/contratos-assinados/:nomeArquivo?", async (req, res) => {
   try {
     const { nomeArquivo } = req.params;
-    const path = nomeArquivo ? `contratos/contratos-assinados/${nomeArquivo}` : `contratos`;
+    const path = nomeArquivo ? `/contratos/contratos-assinados/${nomeArquivo}` : `contratos`;
     const url = `https://api.github.com/repos/${GITHUB_REPO}/contents/${encodeURIComponent(path)}?ref=${GITHUB_BRANCH}`;
 
     const resp = await fetch(url, {
@@ -52,7 +52,7 @@ app.post("/upload", async (req, res) => {
     const { nomeArquivo, conteudoBase64 } = req.body;
     if (!nomeArquivo || !conteudoBase64) return res.status(400).json({ error: "Dados incompletos" });
 
-    const path = `contratos/${nomeArquivo}`;
+    const path = `contratos/contratos-assinados/${nomeArquivo}`;
     const url = `https://api.github.com/repos/${GITHUB_REPO}/contents/${encodeURIComponent(path)}`;
 
     // Verificar se existe para pegar o SHA
