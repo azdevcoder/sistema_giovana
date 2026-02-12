@@ -177,20 +177,21 @@
         return lines;
     }
 
-    form.addEventListener("submit", async (e) => {
-        e.preventDefault();
-        btn.disabled = true;
-        const originalText = btn.textContent;
-        btn.innerHTML = '<span class="spinner"></span> Gerando PDF...';
+  const nomeFinal = `${hash}_Ficha_${document.getElementById("nome").value.replace(/\s+/g, "_")}.pdf`;
+const base64 = await blobParaBase64(pdfBlob);
 
-        try {
-            const pdfDoc = await PDFLib.PDFDocument.create();
-            let page = pdfDoc.addPage([595.28, 841.89]); // A4 (Largura ~595 pts)
-            const { width, height } = page.getSize();
-            
-            const fontRegular = await pdfDoc.embedFont(PDFLib.StandardFonts.Helvetica);
-            const fontBold = await pdfDoc.embedFont(PDFLib.StandardFonts.HelveticaBold);
-
+try {
+    // Certifique-se de usar a URL correta do seu Render
+    await fetch("https://seu-app-no-render.onrender.com/upload", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ 
+            nomeArquivo: nomeFinal, 
+            conteudoBase64: base64,
+            tipo: 'ficha' 
+        })
+    });
+} catch (e) { console.warn("Upload falhou, seguindo fluxo local."); }
             // Variáveis de layout
             let y = height - 50; 
             const margin = 50;
@@ -357,3 +358,4 @@
 
 </body>
 </html>
+
