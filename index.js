@@ -71,33 +71,4 @@ app.post("/salvar-agenda", async (req, res) => {
   }
 });
 
-// --- UPLOAD DE CONTRATOS (DENTRO DO SISTEMA) ---
-app.post("/contratos", async (req, res) => {
-    try {
-        const { nomeArquivo, conteudoBase64 } = req.body;
-        const path = `/contratos/contratos-assinados/${nomeArquivo}`;
-        const url = `https://api.github.com/repos/${GITHUB_REPO}/contents/${encodeURIComponent(path)}`;
-
-        const getResp = await fetch(url, { headers: { Authorization: `token ${GITHUB_TOKEN}` } });
-        let sha;
-        if (getResp.ok) { sha = (await getResp.json()).sha; }
-
-        const putResp = await fetch(url, {
-            method: "PUT",
-            headers: { Authorization: `token ${GITHUB_TOKEN}`, "Content-Type": "application/json" },
-            body: JSON.stringify({
-                message: `Upload contrato: ${nomeArquivo}`,
-                content: conteudoBase64,
-                sha,
-                branch: GITHUB_BRANCH
-            })
-        });
-
-        if (putResp.ok) return res.json({ ok: true });
-        res.status(500).json(await putResp.json());
-    } catch (err) {
-        res.status(500).json({ error: "Erro interno" });
-    }
-});
-
 app.listen(PORT, () => console.log(`Servidor AzDev rodando na porta ${PORT}`));
