@@ -7,9 +7,9 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-const FRONTEND_ORIGIN = process.env.FRONTEND_ORIGIN || "https://psigiovana.github.io";
+const FRONTEND_ORIGIN = process.env.FRONTEND_ORIGIN || "https://azdevcoder.github.io";
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
-const GITHUB_REPO = process.env.GITHUB_REPO || "psigiovana/contratos-assinados";
+const GITHUB_REPO = process.env.GITHUB_REPO || "sistema_giovana/contratos/contratos-assinados";
 const GITHUB_BRANCH = process.env.GITHUB_BRANCH || "main";
 
 if (!GITHUB_TOKEN) {
@@ -27,7 +27,7 @@ app.get("/health", (req, res) => res.json({ ok: true }));
 app.get("/contratos/:nomeArquivo?", async (req, res) => {
   try {
     const { nomeArquivo } = req.params;
-    const path = nomeArquivo ? `contratos/${nomeArquivo}` : `contratos`;
+    const path = nomeArquivo ? `contratos/contratos-assinados/${nomeArquivo}` : `contratos`;
     const url = `https://api.github.com/repos/${GITHUB_REPO}/contents/${encodeURIComponent(path)}?ref=${GITHUB_BRANCH}`;
 
     const resp = await fetch(url, {
@@ -86,3 +86,4 @@ app.post("/upload", async (req, res) => {
 });
 
 app.listen(PORT, () => console.log(`Servidor Contratos rodando na porta ${PORT}`));
+
