@@ -166,7 +166,7 @@
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <h4 class="fw-bold mb-0">Arquivos Assinados</h4>
                 <button class="btn btn-outline-primary btn-sm rounded-pill" onclick="loadContracts()">
-                    <i href="https://psigiovana.azdevcoder.com.br/lista_fichas.html"class="bi bi-arrow-clockwise me-1"></i> Atualizar
+                    <i class="bi bi-arrow-clockwise me-1"></i> Atualizar
                 </button>
             </div>
 
@@ -231,7 +231,7 @@
     const USER = 'azdevcoder';
     const REPO = 'sistema_giovana';
     const PATH = 'contratos/contratos-assinados'; 
-    const url = `https://api.github.com/repos/${USER}/${REPO}/${PATH}`;
+    const url = `https://contratos-assinados-wx0r.onrender.com`;
     
     try {
         const response = await fetch(url);
@@ -284,6 +284,7 @@
     </script>
 </body>
 </html>
+
 
 
 
