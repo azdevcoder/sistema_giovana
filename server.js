@@ -24,10 +24,10 @@ app.use(express.json({ limit: "30mb" }));
 app.get("/health", (req, res) => res.json({ ok: true }));
 
 // --- BUSCAR CONTRATOS (LISTAR OU ARQUIVO ESPECÍFICO) ---
-app.get("/contratos/contratos-assinados/:nomeArquivo?", async (req, res) => {
+app.get("contratos/contratos-assinados/:nomeArquivo?", async (req, res) => {
   try {
     const { nomeArquivo } = req.params;
-    const path = nomeArquivo ? `/contratos/contratos-assinados/${nomeArquivo}` : `contratos`;
+    const path = nomeArquivo ? `contratos/contratos-assinados/${nomeArquivo}` : `contratos/contratos-assinados`;
     const url = `https://api.github.com/repos/${GITHUB_REPO}/contents/${encodeURIComponent(path)}?ref=${GITHUB_BRANCH}`;
 
     const resp = await fetch(url, {
