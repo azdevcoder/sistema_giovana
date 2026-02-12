@@ -5,13 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Giovana Morais | Contratos</title>
     
+    <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#1a73e8">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Giovana Contrato">
     <link rel="apple-touch-icon" href="calendar.png">
-    <link rel="icon" type="image/png" href="Logo-Giovana-Morais-_52-x-52-px_.ico">
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
@@ -104,19 +104,6 @@
             animation: pulse 1.5s infinite;
         }
         @keyframes pulse { 0% { opacity: 0.3; } 50% { opacity: 0.7; } 100% { opacity: 0.3; } }
-
-        .list-group-item { color: var(--text-main) !important; }
-        .list-group-item.active-menu {
-            background-color: rgba(207, 15, 8, 0.1) !important;
-            color: #920f0f !important; /* Azul Google */
-            font-weight: bold;
-            border-right: 3px solid #e8391a;
-        }
-        
-        [data-theme="dark"] .list-group-item.active-menu {
-            color: #ec1111 !important; /* Azul claro para modo escuro */
-            border-right: 3px solid #f17272;
-        }
     </style>
 </head>
 <body data-theme="light">
@@ -140,26 +127,24 @@
         <aside class="sidebar d-none d-md-flex flex-column">
             <nav class="list-group list-group-flush">
                 <a href="index.html" class="list-group-item list-group-item-action border-0 bg-transparent rounded-3 mb-1">
-                    <i class="bi bi-grid-1x2 me-3"></i>Visão Geral
-                </a>
-                <a href="agenda.html" class="list-group-item list-group-item-action border-0 bg-transparent rounded-3 mb-1">
                 <i class="bi bi-calendar-check me-3"></i>Agenda
                 </a>
                 <a href="ficha_acolhimento.html" class="list-group-item list-group-item-action border-0 bg-transparent rounded-3" target="_blank">
                     <i class="bi bi-clipboard2-heart me-3"></i>Ficha de Acolhimento
                 </a>
-                <a href="lista_fichas.html" class="list-group-item list-group-item-action border-0 bg-transparent rounded-3">
+                <a href="lista_fichas.html" class="list-group-item list-group-item-action border-0 bg-transparent rounded-3 active-menu">
                     <i class="bi bi-card-list me-3"></i>Lista Fichas
                 </a>
-                <a href="contrato.html" class="list-group-item list-group-item-action border-0 bg-transparent rounded-3" target="_blank">
+                <a href="contrato.html" class="list-group-item list-group-item-action border-0 bg-transparent rounded-3 mb-1">
                     <i class="bi bi-file-earmark-text me-3"></i>Contrato
                 </a>
-                <a href="lista_contratos.html" class="list-group-item list-group-item-action border-0 bg-transparent rounded-3 active-menu">
+                <a href="lista_contratos.html" class="list-group-item list-group-item-action border-0 bg-transparent rounded-3">
                 <i class="bi bi-file-earmark-check me-3"></i>Lista Contratos
                 </a>
-                <a href="enviar_contrato.html" class="list-group-item list-group-item-action border-0 bg-transparent rounded-3" target="_blank">
+                <a href="enviar_contrato.html" class="list-group-item list-group-item-action border-0 bg-transparent rounded-3">
                     <i class="bi bi-send me-3"></i>Enviar Contrato
                 </a>
+            </nav>
         </aside>
 
         <main class="main-content">
@@ -228,10 +213,10 @@
 
         // Função para carregar contratos do GitHub
         async function loadContracts() {
-    const USER = 'azdevcoder';
-    const REPO = 'sistema_giovana';
-    const PATH = 'contratos/contratos-assinados'; 
-    const url = `https://contratos-assinados-wx0r.onrender.com`;
+    const USER = 'psigiovana';
+    const REPO = 'contratos-assinados';
+    const PATH = 'contratos'; 
+    const url = `https://api.github.com/repos/${USER}/${REPO}/contents/${PATH}`;
     
     try {
         const response = await fetch(url);
@@ -284,9 +269,3 @@
     </script>
 </body>
 </html>
-
-
-
-
-
-
