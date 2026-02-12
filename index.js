@@ -30,12 +30,13 @@ app.post("/upload", async (req, res) => {
             return res.status(400).json({ error: "Dados incompletos" });
         }
 
-        const path = `dados/${nomeArquivo}`;
+        const path = `dados/contratos/${nomeArquivo}`;
         const url = `https://api.github.com/repos/${GITHUB_REPO}/contents/${encodeURIComponent(path)}`;
 
         const getResp = await fetch(url, {
             headers: { Authorization: `token ${GITHUB_TOKEN}` }
         });
+      
         let sha;
         if (getResp.ok) {
             const getJson = await getResp.json();
