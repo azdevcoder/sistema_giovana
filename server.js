@@ -1,88 +1,87 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
+import fetch from "node-fetch"; // Garanta que o node-fetch esteja instalado ou use o nativo do Node 18+
 
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-const FRONTEND_ORIGIN = process.env.FRONTEND_ORIGIN || "https://azdevcoder.github.io";
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
 const GITHUB_REPO = process.env.GITHUB_REPO || "azdevcoder/sistema_giovana";
 const GITHUB_BRANCH = process.env.GITHUB_BRANCH || "main";
 
 if (!GITHUB_TOKEN) {
-  console.error("Falta a variável de ambiente GITHUB_TOKEN.");
+  console.error("ERRO: GITHUB_TOKEN não configurado.");
   process.exit(1);
 }
 
-app.use(cors({ origin: FRONTEND_ORIGIN }));
-app.use(express.json({ limit: "30mb" }));
+app.use(cors());
+app.use(express.json({ limit: "50mb" })); // Aumentado para suportar PDFs maiores
 
 // Rota de Health Check
-app.get("/health", (req, res) => res.json({ ok: true }));
+app.get("/health", (req, res) => res.json({ status: "AzDev Server Online" }));
 
-// --- BUSCAR CONTRATOS (LISTAR OU ARQUIVO ESPECÍFICO) ---
-app.get("/contratos/contratos-assinados/:nomeArquivo?", async (req, res) => {
+// --- FUNÇÃO GENÉRICA PARA GITHUB ---
+async function uploadToGithub(path, contentBase64, message) {
+  const url = `https://api.github.com/repos/${GITHUB_REPO}/contents/${path}`;
+  
+  // Tentar buscar o SHA se o arquivo já existir
+  const getResp = await fetch(url + `?ref=${GITHUB_BRANCH}`, {
+    headers: { Authorization: `token ${GITHUB_TOKEN}` }
+  });
+  
+  let sha;
+  if (getResp.ok) {
+    const data = await getResp.json();
+    sha = data.sha;
+  }
+
+  const putResp = await fetch(url, {
+    method: "PUT",
+    headers: { 
+      Authorization: `token ${GITHUB_TOKEN}`,
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      message,
+      content: contentBase64,
+      sha,
+      branch: GITHUB_BRANCH
+    })
+  });
+
+  return putResp;
+}
+
+// --- ROTA: SALVAR AGENDA (JSON) ---
+app.post("/salvar-agenda", async (req, res) => {
   try {
-    const { nomeArquivo } = req.params;
-    const path = nomeArquivo ? `contratos/contratos-assinados/${nomeArquivo}` : `contratos/contratos-assinados`;
-    const url = `https://api.github.com/repos/${GITHUB_REPO}/contents/${encodeURIComponent(path)}?ref=${GITHUB_BRANCH}`;
-
-    const resp = await fetch(url, {
-      headers: {
-        Authorization: `token ${GITHUB_TOKEN}`,
-        Accept: "application/vnd.github+json"
-      }
-    });
-
-    const data = await resp.json();
-    if (!resp.ok) return res.status(resp.status).json(data);
+    const conteudo = Buffer.from(JSON.stringify(req.body, null, 2)).toString('base64');
+    const resp = await uploadToGithub("dados/agendamento.json", conteudo, "Sincronização de agenda");
     
-    return res.json(data);
+    if (resp.ok) return res.json({ ok: true });
+    res.status(500).json(await resp.json());
   } catch (err) {
-    res.status(500).json({ error: "Erro ao buscar contratos" });
+    res.status(500).json({ error: "Erro interno na agenda" });
   }
 });
 
-// --- UPLOAD DE CONTRATOS ---
+// --- ROTA: UPLOAD DE PDFs (Contratos e Fichas) ---
 app.post("/upload", async (req, res) => {
   try {
-    const { nomeArquivo, conteudoBase64 } = req.body;
-    if (!nomeArquivo || !conteudoBase64) return res.status(400).json({ error: "Dados incompletos" });
+    const { nomeArquivo, conteudoBase64, tipo } = req.body; // 'tipo' pode ajudar a organizar pastas
+    const pasta = tipo === 'ficha' ? 'dados/fichas' : 'contratos/contratos-assinados';
+    const path = `${pasta}/${nomeArquivo}`;
 
-    const path = `contratos/contratos-assinados/${nomeArquivo}`;
-    const url = `https://api.github.com/repos/${GITHUB_REPO}/contents/${encodeURIComponent(path)}`;
+    const resp = await uploadToGithub(path, conteudoBase64, `Upload: ${nomeArquivo}`);
 
-    // Verificar se existe para pegar o SHA
-    const getResp = await fetch(url, { headers: { Authorization: `token ${GITHUB_TOKEN}` } });
-    let sha;
-    if (getResp.ok) {
-      const getJson = await getResp.json();
-      sha = getJson.sha;
-    }
-
-    const putResp = await fetch(url, {
-      method: "PUT",
-      headers: {
-        Authorization: `token ${GITHUB_TOKEN}`,
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        message: `Upload contrato: ${nomeArquivo}`,
-        content: conteudoBase64,
-        sha,
-        branch: GITHUB_BRANCH
-      })
-    });
-
-    if (putResp.ok) return res.json({ ok: true });
-    const errData = await putResp.json();
-    res.status(500).json(errData);
+    if (resp.ok) return res.json({ ok: true });
+    res.status(500).json(await resp.json());
   } catch (err) {
-    res.status(500).json({ error: "Erro interno" });
+    res.status(500).json({ error: "Erro interno no upload" });
   }
 });
 
-app.listen(PORT, () => console.log(`Servidor Contratos rodando na porta ${PORT}`));
+app.listen(PORT, () => console.log(`Servidor AzDev Coder rodando na porta ${PORT}`));
