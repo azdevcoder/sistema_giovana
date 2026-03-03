@@ -365,10 +365,6 @@ function updateStorage() {
         end: e.endStr, 
         backgroundColor: e.backgroundColor
     }));
-    
-    const stringData = JSON.stringify(events);
-    localStorage.setItem('appointments_gih', stringData);
-
     const stringData = JSON.stringify(events);
 
     fetch("https://sistema-giovana.onrender.com/salvar-agenda", {
