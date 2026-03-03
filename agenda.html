@@ -369,17 +369,17 @@ function updateStorage() {
     const stringData = JSON.stringify(events);
     localStorage.setItem('appointments_gih', stringData);
 
-    // USANDO O NOME QUE VOCÊ CONFIRMOU (sistema_giovana)
-    fetch("https://sistema_giovana.onrender.com/salvar-agenda", {
+    // DICA: Tente com HÍFEN se o sublinhado continuar dando erro de CORS
+    fetch("https://sistema-giovana.onrender.com/salvar-agenda", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: stringData
     })
-    .then(response => {
-        if(!response.ok) throw new Error("Erro no servidor");
-        console.log("Agenda sincronizada no GitHub!");
+    .then(res => {
+        if (!res.ok) throw new Error("Erro no servidor");
+        console.log("Agenda salva com sucesso!");
     })
-    .catch(e => console.log("Erro na sincronização:", e));
+    .catch(err => console.error("Falha na sincronização:", err));
 }
 
     async function loadEvents() {
