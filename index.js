@@ -69,16 +69,15 @@ app.post("/upload", async (req, res) => {
     }
 });
 
-// --- SERVIÇO 2: AGENDAMENTOS (CORRIGIDO PARA O CAMINHO CORRETO) ---
+// --- ROTA PARA AGENDAMENTOS (VERSÃO REPARADORA) ---
 app.post("/salvar", async (req, res) => {
   try {
     const eventos = req.body; 
-    // Caminho específico que você solicitou: dados/agendamento.json
-    const path = `dados/agendamento.json`;
+    const path = "dados/agendamento.json";
     const url = `https://api.github.com/repos/${GITHUB_REPO}/contents/${path}`;
 
-    // Busca o SHA para poder sobrescrever o arquivo existente
-    const getResp = await fetch(url, {
+    // 1. SEMPRE busca a versão mais atual do arquivo para evitar Erro 500/409
+    const getResp = await fetch(`${url}?t=${Date.now()}`, { // t=Date.now evita cache
       headers: { Authorization: `token ${GITHUB_TOKEN}` }
     });
 
@@ -88,15 +87,21 @@ app.post("/salvar", async (req, res) => {
       sha = getJson.sha;
     }
 
+    // 2. Transforma os dados em Base64 corretamente
     const jsonString = JSON.stringify(eventos, null, 2);
     const conteudoBase64 = Buffer.from(jsonString, 'utf-8').toString('base64');
 
+    // 3. Monta o corpo da requisição
     const body = {
-      message: "Sincronização automática de agendamentos",
+      message: "Sincronização agenda",
       content: conteudoBase64,
       branch: GITHUB_BRANCH
     };
-    if (sha) body.sha = sha;
+    
+    // Se o arquivo existe, envia o SHA. Se não existe, o GitHub criará um novo.
+    if (sha) {
+      body.sha = sha;
+    }
 
     const putResp = await fetch(url, {
       method: "PUT",
@@ -108,14 +113,16 @@ app.post("/salvar", async (req, res) => {
     });
 
     if (putResp.ok) {
-      return res.json({ ok: true, message: "Agenda sincronizada" });
+      console.log("Agenda salva com sucesso no GitHub");
+      return res.json({ ok: true });
     } else {
       const errorJson = await putResp.json();
+      console.error("Erro detalhado do GitHub:", errorJson);
       return res.status(500).json({ error: "Erro no GitHub", details: errorJson });
     }
 
   } catch (err) {
-    console.error("Erro interno:", err);
+    console.error("Erro fatal no servidor:", err);
     return res.status(500).json({ error: "Erro interno no servidor" });
   }
 });
