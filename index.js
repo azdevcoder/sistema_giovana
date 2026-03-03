@@ -9,7 +9,7 @@ const PORT = process.env.PORT || 3000;
 
 // Configurações Globais
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
-const GITHUB_REPO = process.env.GITHUB_REPO || "azdevcoder/giovana-contratos"; // Nome correto do repo
+const GITHUB_REPO = process.env.GITHUB_REPO || "azdevcoder/sistema_giovana"; // Nome correto do repo
 const GITHUB_BRANCH = process.env.GITHUB_BRANCH || "main";
 
 if (!GITHUB_TOKEN) {
