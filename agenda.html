@@ -367,7 +367,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const stringData = JSON.stringify(events);
         localStorage.setItem('appointments_gih', stringData);
 
-        fetch("https://sistema-giovana.onrender.com/salvar-agenda", {
+        fetch("https://sistema-giovana.onrender.com/salvar", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: stringData
