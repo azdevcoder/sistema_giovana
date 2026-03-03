@@ -67,7 +67,7 @@ app.post("/upload", async (req, res) => {
 });
 
 // --- ROTA PARA AGENDAMENTOS (JSON) ---
-app.post("/salvar-agenda", async (req, res) => {
+app.post("/salvar", async (req, res) => {
   try {
     const eventos = req.body; 
     const path = `dados/agendamento.json`;
