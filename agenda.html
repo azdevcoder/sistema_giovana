@@ -365,7 +365,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }));
         
         const stringData = JSON.stringify(events);
-        localStorage.setItem('appointments_nath', stringData);
+        localStorage.setItem('appointments_gih', stringData);
 
         fetch("https://sistema-giovana.onrender.com/salvar-agenda", {
             method: "POST",
@@ -375,7 +375,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     async function loadEvents() {
-        const localData = localStorage.getItem('appointments_nath');
+        const localData = localStorage.getItem('appointments_gih');
         if (localData) {
             calendar.removeAllEvents();
             calendar.addEventSource(JSON.parse(localData));
