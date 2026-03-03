@@ -369,19 +369,16 @@ function updateStorage() {
     const stringData = JSON.stringify(events);
     localStorage.setItem('appointments_gih', stringData);
 
-    // DICA: Tente com HÍFEN se o sublinhado continuar dando erro de CORS
+    const stringData = JSON.stringify(events);
+
     fetch("https://sistema-giovana.onrender.com/salvar-agenda", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: stringData
     })
-    .then(res => {
-        if (!res.ok) throw new Error("Erro no servidor");
-        console.log("Agenda salva com sucesso!");
-    })
-    .catch(err => console.error("Falha na sincronização:", err));
+    .then(r => { if(!r.ok) throw new Error("Erro no servidor"); })
+    .catch(e => console.error("Falha na sincronização:", e));
 }
-
     async function loadEvents() {
         const localData = localStorage.getItem('appointments_gih');
         if (localData) {
