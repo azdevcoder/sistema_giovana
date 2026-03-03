@@ -367,24 +367,16 @@ function updateStorage() {
     }));
     
     const stringData = JSON.stringify(events);
-    
-    // 1. Salva no navegador (funciona sempre)
-    localStorage.setItem('appointments_gih', stringData);
+    localStorage.setItem('appointments_nath', stringData);
 
-    // 2. Envia para o servidor que REALMENTE tem poder de escrita
+    // Certifique-se de que a URL termina em /salvar-agenda (conforme definido no index.js)
     fetch("https://sistema-giovana.onrender.com/salvar-agenda", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: stringData
     })
-    .then(response => {
-        if(!response.ok) throw new Error("Erro ao salvar no servidor");
-        console.log("Sincronizado com sucesso!");
-    })
-    .catch(e => {
-        console.error("Erro na sincronização:", e);
-        alert("Atenção: O agendamento foi salvo apenas neste aparelho. O servidor está offline.");
-    });
+    .then(r => { if(!r.ok) throw new Error(); })
+    .catch(e => console.log("Servidor offline ou erro no salvamento."));
 }
 
     async function loadEvents() {
