@@ -1,149 +1,909 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<title>Contrato Psicóloga Giovana CRP:08/45995</title>
-<link rel="icon" type="image/png" href="Logo-Giovana-Morais-_52-x-52-px_.ico">
-<style>
-body { font-family: Arial, sans-serif; background: #f3e8db; padding: 20px; text-align: center; }
-.container { background: #fff; padding: 20px; max-width: 600px; margin: auto; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
-input, button { padding: 10px; margin: 10px 0; width: 90%; border: 1px solid #ccc; border-radius: 5px; }
-button { background: #f3e8db; color: black; font-size: 15px; border: none; cursor: pointer; transition: 0.3s; }
-button:hover { background: #f7f7f7; }
-button:disabled { background: #ccc; cursor: not-allowed; }
-.spinner { display: inline-block; width: 16px; height: 16px; border: 2px solid white; border-top: 2px solid #ffaddd; border-radius: 50%; animation: spin 0.8s linear infinite; vertical-align: middle; margin-right: 8px; }
-@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-iframe { width: 100%; height: 500px; border: 1px solid #ddd; margin-top: 15px; }
-</style>
-<script src="https://cdn.jsdelivr.net/npm/pdf-lib/dist/pdf-lib.min.js"></script>
-</head>
-<body>
-<img src="banner_assinatura.png" alt="Banner de Assinatura" style="max-width: 30%;">
-<div class="container">
-<h2>Assinatura do Contrato de Psicoterapia</h2>
-<form id="formContrato">
-  <input type="text" id="nome" placeholder="Nome completo" required>
-  <input type="text" id="nomeSocial" placeholder="Nome social (opcional)">
-  <input type="text" id="cpf" placeholder="CPF" required>
-  <input type="text" id="rg" placeholder="RG" required>
-  <input type="text" id="telefone" placeholder="Telefone / WhatsApp" required>
-  <button type="submit" id="btnEnviar">Assinar e Enviar</button>
-</form>
-
-<iframe id="pdfViewer" src="Contrato1.pdf"></iframe>
-</div>
-
-<script>
-let pdfBlobGlobal = null;
-let dadosGlobais = null;
-
-const form = document.getElementById("formContrato");
-const btn = document.getElementById("btnEnviar");
-const pdfViewer = document.getElementById("pdfViewer");
-const contato = "5544997112467"; // WhatsApp destino
-
-// === Gerar hash de 4 dígitos ===
-function gerarHash5() {
-  return Math.floor(10000 + Math.random() * 9000);
-}
-
-// === Submissão do formulário ===
-form.addEventListener("submit", async (e) => {
-  e.preventDefault();
-  btn.disabled = true;
-  const originalText = btn.textContent;
-  btn.innerHTML = '<span class="spinner"></span>Gerando...';
-
-  const dados = {
-    nome: document.getElementById("nome").value.trim(),
-    nomeSocial: document.getElementById("nomeSocial").value.trim(),
-    cpf: document.getElementById("cpf").value.trim(),
-    rg: document.getElementById("rg").value.trim(),
-    telefone: document.getElementById("telefone").value.trim()
-  };
-  dadosGlobais = dados;
-
-  try {
-    const res = await fetch("Contrato.pdf");
-    if (!res.ok) throw new Error("Contrato.pdf não encontrado");
-    const existingPdfBytes = await res.arrayBuffer();
-    const pdfDoc = await PDFLib.PDFDocument.load(existingPdfBytes);
-    const font = await pdfDoc.embedFont(PDFLib.StandardFonts.Helvetica);
-
-    const pages = pdfDoc.getPages();
-    const firstPage = pages[0];
-    const { height } = firstPage.getSize();
-
-    // Preenche campos no PDF
-    firstPage.drawText(dados.nome, { x:130, y:height-248, size:12, font });
-    if(dados.nomeSocial) firstPage.drawText(dados.nomeSocial, { x:180, y:height-268, size:12, font });
-    firstPage.drawText(dados.cpf, { x:360, y:height-270, size:12, font });
-    firstPage.drawText(dados.rg, { x:120, y:height-293, size:12, font });
-    firstPage.drawText(dados.telefone, { x:380, y:height-293, size:12, font });
-    firstPage.drawText(`Assinado digitalmente por: ${dados.nome}`, { x:50, y:100, size:12, font });
-    firstPage.drawText(`Data: ${new Date().toLocaleDateString("pt-BR")}`, { x:50, y:85, size:12, font });
-
-    if(pages.length > 1){
-      const secondPage = pages[1];
-      const { height: h2 } = secondPage.getSize();
-      secondPage.drawText(dados.nome, { x:250, y:h2-320, size:12, font });
-      secondPage.drawText(new Date().toLocaleDateString("pt-BR"), { x:230, y:h2-300, size:12, font });
-      secondPage.drawText(`Assinado digitalmente por: ${dados.nome}`, { x:50, y:100, size:12, font });
-      secondPage.drawText(`Data: ${new Date().toLocaleDateString("pt-BR")}`, { x:50, y:85, size:12, font });
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Contrato - Psicóloga Giovana</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #f3e8db;
+      color: #4a3f35;
+    }
+    .page {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    header {
+      background: rgba(255, 255, 255, 0.8);
+      backdrop-filter: blur(6px);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+      padding: 12px 16px;
+    }
+    .header-inner {
+      max-width: 960px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+    }
+    .logo-circle {
+      width: 40px;
+      height: 40px;
+      border-radius: 999px;
+      background: #f3e8db;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .logo-icon {
+      width: 22px;
+      height: 22px;
+      stroke: #8b6f4e;
+    }
+    .header-text h1 {
+      font-size: 16px;
+      margin: 0;
+      color: #5a4632;
+      font-weight: 600;
+      text-align: center;
+    }
+    .header-text p {
+      margin: 0;
+      font-size: 11px;
+      color: #8b6f4e;
+      text-align: center;
     }
 
-    const pdfBytes = await pdfDoc.save();
-    pdfBlobGlobal = new Blob([pdfBytes], { type:"application/pdf" });
-    const localUrl = URL.createObjectURL(pdfBlobGlobal);
-    pdfViewer.src = localUrl;
+    main {
+      flex: 1;
+      padding: 24px 16px 32px;
+    }
+    .container {
+      max-width: 960px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+    .card {
+      background: #ffffff;
+      border-radius: 18px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+      padding: 20px 18px;
+    }
+    @media (min-width: 640px) {
+      .card { padding: 28px 26px; }
+    }
+    @media (min-width: 768px) {
+      .card { padding: 32px 32px; }
+    }
 
-    // === Nome do arquivo com hash ===
-    const hash = gerarHash5();
-    const nomeArquivo = `${hash}_${dados.nome.replace(/\s+/g, "_")}_Contrato.pdf`;
+    h2.title {
+      font-size: 22px;
+      text-align: center;
+      margin: 0 0 4px;
+      color: #5a4632;
+    }
+    .subtitle {
+      font-size: 13px;
+      text-align: center;
+      color: #8b6f4e;
+      margin-bottom: 20px;
+    }
 
-    // Converter para base64 e enviar ao backend
-    const base64 = await blobParaBase64(pdfBlobGlobal);
-    await fetch("https://contratos-assinados.onrender.com/upload", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ nomeArquivo, conteudoBase64: base64 })
+    label {
+      display: block;
+      font-size: 13px;
+      font-weight: 500;
+      color: #5a4632;
+      margin-bottom: 4px;
+    }
+    .optional {
+      font-size: 11px;
+      color: #b8a898;
+      font-weight: 400;
+    }
+    .required {
+      color: #e26161;
+    }
+    input {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 12px;
+      border: 1px solid #e0d5c7;
+      background: #faf6f1;
+      color: #5a4632;
+      font-size: 14px;
+      outline: none;
+      transition: border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+    }
+    input::placeholder {
+      color: #b8a898;
+    }
+    input:focus {
+      border-color: #d4b896;
+      box-shadow: 0 0 0 2px rgba(212,184,150,0.35);
+      background: #fffaf3;
+    }
+    .field {
+      margin-bottom: 12px;
+    }
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+    @media (min-width: 640px) {
+      .grid-2 {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    button {
+      border: none;
+      cursor: pointer;
+      font-family: inherit;
+    }
+    .btn-primary {
+      width: 100%;
+      margin-top: 12px;
+      padding: 11px 14px;
+      border-radius: 14px;
+      background: #5a4632;
+      color: #ffffff;
+      font-weight: 600;
+      font-size: 15px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      box-shadow: 0 12px 20px rgba(90,70,50,0.28);
+      transition: background 0.15s ease, transform 0.1s ease, box-shadow 0.15s ease, opacity 0.15s ease;
+    }
+    .btn-primary:hover {
+      background: #7a6352;
+      transform: translateY(-1px);
+      box-shadow: 0 16px 26px rgba(90,70,50,0.32);
+    }
+    .btn-primary:active {
+      transform: scale(0.98);
+      box-shadow: 0 8px 14px rgba(90,70,50,0.2);
+    }
+    .btn-primary[disabled] {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .btn-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      color: #5a4632;
+      font-size: 13px;
+      background: none;
+      padding: 0;
+      margin-bottom: 10px;
+    }
+    .btn-link:hover {
+      color: #8b6f4e;
+      text-decoration: underline;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: #fff6e0;
+      color: #8b6f4e;
+      margin-bottom: 6px;
+    }
+
+    .contract-text {
+      font-size: 14px;
+      line-height: 1.6;
+      color: #4a3f35;
+      text-align: justify;
+    }
+    .section-title {
+      font-weight: 700;
+      color: #5a4632;
+      margin: 12px 0 4px;
+    }
+    .patient-box {
+      background: #faf6f1;
+      border-radius: 14px;
+      border: 1px solid #e0d5c7;
+      padding: 12px 14px;
+      font-size: 13px;
+      margin: 10px 0 14px;
+      text-align: left;
+    }
+    .patient-box p {
+      margin: 2px 0;
+    }
+
+    .alert {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      padding: 10px 12px;
+      border-radius: 12px;
+      font-size: 13px;
+      margin-bottom: 8px;
+    }
+    .alert-info {
+      background: #fff7e6;
+      border: 1px solid #ffe4a3;
+      color: #8b6f4e;
+    }
+
+    .alert-success {
+      background: #ecfdf3;
+      border: 1px solid #bbf7d0;
+      color: #166534;
+    }
+
+    .alert-warn {
+      background: #fffbeb;
+      border: 1px solid #facc15;
+      color: #854d0e;
+    }
+
+    .status-list {
+      margin-top: 10px;
+      display: grid;
+      gap: 6px;
+      font-size: 13px;
+      text-align: left;
+    }
+
+    .status-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 10px;
+      border-radius: 10px;
+    }
+    .status-ok {
+      background: #ecfdf3;
+      color: #166534;
+    }
+    .status-warn {
+      background: #fffbeb;
+      color: #854d0e;
+    }
+
+    .status-icon {
+      width: 18px;
+      height: 18px;
+      flex-shrink: 0;
+    }
+
+    .signature-row {
+      border-top: 2px solid #e0d5c7;
+      padding-top: 16px;
+      margin-top: 16px;
+      display: grid;
+      gap: 12px;
+      text-align: left;
+    }
+    @media (min-width: 640px) {
+      .signature-row {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+    .signature-box {
+      background: #faf6f1;
+      border-radius: 14px;
+      border: 1px solid #e0d5c7;
+      padding: 12px 14px;
+      font-size: 13px;
+    }
+    .signature-label {
+      font-size: 11px;
+      color: #8b6f4e;
+      margin-bottom: 4px;
+    }
+    .signature-name {
+      font-weight: 600;
+      color: #5a4632;
+    }
+    .signature-sub {
+      font-size: 11px;
+      color: #b8a898;
+      margin-top: 2px;
+    }
+
+    .spinner {
+      width: 16px;
+      height: 16px;
+      border-radius: 999px;
+      border: 2px solid rgba(255,255,255,0.6);
+      border-top-color: #ffffff;
+      animation: spin 0.7s linear infinite;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .success-icon-wrap {
+      width: 72px;
+      height: 72px;
+      border-radius: 999px;
+      margin: 0 auto 10px;
+      background: #ecfdf3;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .success-icon {
+      width: 40px;
+      height: 40px;
+      stroke: #16a34a;
+    }
+
+    .center {
+      text-align: center;
+    }
+
+    footer {
+      text-align: center;
+      padding: 14px 8px 18px;
+      font-size: 11px;
+      color: #b8a898;
+    }
+  </style>
+
+  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+</head>
+<body>
+  <div class="page">
+    <header>
+      <div class="header-inner">
+        <div class="header-text">
+          <h1>Psicóloga Giovana de Morais</h1>
+          <p>CRP: 08/45995 • Sistema de assinatura de contrato</p>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <div class="container">
+        <div id="step-form" class="card">
+          <h2 class="title">Contrato de Psicoterapia</h2>
+          <p class="subtitle">Preencha seus dados para visualizar e assinar o contrato</p>
+
+          <div class="badge">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75A2.25 2.25 0 0 0 14.25 4.5h-9A2.25 2.25 0 0 0 3 6.75v10.5A2.25 2.25 0 0 0 5.25 19.5h8.25m3-9 3 3m0 0-3 3m3-3h-9" />
+            </svg>
+            Seus dados serão usados apenas neste contrato, conforme o Código de Ética Profissional do Psicólogo.
+          </div>
+
+          <form id="formContrato">
+            <div class="field">
+              <label>Nome completo <span class="required">*</span></label>
+              <input id="nome" type="text" placeholder="Digite seu nome completo" required />
+            </div>
+
+            <div class="field">
+              <label>Nome social <span class="optional">(opcional)</span></label>
+              <input id="nomeSocial" type="text" placeholder="Nome social, se houver" />
+            </div>
+
+            <div class="grid-2">
+              <div class="field">
+                <label>CPF <span class="required">*</span></label>
+                <input id="cpf" type="text" placeholder="000.000.000-00" required />
+              </div>
+              <div class="field">
+                <label>Telefone / WhatsApp <span class="required">*</span></label>
+                <input id="telefone" type="text" placeholder="(00) 00000-0000" required />
+              </div>
+            </div>
+
+            <button type="submit" class="btn-primary">
+              <span>Visualizar Contrato</span>
+            </button>
+          </form>
+        </div>
+
+        <div id="step-preview" class="card" style="display:none;">
+          <button type="button" class="btn-link" id="btnVoltar">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
+            </svg>
+            Voltar e editar dados
+          </button>
+
+          <h2 class="title" style="margin-bottom:10px;">CONTRATO DE PSICOTERAPIA</h2>
+
+          <div class="contract-text" id="previewContrato"></div>
+
+          <div class="alert alert-info" style="margin-top:18px;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75M12 3.75a8.25 8.25 0 1 1 0 16.5 8.25 8.25 0 0 1 0-16.5Zm0 9.75h.008v.008H12v-.008Z" />
+            </svg>
+            <div>
+              Ao clicar em <strong>"Assinar Contrato"</strong>, o PDF será gerado com estes dados, salvo no Banco de Dados e baixado no seu dispositivo.
+            </div>
+          </div>
+
+          <button id="btnAssinar" type="button" class="btn-primary">
+            <span>Assinar Contrato</span>
+          </button>
+        </div>
+
+        <div id="step-success" class="card center" style="display:none;">
+          <div class="success-icon-wrap">
+            <svg class="success-icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+            </svg>
+          </div>
+          <h2 class="title" style="margin-bottom:2px;">Contrato assinado!</h2>
+          <p class="subtitle" id="successSubtitle">Seu contrato foi gerado em PDF, salvo e enviado com sucesso.</p>
+
+          <div class="status-list" id="statusList"></div>
+
+          <div id="extraActions" style="margin-top:18px;"></div>
+        </div>
+      </div>
+    </main>
+
+    <footer>
+      <div>Psicóloga Giovana de Morais • CRP 08/45995</div>
+      <div>Sistema de assinatura digital de contratos</div>
+      <div>Desenvolvido por: AzDev Coder</div>
+    </footer>
+  </div>
+
+  <script>
+    const { jsPDF } = window.jspdf;
+    const CONTATO_WHATSAPP = '5544997112467';
+
+    const form = document.getElementById('formContrato');
+    const stepForm = document.getElementById('step-form');
+    const stepPreview = document.getElementById('step-preview');
+    const stepSuccess = document.getElementById('step-success');
+    const previewContrato = document.getElementById('previewContrato');
+    const btnVoltar = document.getElementById('btnVoltar');
+    const btnAssinar = document.getElementById('btnAssinar');
+    const statusList = document.getElementById('statusList');
+    const extraActions = document.getElementById('extraActions');
+
+    const inputNome = document.getElementById('nome');
+    const inputNomeSocial = document.getElementById('nomeSocial');
+    const inputCPF = document.getElementById('cpf');
+    const inputTelefone = document.getElementById('telefone');
+
+    let dadosGlobais = null;
+    let pdfBlobGlobal = null;
+    let nomeArquivoFinal = '';
+    let githubSalvo = false;
+
+    function formatarCPF(valor) {
+      const nums = valor.replace(/\D/g, '').slice(0, 11);
+      if (nums.length <= 3) return nums;
+      if (nums.length <= 6) return nums.slice(0,3) + '.' + nums.slice(3);
+      if (nums.length <= 9) return nums.slice(0,3) + '.' + nums.slice(3,6) + '.' + nums.slice(6);
+      return (
+        nums.slice(0,3) + '.' +
+        nums.slice(3,6) + '.' +
+        nums.slice(6,9) + '-' +
+        nums.slice(9)
+      );
+    }
+
+    function formatarTelefone(valor) {
+      const nums = valor.replace(/\D/g, '').slice(0, 11);
+      if (!nums) return '';
+      if (nums.length <= 2) return '(' + nums;
+      if (nums.length <= 6) return '(' + nums.slice(0,2) + ') ' + nums.slice(2);
+      if (nums.length <= 10) return '(' + nums.slice(0,2) + ') ' + nums.slice(2,6) + '-' + nums.slice(6);
+      return '(' + nums.slice(0,2) + ') ' + nums.slice(2,7) + '-' + nums.slice(7);
+    }
+
+    inputCPF.addEventListener('input', () => {
+      inputCPF.value = formatarCPF(inputCPF.value);
+    });
+    inputTelefone.addEventListener('input', () => {
+      inputTelefone.value = formatarTelefone(inputTelefone.value);
     });
 
-    // Download automático
-    const downloadLink = document.createElement('a');
-    downloadLink.href = localUrl;
-    downloadLink.download = nomeArquivo;
-    downloadLink.click();
+    function gerarHash5() {
+      return Math.floor(10000 + Math.random() * 90000);
+    }
 
-    // Enviar pelo WhatsApp
-    const msg = encodeURIComponent(`Olá Giovana, segue o contrato assinado por ${dados.nome}`);
-    window.open(`https://wa.me/${contato}?text=${msg}`, "_blank");
+    function construirPreviewContrato(d) {
+      const dataAtual = new Date().toLocaleDateString('pt-BR');
 
-    alert("Contrato assinado, salvo, enviado ao GitHub e baixado com sucesso!");
+      let html = '';
+      html += '<p>Eu, <strong>Giovana de Morais</strong>, Psicóloga (CRP 08/45995), e você, paciente abaixo identificado(a), firmamos este acordo com o objetivo de estabelecer clareza e segurança em nosso processo terapêutico.</p>';
 
-  } catch (err) {
-    alert("Erro: " + err.message);
-    console.error(err);
-  } finally {
-    btn.disabled = false;
-    btn.textContent = originalText;
-  }
-});
+      html += '<div class="patient-box">';
+      html += '<p><strong>Dados do(a) Paciente:</strong></p>';
+      html += '<p><strong>Nome:</strong> ' + (d.nome || '') + '</p>';
+      if (d.nomeSocial) {
+        html += '<p><strong>Nome social:</strong> ' + d.nomeSocial + '</p>';
+      }
+      html += '<p><strong>CPF:</strong> ' + (d.cpf || '') + '</p>';
+      html += '<p><strong>Telefone/WhatsApp:</strong> ' + (d.telefone || '') + '</p>';
+      html += '</div>';
 
-// Converter Blob → Base64
-function blobParaBase64(blob) {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onloadend = () => resolve(reader.result.split(",")[1]);
-    reader.onerror = reject;
-    reader.readAsDataURL(blob);
-  });
-}
-</script>
+      html += '<p class="section-title">1. Sobre o atendimento:</p>';
+      html += '<p>Nossas sessões de psicoterapia terão duração de aproximadamente 50 minutos e acontecerão semanalmente ou quinzenalmente em formato presencial em Maringá-PR ou on-line, conforme combinado.</p>';
+
+      html += '<p class="section-title">2. Valores e forma de pagamento:</p>';
+      html += '<p>Cada sessão tem o valor de R$ 60,00 (social para estudantes e baixa renda) e R$100,00 valor convencional. O pagamento poderá ser realizado por: (PIX, Transferência ou Dinheiro). Sendo realizado até o dia 10 de cada mês, ou no dia das sessões.</p>';
+
+      html += '<p class="section-title">3. Cancelamentos e/ou faltas:</p>';
+      html += '<p>Para que nosso processo tenha continuidade e respeito ao tempo de ambos: Se precisar cancelar, avise com no mínimo 24 horas de antecedência. Cancelamentos fora desse prazo ou faltas sem aviso terão a cobrança integral da sessão.</p>';
+
+      html += '<p class="section-title">4. Sigilo e ética:</p>';
+      html += '<p>Tudo o que você compartilhar nas sessões será mantido em sigilo absoluto, conforme previsto no Código de Ética Profissional do Psicólogo. Somente em situações previstas por lei (ex.: risco à sua vida ou à de terceiros) o sigilo poderá ser quebrado.</p>';
+      html += '<p>Em relação a psicoterapia realizada online, é necessário que o ambiente seja tranquilo, silencioso e reservado. Use fones de ouvido para mais privacidade e concentração. Além disso, verifique se a internet está funcionando bem e não esqueça de manter o celular ou computador carregado ou conectado na energia.</p>';
+
+      html += '<p class="section-title">5. Encerramento do processo:</p>';
+      html += '<p>A psicoterapia é um processo construído em conjunto. Tanto você quanto eu podemos decidir pelo encerramento, sempre conversando abertamente sobre o momento mais adequado.</p>';
+
+      html += '<p class="section-title">6. Acordo de confiança:</p>';
+      html += '<p>Este contrato não é apenas um documento, mas um acordo de confiança e respeito mútuo. Estamos aqui para construir um espaço seguro, acolhedor e transformador.</p>';
+
+      html += '<p style="margin-top:16px;font-size:13px;color:#8b6f4e;">Local e data: Maringá, ' + dataAtual + '</p>';
+
+      html += '<div class="signature-row">';
+
+      html += '<div class="signature-box">';
+      html += '<div class="signature-label">Assinatura do(a) Paciente:</div>';
+      html += '<div class="signature-name">' + (d.nome || '________________________') + '</div>';
+      html += '<div class="signature-sub">Assinado digitalmente em ' + dataAtual + '</div>';
+      html += '</div>';
+
+      html += '<div class="signature-box">';
+      html += '<div class="signature-label">Assinatura da Psicóloga:</div>';
+      html += '<div class="signature-name">Giovana de Morais</div>';
+      html += '<div class="signature-sub">CRP-08/45995</div>';
+      html += '</div>';
+
+      html += '</div>';
+
+      previewContrato.innerHTML = html;
+    }
+
+    function gerarPDF(dados) {
+      const doc = new jsPDF({ unit: 'mm', format: 'a4' });
+      const pageWidth = doc.internal.pageSize.getWidth();
+      const marginLeft = 20;
+      const marginRight = 20;
+      const maxWidth = pageWidth - marginLeft - marginRight;
+      let y = 20;
+      const lineHeight = 6;
+      const dataAtual = new Date().toLocaleDateString('pt-BR');
+
+      function addTitle(text) {
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(14);
+        doc.text(text, pageWidth / 2, y, { align: 'center' });
+        y += lineHeight + 4;
+      }
+
+      function addSubtitle(text) {
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(11);
+        doc.text(text, marginLeft, y);
+        y += lineHeight + 1;
+      }
+
+      function addParagraph(text) {
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(10);
+        const lines = doc.splitTextToSize(text, maxWidth);
+        lines.forEach(function(line) {
+          if (y > 275) {
+            doc.addPage();
+            y = 20;
+          }
+          doc.text(line, marginLeft, y, { maxWidth: maxWidth, align: 'justify' });
+          y += lineHeight - 1;
+        });
+        y += 3;
+      }
+
+      function addField(label, value) {
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(10);
+        doc.text(label, marginLeft, y);
+        const labelWidth = doc.getTextWidth(label);
+        doc.setFont('helvetica', 'normal');
+        doc.text(value || '', marginLeft + labelWidth + 1, y);
+        y += lineHeight;
+      }
+
+      addTitle('CONTRATO DE PSICOTERAPIA');
+
+      addParagraph('Eu, Giovana de Morais, Psicóloga (CRP 08/45995), e você, paciente abaixo identificado(a), firmamos este acordo com o objetivo de estabelecer clareza e segurança em nosso processo terapêutico.');
+
+      y += 2;
+      addSubtitle('Dados do(a) Paciente:');
+      addField('Nome: ', dados.nome || '');
+      if (dados.nomeSocial) {
+        addField('Nome social: ', dados.nomeSocial);
+      }
+      addField('CPF: ', dados.cpf || '');
+      addField('Telefone/WhatsApp: ', dados.telefone || '');
+
+      y += 4;
+
+      addSubtitle('1. Sobre o atendimento:');
+      addParagraph('Nossas sessões de psicoterapia terão duração de aproximadamente 50 minutos e acontecerão semanalmente ou quinzenalmente em formato presencial em Maringá-PR ou on-line, conforme combinado.');
+
+      addSubtitle('2. Valores e forma de pagamento:');
+      addParagraph('Cada sessão tem o valor de R$ 60,00 (social para estudantes e baixa renda) e R$100,00 valor convencional. O pagamento poderá ser realizado por: (PIX, Transferência ou Dinheiro). Sendo realizado até o dia 10 de cada mês, ou no dia das sessões.');
+
+      addSubtitle('3. Cancelamentos e/ou faltas:');
+      addParagraph('Para que nosso processo tenha continuidade e respeito ao tempo de ambos: Se precisar cancelar, avise com no mínimo 24 horas de antecedência. Cancelamentos fora desse prazo ou faltas sem aviso terão a cobrança integral da sessão.');
+
+      addSubtitle('4. Sigilo e ética:');
+      addParagraph('Tudo o que você compartilhar nas sessões será mantido em sigilo absoluto, conforme previsto no Código de Ética Profissional do Psicólogo. Somente em situações previstas por lei (ex.: risco à sua vida ou à de terceiros) o sigilo poderá ser quebrado.');
+      addParagraph('Em relação a psicoterapia realizada online, é necessário que o ambiente seja tranquilo, silencioso e reservado. Use fones de ouvido para mais privacidade e concentração. Além disso, verifique se a internet está funcionando bem e não esqueça de manter o celular ou computador carregado ou conectado na energia.');
+
+      addSubtitle('5. Encerramento do processo:');
+      addParagraph('A psicoterapia é um processo construído em conjunto. Tanto você quanto eu podemos decidir pelo encerramento, sempre conversando abertamente sobre o momento mais adequado.');
+
+      addSubtitle('6. Acordo de confiança:');
+      addParagraph('Este contrato não é apenas um documento, mas um acordo de confiança e respeito mútuo. Estamos aqui para construir um espaço seguro, acolhedor e transformador.');
+
+      if (y > 240) {
+        doc.addPage();
+        y = 20;
+      }
+
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(10);
+      doc.text('Local e data: Maringá, ' + dataAtual, marginLeft, y);
+      y += 14;
+
+      doc.setFont('helvetica', 'bold');
+      doc.text('Assinatura do(a) Paciente:', marginLeft, y);
+      y += 6;
+      doc.setFont('helvetica', 'normal');
+      doc.text(dados.nome || '', marginLeft, y);
+      y += 4;
+      doc.setFontSize(8);
+      doc.text('Assinado digitalmente em ' + dataAtual, marginLeft, y);
+      doc.setFontSize(10);
+
+      y += 14;
+
+      doc.setFont('helvetica', 'bold');
+      doc.text('Assinatura da Psicóloga:', marginLeft, y);
+      y += 6;
+      doc.setFont('helvetica', 'normal');
+      doc.text('Giovana de Morais – CRP-08/45995', marginLeft, y);
+
+      const totalPages = doc.getNumberOfPages();
+      for (let i = 1; i <= totalPages; i++) {
+        doc.setPage(i);
+        doc.setFontSize(7);
+        doc.setTextColor(120, 120, 120);
+        doc.text(
+          'Documento assinado digitalmente por ' + (dados.nome || '') + ' - CPF: ' + (dados.cpf || '') + ' - ' + dataAtual,
+          pageWidth / 2,
+          290,
+          { align: 'center' }
+        );
+        doc.text('Página ' + i + ' de ' + totalPages, pageWidth / 2, 294, { align: 'center' });
+        doc.setTextColor(0, 0, 0);
+      }
+
+      return doc;
+    }
+
+    function blobParaBase64(blob) {
+      return new Promise(function(resolve, reject) {
+        const reader = new FileReader();
+        reader.onloadend = function() {
+          const res = reader.result;
+          if (typeof res === 'string') {
+            resolve(res.split(',')[1]);
+          } else {
+            reject(new Error('Falha ao ler o arquivo.'));
+          }
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(blob);
+      });
+    }
+
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      const nome = inputNome.value.trim();
+      const nomeSocial = inputNomeSocial.value.trim();
+      const cpf = inputCPF.value.trim();
+      const telefone = inputTelefone.value.trim();
+
+      if (!nome || !cpf || !telefone) {
+        alert('Preencha todos os campos obrigatórios.');
+        return;
+      }
+      if (cpf.replace(/\D/g, '').length < 11) {
+        alert('CPF incompleto.');
+        return;
+      }
+      if (telefone.replace(/\D/g, '').length < 10) {
+        alert('Telefone incompleto.');
+        return;
+      }
+
+      dadosGlobais = { nome, nomeSocial, cpf, telefone };
+      construirPreviewContrato(dadosGlobais);
+
+      stepForm.style.display = 'none';
+      stepPreview.style.display = 'block';
+      stepSuccess.style.display = 'none';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+
+    btnVoltar.addEventListener('click', function() {
+      stepForm.style.display = 'block';
+      stepPreview.style.display = 'none';
+      stepSuccess.style.display = 'none';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+
+    btnAssinar.addEventListener('click', async function() {
+      if (!dadosGlobais) return;
+
+      btnAssinar.disabled = true;
+      const originalText = btnAssinar.textContent;
+      btnAssinar.innerHTML = '<span class="spinner"></span><span>Gerando contrato...</span>';
+      githubSalvo = false;
+      statusList.innerHTML = '';
+      extraActions.innerHTML = '';
+
+      try {
+        const doc = gerarPDF(dadosGlobais);
+        const pdfBlob = doc.output('blob');
+        pdfBlobGlobal = pdfBlob;
+
+        const hash = gerarHash5();
+        nomeArquivoFinal = hash + '_' + (dadosGlobais.nome || '').replace(/\s+/g, '_') + '_Contrato.pdf';
+
+        const url = URL.createObjectURL(pdfBlob);
+
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = nomeArquivoFinal;
+        a.click();
+
+        let githubOk = false;
+        try {
+          const base64 = await blobParaBase64(pdfBlob);
+          const caminhoGitHub = "contratos/" + nomeArquivoFinal;
+
+          const resp = await fetch('https://contratos-assinados.onrender.com/upload', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              nomeArquivo: caminhoGitHub,
+              conteudoBase64: base64
+            })
+          });
+
+          if (resp.ok) {
+            githubOk = true;
+            githubSalvo = true;
+          }
+        } catch (err) {
+          console.warn('Falha ao salvar no Banco de Dados:', err);
+        }
+
+        const msg = encodeURIComponent('Olá Giovana, segue o contrato assinado por ' + dadosGlobais.nome);
+        window.open('https://wa.me/' + CONTATO_WHATSAPP + '?text=' + msg, '_blank');
+
+        statusList.innerHTML = '';
+
+        const item1 = document.createElement('div');
+        item1.className = 'status-item status-ok';
+        item1.innerHTML = '<svg class="status-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" /></svg><span>PDF gerado e baixado automaticamente.</span>';
+        statusList.appendChild(item1);
+
+        if (githubOk) {
+          const item2 = document.createElement('div');
+          item2.className = 'status-item status-ok';
+          item2.innerHTML = '<svg class="status-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" /></svg><span>Contrato salvo no Banco de Dados em <strong>contratos/' + nomeArquivoFinal + '</strong>.</span>';
+          statusList.appendChild(item2);
+        } else {
+          const item2 = document.createElement('div');
+          item2.className = 'status-item status-warn';
+          item2.innerHTML = '<svg class="status-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75M12 3.75a8.25 8.25 0 1 1 0 16.5 8.25 8.25 0 0 1 0-16.5Zm0 9.75h.008v.008H12v-.008Z" /></svg><span>Não foi possível confirmar o envio ao Banco de Dados. O PDF foi baixado no seu dispositivo.</span>';
+          statusList.appendChild(item2);
+        }
+
+        const item3 = document.createElement('div');
+        item3.className = 'status-item status-ok';
+        item3.innerHTML = '<svg class="status-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" /></svg><span>Mensagem preparada para envio via WhatsApp.</span>';
+        statusList.appendChild(item3);
+
+        extraActions.innerHTML = '';
+        if (pdfBlobGlobal) {
+          const btnDownload = document.createElement('a');
+          btnDownload.textContent = 'Baixar PDF novamente';
+          btnDownload.style.display = 'inline-flex';
+          btnDownload.style.alignItems = 'center';
+          btnDownload.style.gap = '6px';
+          btnDownload.style.padding = '10px 16px';
+          btnDownload.style.borderRadius = '999px';
+          btnDownload.style.background = '#5a4632';
+          btnDownload.style.color = '#fff';
+          btnDownload.style.fontSize = '13px';
+          btnDownload.style.fontWeight = '600';
+          btnDownload.style.textDecoration = 'none';
+
+          const icon = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+          icon.setAttribute('viewBox', '0 0 24 24');
+          icon.setAttribute('fill', 'none');
+          icon.setAttribute('stroke', 'currentColor');
+          icon.setAttribute('stroke-width', '2');
+          icon.style.width = '16px';
+          icon.style.height = '16px';
+          icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />';
+
+          btnDownload.appendChild(icon);
+          extraActions.appendChild(btnDownload);
+
+          btnDownload.href = URL.createObjectURL(pdfBlobGlobal);
+          btnDownload.download = nomeArquivoFinal || 'Contrato_Psicoterapia.pdf';
+        }
+
+        const btnNovo = document.createElement('button');
+        btnNovo.type = 'button';
+        btnNovo.textContent = 'Assinar novo contrato';
+        btnNovo.style.display = 'block';
+        btnNovo.style.margin = '10px auto 0';
+        btnNovo.style.fontSize = '12px';
+        btnNovo.style.color = '#8b6f4e';
+        btnNovo.style.background = 'none';
+        btnNovo.style.border = 'none';
+        btnNovo.style.textDecoration = 'underline';
+        btnNovo.style.cursor = 'pointer';
+
+        btnNovo.addEventListener('click', function() {
+          form.reset();
+          pdfBlobGlobal = null;
+          nomeArquivoFinal = '';
+          githubSalvo = false;
+          stepForm.style.display = 'block';
+          stepPreview.style.display = 'none';
+          stepSuccess.style.display = 'none';
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+
+        extraActions.appendChild(btnNovo);
+
+        stepForm.style.display = 'none';
+        stepPreview.style.display = 'none';
+        stepSuccess.style.display = 'block';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } catch (err) {
+        console.error(err);
+        alert('Erro ao gerar o contrato. Tente novamente.');
+      } finally {
+        btnAssinar.disabled = false;
+        btnAssinar.textContent = originalText;
+      }
+    });
+  </script>
 </body>
 </html>
-
-
-
-
-
