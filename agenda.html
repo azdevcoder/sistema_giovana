@@ -372,7 +372,7 @@ function updateStorage() {
     localStorage.setItem('appointments_gih', stringData);
 
     // 2. Envia para o servidor que REALMENTE tem poder de escrita
-    fetch("https://sistema-giovana.onrender.com/salvar", {
+    fetch("https://sistema-giovana.onrender.com/salvar-agenda", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: stringData
