@@ -10,7 +10,7 @@
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="Nath Agenda">
+    <meta name="apple-mobile-web-app-title" content="Gih Agenda">
     <link rel="apple-touch-icon" href="agenda.png">
     <link rel="icon" type="image/png" href="Logo-Giovana-Morais-_52-x-52-px_.ico">
 
@@ -388,7 +388,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (!localData || JSON.stringify(serverData) !== localData) {
                     calendar.removeAllEvents();
                     calendar.addEventSource(serverData);
-                    localStorage.setItem('appointments_nath', JSON.stringify(serverData));
+                    localStorage.setItem('appointments_gih', JSON.stringify(serverData));
                 }
             }
         } catch (e) {
