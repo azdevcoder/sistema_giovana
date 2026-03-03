@@ -7,9 +7,11 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// Configurações via Variáveis de Ambiente ou Padrão
 const FRONTEND_ORIGIN = process.env.FRONTEND_ORIGIN || "https://azdevcoder.github.io";
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
-const GITHUB_REPO = process.env.GITHUB_REPO || "azdevcoder/sistema_giovana"; 
+// Verifique se o nome abaixo está correto para os dois serviços
+const GITHUB_REPO = process.env.GITHUB_REPO || "azdevcoder/giovana-contratos"; 
 const GITHUB_BRANCH = process.env.GITHUB_BRANCH || "main";
 
 if (!GITHUB_TOKEN) {
@@ -17,12 +19,13 @@ if (!GITHUB_TOKEN) {
   process.exit(1);
 }
 
-app.use(cors({ origin: FRONTEND_ORIGIN }));
+// CORS ajustado para aceitar requisições do seu GitHub Pages e testes locais
+app.use(cors({ origin: "*" })); 
 app.use(express.json({ limit: "30mb" }));
 
 app.get("/health", (req, res) => res.json({ ok: true }));
 
-// --- ROTA PARA CONTRATOS ---
+// --- SERVIÇO 1: CONTRATOS (MANTIDO INTEGRALMENTE) ---
 app.post("/upload", async (req, res) => {
     try {
         const { nomeArquivo, conteudoBase64 } = req.body;
@@ -66,13 +69,15 @@ app.post("/upload", async (req, res) => {
     }
 });
 
-// --- ROTA PARA AGENDAMENTOS (JSON) ---
+// --- SERVIÇO 2: AGENDAMENTOS (CORRIGIDO PARA O CAMINHO CORRETO) ---
 app.post("/salvar", async (req, res) => {
   try {
     const eventos = req.body; 
+    // Caminho específico que você solicitou: dados/agendamento.json
     const path = `dados/agendamento.json`;
-    const url = `https://api.github.com/repos/${GITHUB_REPO}/contents/${encodeURIComponent(path)}`;
+    const url = `https://api.github.com/repos/${GITHUB_REPO}/contents/${path}`;
 
+    // Busca o SHA para poder sobrescrever o arquivo existente
     const getResp = await fetch(url, {
       headers: { Authorization: `token ${GITHUB_TOKEN}` }
     });
@@ -110,7 +115,7 @@ app.post("/salvar", async (req, res) => {
     }
 
   } catch (err) {
-    console.error(err);
+    console.error("Erro interno:", err);
     return res.status(500).json({ error: "Erro interno no servidor" });
   }
 });
