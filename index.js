@@ -11,7 +11,7 @@ const PORT = process.env.PORT || 3000;
 const FRONTEND_ORIGIN = process.env.FRONTEND_ORIGIN || "https://azdevcoder.github.io";
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
 // Verifique se o nome abaixo está correto para os dois serviços
-const GITHUB_REPO = process.env.GITHUB_REPO || "azdevcoder/giovana-contratos"; 
+const GITHUB_REPO = process.env.GITHUB_REPO || "azdevcoder/sistema_giovana"; 
 const GITHUB_BRANCH = process.env.GITHUB_BRANCH || "main";
 
 if (!GITHUB_TOKEN) {
