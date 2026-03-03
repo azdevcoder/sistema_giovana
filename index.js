@@ -7,71 +7,81 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// Verifique se estas variáveis estão EXATAMENTE assim no painel do Render
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
 const GITHUB_REPO = process.env.GITHUB_REPO || "azdevcoder/sistema_giovana"; 
 const GITHUB_BRANCH = process.env.GITHUB_BRANCH || "main";
 
+// 1. Configuração de CORS para aceitar o GitHub Pages
 app.use(cors({ origin: "*" }));
-app.options("*", cors());
+app.options("*", cors()); // Responde ao "preflight" do navegador
 app.use(express.json({ limit: "30mb" }));
 
-async function enviarParaGithub(path, base64, message) {
+// Função mestre para salvar no GitHub (resolve o erro 500 de conflito)
+async function salvarArquivoGithub(path, contentBase64, message) {
     const url = `https://api.github.com/repos/${GITHUB_REPO}/contents/${path}`;
     
-    // 1. Tenta pegar o arquivo atual para obter o SHA
+    // Tenta buscar o arquivo existente para pegar o SHA
     const getResp = await fetch(`${url}?t=${Date.now()}`, {
         headers: { Authorization: `token ${GITHUB_TOKEN}` }
     });
 
     let sha;
     if (getResp.ok) {
-        const data = await getResp.json();
-        sha = data.sha;
+        const getJson = await getResp.json();
+        sha = getJson.sha;
     }
 
-    // 2. Envia a atualização
+    const body = {
+        message: message,
+        content: contentBase64,
+        branch: GITHUB_BRANCH
+    };
+    if (sha) body.sha = sha; // Só adiciona o SHA se o arquivo já existir
+
     return await fetch(url, {
         method: "PUT",
         headers: {
             Authorization: `token ${GITHUB_TOKEN}`,
             "Content-Type": "application/json"
         },
-        body: JSON.stringify({
-            message,
-            content: base64,
-            sha, // Importante para não dar erro 500
-            branch: GITHUB_BRANCH
-        })
+        body: JSON.stringify(body)
     });
 }
 
-// ROTA DA AGENDA
+// --- ROTA DA AGENDA ---
 app.post("/salvar-agenda", async (req, res) => {
     try {
-        const jsonString = JSON.stringify(req.body, null, 2);
-        const base64 = Buffer.from(jsonString).toString("base64");
+        const eventos = req.body;
+        const jsonString = JSON.stringify(eventos, null, 2);
+        const base64 = Buffer.from(jsonString).toString('base64');
         
-        const resp = await enviarParaGithub("dados/agendamento.json", base64, "Sincronização Agenda");
+        const resp = await salvarArquivoGithub("dados/agendamento.json", base64, "Sincronização Agenda");
 
-        if (resp.ok) return res.json({ ok: true });
-
-        const erroGithub = await resp.json();
-        console.error("ERRO DO GITHUB:", erroGithub); // VEJA ISSO NOS LOGS DO RENDER
-        res.status(500).json({ erro: "Github recusou", detalhes: erroGithub });
+        if (resp.ok) {
+            return res.json({ ok: true });
+        } else {
+            const errData = await resp.json();
+            console.error("Erro GitHub:", errData);
+            return res.status(500).json({ error: "Erro no GitHub", details: errData });
+        }
     } catch (err) {
-        console.error("ERRO NO SERVIDOR:", err);
-        res.status(500).json({ erro: err.message });
+        console.error("Erro Servidor:", err);
+        res.status(500).json({ error: "Erro interno" });
     }
 });
 
-// ROTA DE CONTRATOS
+// --- ROTA DE CONTRATOS ---
 app.post("/upload", async (req, res) => {
     try {
         const { nomeArquivo, conteudoBase64 } = req.body;
-        const resp = await enviarParaGithub(`dados/fichas/${nomeArquivo}`, conteudoBase64, `Contrato: ${nomeArquivo}`);
+        const resp = await salvarArquivoGithub(`dados/fichas/${nomeArquivo}`, conteudoBase64, `Upload Contrato: ${nomeArquivo}`);
+        
         if (resp.ok) return res.json({ ok: true });
         res.status(500).json(await resp.json());
-    } catch (err) { res.status(500).json({ error: err.message }); }
+    } catch (err) {
+        res.status(500).json({ error: "Erro interno" });
+    }
 });
 
-app.listen(PORT, () => console.log("Servidor Online!"));
+app.listen(PORT, () => console.log(`Servidor rodando na porta ${PORT}`));
