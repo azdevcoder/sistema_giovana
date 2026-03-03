@@ -8,6 +8,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Verifique se estas variáveis estão EXATAMENTE assim no painel do Render
+const FRONTEND_ORIGIN = process.env.FRONTEND_ORIGIN || "https://azdevcoder.github.io";
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
 const GITHUB_REPO = process.env.GITHUB_REPO || "azdevcoder/sistema_giovana"; 
 const GITHUB_BRANCH = process.env.GITHUB_BRANCH || "main";
