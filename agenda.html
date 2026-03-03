@@ -370,7 +370,7 @@ function updateStorage() {
     localStorage.setItem('appointments_nath', stringData);
 
     // Certifique-se de que a URL termina em /salvar-agenda (conforme definido no index.js)
-    fetch("https://sistema-giovana.onrender.com/salvar-agenda", {
+    fetch("https://sistema_giovana.onrender.com/salvar-agenda", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: stringData
