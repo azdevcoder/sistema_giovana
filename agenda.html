@@ -387,7 +387,7 @@ function updateStorage() {
         }
 
         try {
-            const res = await fetch("https://azdevcoder.github.io/giovana-contratos/dados/agendamento.json?t=" + Date.now());
+            const res = await fetch("https://azdevcoder.github.io/sistema_giovana/dados/agendamento.json?t=" + Date.now());
             if (res.ok) {
                 const serverData = await res.json();
                 if (!localData || JSON.stringify(serverData) !== localData) {
