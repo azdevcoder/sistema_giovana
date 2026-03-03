@@ -8,7 +8,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
-const GITHUB_REPO = process.env.GITHUB_REPO || "azdevcoder/giovana-contratos"; 
+const GITHUB_REPO = process.env.GITHUB_REPO || "azdevcoder/sistema_giovana"; 
 const GITHUB_BRANCH = process.env.GITHUB_BRANCH || "main";
 
 // 1. Configuração Robusta de CORS
