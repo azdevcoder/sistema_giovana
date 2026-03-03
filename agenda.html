@@ -17,15 +17,6 @@
     <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     
-    <script>
-      if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-          navigator.serviceWorker.register('./sw.js?v=3')
-            .then(reg => console.log("PWA Ativo:", reg.scope))
-            .catch(err => console.log("Erro PWA:", err));
-        });
-      }
-    </script>
     <style>
         :root {
             --google-blue: #1a73e8;
