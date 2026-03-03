@@ -355,24 +355,37 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     calendar.render();
 
-    function updateStorage() {
-        const events = calendar.getEvents().map(e => ({
-            id: e.id, 
-            title: e.title, 
-            start: e.startStr, 
-            end: e.endStr, 
-            backgroundColor: e.backgroundColor
-        }));
-        
-        const stringData = JSON.stringify(events);
-        localStorage.setItem('appointments_gih', stringData);
+    // No seu arquivo HTML, dentro da função updateStorage:
 
-        fetch("https://sistema-giovana.onrender.com/salvar", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: stringData
-        }).catch(e => console.log("Servidor offline, salvo localmente."));
-    }
+function updateStorage() {
+    const events = calendar.getEvents().map(e => ({
+        id: e.id, 
+        title: e.title, 
+        start: e.startStr, 
+        end: e.endStr, 
+        backgroundColor: e.backgroundColor
+    }));
+    
+    const stringData = JSON.stringify(events);
+    
+    // 1. Salva no navegador (funciona sempre)
+    localStorage.setItem('appointments_gih', stringData);
+
+    // 2. Envia para o servidor que REALMENTE tem poder de escrita
+    fetch("https://sistema-giovana.onrender.com/salvar", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: stringData
+    })
+    .then(response => {
+        if(!response.ok) throw new Error("Erro ao salvar no servidor");
+        console.log("Sincronizado com sucesso!");
+    })
+    .catch(e => {
+        console.error("Erro na sincronização:", e);
+        alert("Atenção: O agendamento foi salvo apenas neste aparelho. O servidor está offline.");
+    });
+}
 
     async function loadEvents() {
         const localData = localStorage.getItem('appointments_gih');
