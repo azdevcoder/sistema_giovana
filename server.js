@@ -95,9 +95,9 @@ app.post("/upload", async (req, res) => {
 });
 
 // --- ROTA DE LISTAGEM DE CONTRATOS ---
-app.get('/contratos-assinados', async (req, res) => {
+app.get('contratos/contratos-assinados', async (req, res) => {
     try {
-        const url = `https://api.github.com/repos/${GITHUB_REPO}/contents/dados`;
+        const url = `https://api.github.com/repos/${GITHUB_REPO}/contents/contratos`;
         const resp = await fetch(url, {
             headers: { Authorization: `token ${GITHUB_TOKEN}` }
         });
