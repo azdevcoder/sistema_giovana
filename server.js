@@ -6,7 +6,6 @@ import fetch from "node-fetch";
 dotenv.config();
 
 const app = express();
-// O Render exige que o servidor escute em 0.0.0.0
 const PORT = process.env.PORT || 10000;
 
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
@@ -16,7 +15,7 @@ const GITHUB_BRANCH = process.env.GITHUB_BRANCH || "main";
 app.use(cors());
 app.use(express.json({ limit: "50mb" }));
 
-// --- FUNÇÃO AUXILIAR PARA SALVAR NO GITHUB ---
+// --- FUNÇÃO AUXILIAR ---
 async function salvarNoGithub(path, conteudoBase64, mensagem) {
     const url = `https://api.github.com/repos/${GITHUB_REPO}/contents/${path}`;
     
@@ -49,98 +48,68 @@ async function salvarNoGithub(path, conteudoBase64, mensagem) {
 
         return putResp;
     } catch (error) {
-        console.error("Erro na função salvarNoGithub:", error);
+        console.error("Erro no GitHub:", error);
         throw error;
     }
 }
 
-// --- ROTA DA AGENDA ---
+// --- ROTA AGENDA ---
 app.post("/salvar-agenda", async (req, res) => {
     try {
         const eventos = req.body;
         const jsonString = JSON.stringify(eventos, null, 2);
         const base64 = Buffer.from(jsonString).toString('base64');
-        
         const response = await salvarNoGithub('dados/agendamento.json', base64, "Sincronização de Agenda");
-
-        if (response.ok) {
-            return res.json({ ok: true });
-        } else {
-            const errData = await response.json();
-            return res.status(500).json({ error: "Erro no GitHub", details: errData });
-        }
+        if (response.ok) return res.json({ ok: true });
+        res.status(500).json({ error: "Erro GitHub" });
     } catch (err) {
-        console.error(err);
-        res.status(500).json({ error: "Erro interno na Agenda" });
+        res.status(500).json({ error: "Erro interno" });
     }
 });
 
-// --- ROTA DE UPLOAD DE CONTRATO ---
+// --- ROTA CONTRATOS ---
 app.post("/upload", async (req, res) => {
     try {
         const { nomeArquivo, conteudoBase64 } = req.body;
-        const path = `contratos/${nomeArquivo}`; 
-        
-        const response = await salvarNoGithub(path, conteudoBase64, `Novo contrato: ${nomeArquivo}`);
-
-        if (response.ok) {
-            return res.json({ ok: true });
-        } else {
-            const errData = await response.json();
-            return res.status(500).json({ error: "Erro ao salvar contrato no GitHub", details: errData });
-        }
+        const path = `contratos/${nomeArquivo}`;
+        const response = await salvarNoGithub(path, conteudoBase64, `Contrato: ${nomeArquivo}`);
+        if (response.ok) return res.json({ ok: true });
+        res.status(500).json({ error: "Erro GitHub" });
     } catch (err) {
-        console.error(err);
-        res.status(500).json({ error: "Erro interno no Upload" });
+        res.status(500).json({ error: "Erro interno" });
     }
 });
 
-// --- ROTA DE UPLOAD DE FICHA ---
+// --- ROTA FICHAS ACOLHIMENTO ---
 app.post("/upload-ficha", async (req, res) => {
     try {
         const { nomeArquivo, conteudoBase64 } = req.body;
-        const path = `fichas/${nomeArquivo}`; 
-        
-        const response = await salvarNoGithub(path, conteudoBase64, `Nova Ficha: ${nomeArquivo}`);
-
-        if (response.ok) {
-            return res.json({ ok: true });
-        } else {
-            const errData = await response.json();
-            return res.status(500).json({ error: "Erro no GitHub", details: errData });
-        }
+        const path = `fichas/${nomeArquivo}`;
+        const response = await salvarNoGithub(path, conteudoBase64, `Ficha: ${nomeArquivo}`);
+        if (response.ok) return res.json({ ok: true });
+        res.status(500).json({ error: "Erro GitHub" });
     } catch (err) {
-        console.error(err);
-        res.status(500).json({ error: "Erro interno no Upload de Ficha" });
+        res.status(500).json({ error: "Erro interno" });
     }
 });
 
-// --- ROTA DE LISTAGEM ---
+// --- ROTA LISTAGEM ---
 app.get('/contratos-assinados', async (req, res) => {
     try {
         const url = `https://api.github.com/repos/${GITHUB_REPO}/contents/contratos`;
-        const resp = await fetch(url, {
-            headers: { Authorization: `token ${GITHUB_TOKEN}` }
-        });
-
+        const resp = await fetch(url, { headers: { Authorization: `token ${GITHUB_TOKEN}` } });
         if (!resp.ok) return res.json([]);
-
         const data = await resp.json();
-        const arquivos = data
-            .filter(file => file.name.toLowerCase().endsWith('.pdf'))
-            .map(file => ({
-                name: file.name.replace('.pdf', '').replace(/_/g, ' '),
-                url: file.download_url,
-                date: "Assinado"
-            }));
-
+        const arquivos = data.filter(f => f.name.endsWith('.pdf')).map(f => ({
+            name: f.name.replace('.pdf', '').replace(/_/g, ' '),
+            url: f.download_url
+        }));
         res.json(arquivos);
     } catch (err) {
         res.json([]);
     }
 });
 
-// Rota de teste para confirmar que o servidor está vivo
-app.get("/", (req, res) => res.send("Servidor Ativo!"));
+app.get("/", (req, res) => res.send("OK"));
 
-app.listen(PORT, "0.0.0.0", () => console.log(`Rodando na porta ${PORT}`));
+app.listen(PORT, "0.0.0.0", () => console.log(`Porta ${PORT}`));
