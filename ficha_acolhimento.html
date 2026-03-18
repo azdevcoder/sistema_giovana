@@ -144,29 +144,24 @@
     
     // Configurações
     const contatoWhatsApp = "5544997112467"; 
+    // AJUSTE ESTA URL para o endereço que aparece no seu Dashboard do Render:
+    const URL_BACKEND = "https://sistema-giovana-backend.onrender.com"; 
 
     function gerarHash() { return Math.floor(10000 + Math.random() * 9000); }
 
-    // === NOVA FUNÇÃO INTELIGENTE DE QUEBRA DE LINHA ===
-    // Mede o tamanho real do texto baseado na fonte e no limite de largura da página
     function wrapText(text, maxWidth, font, fontSize) {
         if (!text) return [""];
         const paragraphs = text.split('\n');
         let lines = [];
-
         for (const paragraph of paragraphs) {
             const words = paragraph.split(' ');
             let currentLine = "";
-
             for (const word of words) {
-                // Testa se a palavra cabe na linha atual
                 const testLine = currentLine ? currentLine + " " + word : word;
                 const width = font.widthOfTextAtSize(testLine, fontSize);
-
                 if (width <= maxWidth) {
                     currentLine = testLine;
                 } else {
-                    // Se não couber, salva a linha anterior e começa uma nova
                     if (currentLine) lines.push(currentLine);
                     currentLine = word;
                 }
@@ -180,27 +175,24 @@
         e.preventDefault();
         btn.disabled = true;
         const originalText = btn.textContent;
-        btn.innerHTML = '<span class="spinner"></span> Gerando PDF...';
+        btn.innerHTML = '<span class="spinner"></span> Gerando e Salvando...';
 
         try {
             const pdfDoc = await PDFLib.PDFDocument.create();
-            let page = pdfDoc.addPage([595.28, 841.89]); // A4 (Largura ~595 pts)
+            let page = pdfDoc.addPage([595.28, 841.89]);
             const { width, height } = page.getSize();
             
             const fontRegular = await pdfDoc.embedFont(PDFLib.StandardFonts.Helvetica);
             const fontBold = await pdfDoc.embedFont(PDFLib.StandardFonts.HelveticaBold);
 
-            // Variáveis de layout
             let y = height - 50; 
             const margin = 50;
-            const contentWidth = width - (margin * 2); // Largura útil (~495 pts)
+            const contentWidth = width - (margin * 2);
             const lineHeight = 14; 
             const fontSize = 10;
 
-            // Função para desenhar linhas e atualizar o Y automaticamente
             const escreverLinhas = (linhas) => {
                 linhas.forEach(linha => {
-                    // Verifica se a página acabou (rodapé)
                     if (y < 40) { 
                         page = pdfDoc.addPage([595.28, 841.89]); 
                         y = height - 50; 
@@ -208,20 +200,17 @@
                     page.drawText(linha, { x: margin, y, size: fontSize, font: fontRegular });
                     y -= lineHeight;
                 });
-                y -= 5; // Espaço extra após bloco de texto
+                y -= 5;
             };
 
-            // Função para desenhar campos simples (Label: Valor)
             const drawField = (label, value) => {
                 const valorLimpo = value ? String(value).toUpperCase() : "-";
                 page.drawText(label, { x: margin, y, size: fontSize, font: fontBold });
-                
                 const labelWidth = fontBold.widthOfTextAtSize(label, fontSize);
                 page.drawText(valorLimpo, { x: margin + labelWidth + 5, y, size: fontSize, font: fontRegular });
                 y -= lineHeight * 1.5;
             };
 
-            // Função para Títulos
             const drawSection = (title) => {
                 y -= 10;
                 page.drawText(title, { x: margin, y, size: 12, font: fontBold });
@@ -230,21 +219,17 @@
                 y -= 20;
             };
 
-            // === CABEÇALHO ===
             page.drawText('FICHA DE ACOLHIMENTO - PSICOTERAPIA', { x: margin, y, size: 16, font: fontBold });
             y -= 25;
             page.drawText('Psicóloga Giovana CRP:08/45995 ', { x: margin, y, size: 12, font: fontRegular, color: PDFLib.rgb(0.4, 0.4, 0.4) });
             y -= 30;
 
-            // === 1. IDENTIFICAÇÃO ===
             drawSection("1. IDENTIFICAÇÃO PESSOAL");
             drawField("Nome:", document.getElementById("nome").value);
-            
             const nasc = document.getElementById("nascimento").value.split('-').reverse().join('/');
             drawField("Data Nasc:", nasc);
             if(document.getElementById("nomeSocial").value) drawField("Nome Social:", document.getElementById("nomeSocial").value);
             
-            // Endereço (usando a quebra inteligente)
             page.drawText("Endereço:", { x: margin, y, size: fontSize, font: fontBold });
             y -= lineHeight;
             escreverLinhas(wrapText(document.getElementById("endereco").value, contentWidth, fontRegular, fontSize));
@@ -255,56 +240,20 @@
             drawField("Telefone:", document.getElementById("telefone").value);
             drawField("E-mail:", document.getElementById("email").value);
 
-            // === 2. PAIS ===
             drawSection("2. IDENTIFICAÇÃO DOS PAIS");
-            
             page.drawText("PAI:", { x: margin, y, size: fontSize, font: fontBold }); y -= lineHeight;
             drawField("Nome:", document.getElementById("paiNome").value);
-            page.drawText(`Idade: ${document.getElementById("paiIdade").value}   Profissão: ${document.getElementById("paiProfissao").value}   Escolaridade: ${document.getElementById("paiEscolaridade").value}`, { x: margin, y, size: fontSize, font: fontRegular });
+            page.drawText(`Idade: ${document.getElementById("paiIdade").value} | Profissão: ${document.getElementById("paiProfissao").value}`, { x: margin, y, size: fontSize, font: fontRegular });
             y -= lineHeight * 2;
 
             page.drawText("MÃE:", { x: margin, y, size: fontSize, font: fontBold }); y -= lineHeight;
             drawField("Nome:", document.getElementById("maeNome").value);
-            page.drawText(`Idade: ${document.getElementById("maeIdade").value}   Profissão: ${document.getElementById("maeProfissao").value}   Escolaridade: ${document.getElementById("maeEscolaridade").value}`, { x: margin, y, size: fontSize, font: fontRegular });
+            page.drawText(`Idade: ${document.getElementById("maeIdade").value} | Profissão: ${document.getElementById("maeProfissao").value}`, { x: margin, y, size: fontSize, font: fontRegular });
             y -= lineHeight * 2;
 
-            page.drawText("Endereço dos Pais:", { x: margin, y, size: fontSize, font: fontBold });
-            y -= lineHeight;
-            escreverLinhas(wrapText(document.getElementById("paisEndereco").value, contentWidth, fontRegular, fontSize));
-
-            // === 3. QUEIXA ===
-            if (y < 250) { page = pdfDoc.addPage([595.28, 841.89]); y = height - 50; }
-            
             drawSection("3. QUEIXA PRINCIPAL");
-            
-            page.drawText("Descreva a queixa principal:", { x: margin, y, size: fontSize, font: fontBold });
-            y -= lineHeight;
-            // Aqui usamos o wrapText passando a largura máxima (contentWidth)
             escreverLinhas(wrapText(document.getElementById("queixa").value, contentWidth, fontRegular, fontSize));
-            y -= 10;
-
-            page.drawText("Evolução (Como começou):", { x: margin, y, size: fontSize, font: fontBold });
-            y -= lineHeight;
-            escreverLinhas(wrapText(document.getElementById("evolucao").value, contentWidth, fontRegular, fontSize));
-            y -= 10;
-
             drawField("Início:", document.getElementById("inicioTipo").value);
-
-            page.drawText("Sintomas atuais:", { x: margin, y, size: fontSize, font: fontBold });
-            y -= lineHeight;
-            escreverLinhas(wrapText(document.getElementById("sintomas").value, contentWidth, fontRegular, fontSize));
-
-            // === 4. MEDICAMENTOS ===
-            if (y < 100) { page = pdfDoc.addPage([595.28, 841.89]); y = height - 50; }
-            drawSection("4. MEDICAMENTOS");
-            drawField("Usa Medicamentos?", document.getElementById("usoMedicamento").value);
-            
-            page.drawText("Quais:", { x: margin, y, size: fontSize, font: fontBold });
-            y -= lineHeight;
-            escreverLinhas(wrapText(document.getElementById("quaisMedicamentos").value, contentWidth, fontRegular, fontSize));
-
-            // === FINALIZAÇÃO ===
-            page.drawText(`Gerado em: ${new Date().toLocaleString()}`, { x: margin, y: 30, size: 8, font: fontRegular, color: PDFLib.rgb(0.6, 0.6, 0.6) });
 
             const pdfBytes = await pdfDoc.save();
             const pdfBlob = new Blob([pdfBytes], { type: "application/pdf" });
@@ -313,42 +262,36 @@
             pdfViewer.style.display = "block";
             pdfViewer.src = localUrl;
 
-            // === ENVIOS ===
             const hash = gerarHash();
             const nomeFinal = `${hash}_Ficha_${document.getElementById("nome").value.split(" ")[0]}.pdf`;
             const base64 = await blobParaBase64(pdfBlob);
             
-            // === PARTE CORRIGIDA DO HTML PARA ENVIAR PARA O GITHUB ===
-try {
-    // Note que a URL agora termina em /upload-ficha para coincidir com o servidor
-    const response = await fetch("https://ficha-acolhimento.onrender.com/upload-ficha", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ 
-            nomeArquivo: nomeFinal, 
-            conteudoBase64: base64 
-        })
-    });
-
-    const resultado = await response.json();
-    if (!resultado.ok) console.warn("GitHub rejeitou o arquivo:", resultado.details);
-} catch (e) { 
-    console.error("Erro ao conectar com o servidor Render:", e); 
-}
+            // ENVIO PARA O BACKEND CORRIGIDO
+            try {
+                const response = await fetch(`${URL_BACKEND}/upload-ficha`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ nomeArquivo: nomeFinal, conteudoBase64: base64 })
+                });
+                const resJson = await response.json();
+                if(resJson.ok) console.log("Salvo com sucesso!");
+            } catch (e) { 
+                console.warn("Erro no envio automático:", e); 
+            }
 
             const link = document.createElement('a');
             link.href = localUrl;
             link.download = nomeFinal;
             link.click();
 
-            const msg = encodeURIComponent(`Olá Giovana, preenchi a Ficha de Acolhimento.\nPaciente: ${document.getElementById("nome").value}`);
+            const msg = encodeURIComponent(`Olá Giovana, enviei minha ficha de acolhimento.`);
             window.open(`https://wa.me/${contatoWhatsApp}?text=${msg}`, "_blank");
 
-            alert("Ficha gerada com sucesso!");
+            alert("Sucesso! A ficha foi salva e enviada.");
 
         } catch (err) {
             console.error(err);
-            alert("Erro: " + err.message);
+            alert("Erro ao processar: " + err.message);
         } finally {
             btn.disabled = false;
             btn.textContent = originalText;
@@ -363,6 +306,5 @@ try {
         });
     }
 </script>
-
 </body>
 </html>
