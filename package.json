@@ -1,7 +1,7 @@
 {
   "name": "sistema-giovana-backend",
   "version": "1.0.0",
-  "description": "Backend para gestão de agenda e contratos - Giovana Morais",
+  "description": "Backend para gestão de agenda e fichas - Giovana Morais",
   "main": "server.js",
   "type": "module",
   "scripts": {
