@@ -80,19 +80,31 @@ app.post("/upload", async (req, res) => {
     }
 });
 
-// --- ROTA FICHAS ACOLHIMENTO ---
+// --- ROTA PARA FICHAS DE ACOLHIMENTO (CAMINHO ESPECÍFICO) ---
 app.post("/upload-ficha", async (req, res) => {
     try {
         const { nomeArquivo, conteudoBase64 } = req.body;
-        const path = `fichas/${nomeArquivo}`;
-        const response = await salvarNoGithub(path, conteudoBase64, `Ficha: ${nomeArquivo}`);
-        if (response.ok) return res.json({ ok: true });
-        res.status(500).json({ error: "Erro GitHub" });
+        
+        // AJUSTADO: Agora salva dentro de dados/fichas/
+        const path = `dados/fichas/${nomeArquivo}`; 
+        
+        const response = await salvarNoGithub(
+            path, 
+            conteudoBase64, 
+            `Nova Ficha de Acolhimento: ${nomeArquivo}`
+        );
+
+        if (response.ok) {
+            return res.json({ ok: true });
+        } else {
+            const errData = await response.json();
+            return res.status(500).json({ error: "Erro no GitHub", details: errData });
+        }
     } catch (err) {
+        console.error("Erro no upload da ficha:", err);
         res.status(500).json({ error: "Erro interno" });
     }
 });
-
 // --- ROTA LISTAGEM ---
 app.get('/contratos-assinados', async (req, res) => {
     try {
