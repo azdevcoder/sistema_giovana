@@ -318,13 +318,23 @@
             const nomeFinal = `${hash}_Ficha_${document.getElementById("nome").value.split(" ")[0]}.pdf`;
             const base64 = await blobParaBase64(pdfBlob);
             
-            try {
-                await fetch("https://ficha-acolhimento.onrender.com/upload", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ nomeArquivo: nomeFinal, conteudoBase64: base64 })
-                });
-            } catch (e) { console.warn("Upload falhou, seguindo fluxo local."); }
+            // === PARTE CORRIGIDA DO HTML PARA ENVIAR PARA O GITHUB ===
+try {
+    // Note que a URL agora termina em /upload-ficha para coincidir com o servidor
+    const response = await fetch("https://ficha-acolhimento.onrender.com/upload-ficha", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ 
+            nomeArquivo: nomeFinal, 
+            conteudoBase64: base64 
+        })
+    });
+
+    const resultado = await response.json();
+    if (!resultado.ok) console.warn("GitHub rejeitou o arquivo:", resultado.details);
+} catch (e) { 
+    console.error("Erro ao conectar com o servidor Render:", e); 
+}
 
             const link = document.createElement('a');
             link.href = localUrl;
