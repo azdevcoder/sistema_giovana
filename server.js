@@ -9,7 +9,6 @@ const app = express();
 const PORT = process.env.PORT || 10000;
 
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
-// AJUSTADO: Repositório alvo para os contratos
 const GITHUB_REPO = process.env.GITHUB_REPO || "psigiovana/contratos-assinados";
 const GITHUB_BRANCH = process.env.GITHUB_BRANCH || "main";
 
@@ -61,7 +60,6 @@ app.post("/salvar-agenda", async (req, res) => {
         const jsonString = JSON.stringify(eventos, null, 2);
         const base64 = Buffer.from(jsonString).toString('base64');
         
-        // Mantendo na pasta dados do repo de contratos ou conforme sua estrutura
         const response = await salvarNoGithub('dados/agendamento.json', base64, "Sincronização de Agenda");
 
         if (response.ok) {
@@ -76,11 +74,10 @@ app.post("/salvar-agenda", async (req, res) => {
     }
 });
 
-// --- ROTA DE UPLOAD DE CONTRATO (AJUSTADA) ---
+// --- ROTA DE UPLOAD DE CONTRATO ---
 app.post("/upload", async (req, res) => {
     try {
         const { nomeArquivo, conteudoBase64 } = req.body;
-        // AJUSTADO: Salva dentro da pasta 'contratos' no repositório 'psigiovana/contratos-assinados'
         const path = `contratos/${nomeArquivo}`; 
         
         const response = await salvarNoGithub(path, conteudoBase64, `Novo contrato: ${nomeArquivo}`);
@@ -97,10 +94,30 @@ app.post("/upload", async (req, res) => {
     }
 });
 
-// --- ROTA DE LISTAGEM DE CONTRATOS (AJUSTADA) ---
+// --- NOVA ROTA PARA FICHAS DE ACOLHIMENTO ---
+app.post("/upload-ficha", async (req, res) => {
+    try {
+        const { nomeArquivo, conteudoBase64 } = req.body;
+        // Salva na pasta 'fichas' para organizar separado dos contratos
+        const path = `fichas/${nomeArquivo}`; 
+        
+        const response = await salvarNoGithub(path, conteudoBase64, `Nova Ficha de Acolhimento: ${nomeArquivo}`);
+
+        if (response.ok) {
+            return res.json({ ok: true });
+        } else {
+            const errData = await response.json();
+            return res.status(500).json({ error: "Erro ao salvar ficha no GitHub", details: errData });
+        }
+    } catch (err) {
+        console.error("Erro no upload da ficha:", err);
+        res.status(500).json({ error: "Erro interno no Upload da Ficha" });
+    }
+});
+
+// --- ROTA DE LISTAGEM DE CONTRATOS ---
 app.get('/contratos-assinados', async (req, res) => {
     try {
-        // AJUSTADO: Busca a listagem dentro da pasta 'contratos'
         const url = `https://api.github.com/repos/${GITHUB_REPO}/contents/contratos`;
         const resp = await fetch(url, {
             headers: { Authorization: `token ${GITHUB_TOKEN}` }
@@ -128,4 +145,4 @@ app.get('/contratos-assinados', async (req, res) => {
     }
 });
 
-app.listen(PORT, () => console.log(`Servidor AzDev rodando na porta ${PORT}`));
+app.listen(PORT, () => console.log(`Servidor rodando na porta ${PORT}`));
