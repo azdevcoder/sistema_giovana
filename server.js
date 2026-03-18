@@ -6,6 +6,7 @@ import fetch from "node-fetch";
 dotenv.config();
 
 const app = express();
+// O Render exige que o servidor escute em 0.0.0.0
 const PORT = process.env.PORT || 10000;
 
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
@@ -94,28 +95,27 @@ app.post("/upload", async (req, res) => {
     }
 });
 
-// --- NOVA ROTA PARA FICHAS DE ACOLHIMENTO ---
+// --- ROTA DE UPLOAD DE FICHA ---
 app.post("/upload-ficha", async (req, res) => {
     try {
         const { nomeArquivo, conteudoBase64 } = req.body;
-        // Salva na pasta 'fichas' para organizar separado dos contratos
         const path = `fichas/${nomeArquivo}`; 
         
-        const response = await salvarNoGithub(path, conteudoBase64, `Nova Ficha de Acolhimento: ${nomeArquivo}`);
+        const response = await salvarNoGithub(path, conteudoBase64, `Nova Ficha: ${nomeArquivo}`);
 
         if (response.ok) {
             return res.json({ ok: true });
         } else {
             const errData = await response.json();
-            return res.status(500).json({ error: "Erro ao salvar ficha no GitHub", details: errData });
+            return res.status(500).json({ error: "Erro no GitHub", details: errData });
         }
     } catch (err) {
-        console.error("Erro no upload da ficha:", err);
-        res.status(500).json({ error: "Erro interno no Upload da Ficha" });
+        console.error(err);
+        res.status(500).json({ error: "Erro interno no Upload de Ficha" });
     }
 });
 
-// --- ROTA DE LISTAGEM DE CONTRATOS ---
+// --- ROTA DE LISTAGEM ---
 app.get('/contratos-assinados', async (req, res) => {
     try {
         const url = `https://api.github.com/repos/${GITHUB_REPO}/contents/contratos`;
@@ -126,23 +126,21 @@ app.get('/contratos-assinados', async (req, res) => {
         if (!resp.ok) return res.json([]);
 
         const data = await resp.json();
-        
         const arquivos = data
             .filter(file => file.name.toLowerCase().endsWith('.pdf'))
             .map(file => ({
-                name: file.name
-                    .replace('.pdf', '')
-                    .replace(/_/g, ' ')
-                    .replace(/^[0-9]+-/, ''), 
+                name: file.name.replace('.pdf', '').replace(/_/g, ' '),
                 url: file.download_url,
                 date: "Assinado"
             }));
 
         res.json(arquivos);
     } catch (err) {
-        console.error(err);
         res.json([]);
     }
 });
 
-app.listen(PORT, () => console.log(`Servidor rodando na porta ${PORT}`));
+// Rota de teste para confirmar que o servidor está vivo
+app.get("/", (req, res) => res.send("Servidor Ativo!"));
+
+app.listen(PORT, "0.0.0.0", () => console.log(`Rodando na porta ${PORT}`));
