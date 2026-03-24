@@ -151,11 +151,42 @@
             page.drawText('FICHA DE ACOLHIMENTO - PSICOTERAPIA', { x: margin, y, size: 16, font: fontBold });
             y -= 40;
 
-            // Preenchimento dos dados no PDF (Lógica completa mantida)
-            page.drawText(`NOME: ${document.getElementById("nome").value.toUpperCase()}`, { x: margin, y, size: 10, font: fontBold });
+            // --- INÍCIO DA INSERÇÃO DE TODOS OS DADOS NO PDF ---
+            
+            page.drawText('1. IDENTIFICAÇÃO PESSOAL', { x: margin, y, size: 12, font: fontBold });
             y -= 20;
-            page.drawText(`TELEFONE: ${document.getElementById("telefone").value}`, { x: margin, y, size: 10, font: fontRegular });
+            escreverLinhas(`Nome Completo: ${document.getElementById("nome").value}`);
+            escreverLinhas(`Nome Social: ${document.getElementById("nomeSocial").value || "Não informado"}`);
+            escreverLinhas(`Data de Nascimento: ${document.getElementById("nascimento").value}`);
+            escreverLinhas(`Endereço: ${document.getElementById("endereco").value || "Não informado"}`);
+            escreverLinhas(`Profissão: ${document.getElementById("profissao").value}`);
+            escreverLinhas(`Religião: ${document.getElementById("religiao").value || "Não informado"}`);
+            escreverLinhas(`Escolaridade: ${document.getElementById("escolaridade").value || "Não informado"}`);
+            escreverLinhas(`Telefone: ${document.getElementById("telefone").value}`);
+            escreverLinhas(`E-mail: ${document.getElementById("email").value}`);
+            y -= 15;
+
+            page.drawText('2. IDENTIFICAÇÃO DOS PAIS', { x: margin, y, size: 12, font: fontBold });
             y -= 20;
+            escreverLinhas(`Pai: ${document.getElementById("paiNome").value || "Não informado"} | Idade: ${document.getElementById("paiIdade").value || "-"} | Profissão: ${document.getElementById("paiProfissao").value || "-"} | Escolaridade: ${document.getElementById("paiEscolaridade").value || "-"}`);
+            escreverLinhas(`Mãe: ${document.getElementById("maeNome").value || "Não informado"} | Idade: ${document.getElementById("maeIdade").value || "-"} | Profissão: ${document.getElementById("maeProfissao").value || "-"} | Escolaridade: ${document.getElementById("maeEscolaridade").value || "-"}`);
+            escreverLinhas(`Endereço dos Pais: ${document.getElementById("paisEndereco").value || "Não informado"}`);
+            y -= 15;
+
+            page.drawText('3. QUEIXA PRINCIPAL', { x: margin, y, size: 12, font: fontBold });
+            y -= 20;
+            escreverLinhas(`Queixa Principal: ${document.getElementById("queixa").value || "Não informado"}`);
+            escreverLinhas(`Evolução da Queixa: ${document.getElementById("evolucao").value}`);
+            escreverLinhas(`O início foi: ${document.getElementById("inicioTipo").value}`);
+            escreverLinhas(`Sintomas Atuais: ${document.getElementById("sintomas").value || "Não informado"}`);
+            y -= 15;
+
+            page.drawText('4. MEDICAMENTOS', { x: margin, y, size: 12, font: fontBold });
+            y -= 20;
+            escreverLinhas(`Faz uso de medicamentos? ${document.getElementById("usoMedicamento").value}`);
+            escreverLinhas(`Quais: ${document.getElementById("quaisMedicamentos").value || "Não informado"}`);
+            
+            // --- FIM DA INSERÇÃO DE TODOS OS DADOS NO PDF ---
 
             // Download Local
             const pdfBytes = await pdfDoc.save();
