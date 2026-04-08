@@ -3,192 +3,293 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Giovana Morais | Novo Relato</title>
-    <meta name="theme-color" content="#1a73e8">
+    <title>Giovana Morais | Lista de Relatos</title>
     
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
-
+    
     <style>
-        :root {
+        :root { 
             --google-blue: #1a73e8;
-            --border-color: #dadce0;
-            --bg-main: #f0f2f5;
-            --text-main: #3c4043;
-            --text-muted: #5f6368;
-            --sidebar-bg: #ffffff;
-            --header-bg: #ffffff;
-            --card-bg: #ffffff;
+            --bg-main: #f0f2f5; 
+            --card-bg: #ffffff; 
+            --text-main: #3c4043; 
+            --border-color: #dadce0; 
         }
-
-        [data-theme="dark"] {
-            --bg-main: #121212;
-            --text-main: #e8eaed;
-            --text-muted: #9aa0a6;
-            --border-color: #3c4043;
-            --sidebar-bg: #1e1e1e;
-            --header-bg: #1e1e1e;
-            --card-bg: #252525;
-            color-scheme: dark;
+        [data-theme="dark"] { 
+            --bg-main: #121212; 
+            --card-bg: #252525; 
+            --text-main: #e8eaed; 
+            --border-color: #3c4043; 
         }
-
         body { 
             background-color: var(--bg-main); 
-            color: var(--text-main);
+            color: var(--text-main); 
             font-family: 'Roboto', sans-serif; 
-            overflow: hidden; 
-            transition: background 0.3s ease, color 0.3s ease;
+            min-height: 100vh;
+            transition: background 0.3s ease; 
         }
-
-        .app-container { display: flex; height: 100vh; flex-direction: column; }
-        .main-content { display: flex; flex: 1; overflow: hidden; }
-        .content-scroll { flex: 1; overflow-y: auto; padding: 20px; }
-
-        .header-top {
-            height: 64px;
-            display: flex; align-items: center; justify-content: space-between;
-            padding: 0 16px; border-bottom: 1px solid var(--border-color);
-            background: var(--header-bg); z-index: 1030;
+        .dash-card { 
+            background: var(--card-bg); 
+            border-radius: 12px; 
+            padding: 25px; 
+            border: 1px solid var(--border-color); 
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05); 
         }
-
-        .dash-card {
-            background: var(--card-bg);
-            border-radius: 12px; padding: 25px;
-            border: 1px solid var(--border-color);
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-        }
-
-        .form-control {
-            background-color: transparent;
-            border-color: var(--border-color);
-            color: var(--text-main);
-        }
-        .form-control:focus {
-            background-color: transparent;
-            color: var(--text-main);
-            border-color: var(--google-blue);
-        }
+        .table { --bs-table-bg: transparent; --bs-table-color: var(--text-main); }
+        .table>:not(caption)>*>* { border-bottom-color: var(--border-color); color: var(--text-main); }
         
-        
+        /* Estilos do Modal */
+        .modal-content { background-color: var(--card-bg); color: var(--text-main); border: 1px solid var(--border-color); }
+        .modal-header { border-bottom: 1px solid var(--border-color); }
+        .modal-footer { border-top: 1px solid var(--border-color); }
+        .form-control { 
+            background-color: transparent; 
+            border-color: var(--border-color); 
+            color: var(--text-main); 
+        }
+        .form-control:focus { 
+            background-color: transparent; 
+            color: var(--text-main); 
+            border-color: var(--google-blue); 
+            box-shadow: 0 0 0 0.25rem rgba(26, 115, 232, 0.25);
+        }
     </style>
 </head>
 <body data-theme="light">
 
-<div class="app-container">
-    <header class="header-top shadow-sm">
-        <div class="d-flex align-items-center">
-            <i class="bi bi-journal-text text-primary fs-4 me-2"></i>
-            <h5 class="mb-0 fw-bold">Psicóloga Giovana | <span class="text-secondary fw-normal">Novo Relato</span></h5>
+<div class="container mt-5 mb-5">
+    <div id="authSection" class="dash-card text-center mx-auto" style="max-width: 400px; margin-top: 10vh;">
+        <i class="bi bi-shield-lock-fill text-primary" style="font-size: 3rem;"></i>
+        <h4 class="fw-bold mt-3">Acesso Restrito</h4>
+        <p class="text-muted small">Insira a senha de segurança para visualizar o histórico.</p>
+        
+        <input type="password" id="inputSenhaAcesso" class="form-control text-center mb-3" placeholder="Senha" autofocus>
+        <button id="btnAcessar" class="btn btn-primary w-100 fw-bold" onclick="autenticarEBuscar()">
+            <i class="bi bi-unlock me-2"></i>Acessar
+        </button>
+        <div id="authMsg" class="mt-2 text-danger small"></div>
+    </div>
+
+    <div id="contentSection" class="dash-card d-none mx-auto" style="max-width: 1000px;">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h5 class="fw-bold mb-0 text-primary"><i class="bi bi-card-list me-2"></i>Histórico de Relatos</h5>
+            <div class="d-flex gap-2">
+                <button class="btn btn-sm btn-outline-danger" onclick="location.reload()">Sair</button>
+            </div>
         </div>
-    </header>
 
-    <div class="main-content">
-        <div class="content-scroll">
-            <div class="container-fluid">
-                <div class="dash-card mx-auto" style="max-width: 900px;">
-                    <h5 class="fw-bold mb-4 text-primary"><i class="bi bi-pencil-square me-2"></i>Registrar Relato da Sessão</h5>
-                    
-                    <form id="formRelato">
-                        <div class="row g-3 mb-3">
-                            <div class="col-md-8">
-                                <label class="form-label fw-bold small text-muted">NOME DO PACIENTE</label>
-                                <input type="text" class="form-control" id="nomePaciente" required placeholder="Ex: João da Silva">
-                            </div>
-                            <div class="col-md-4">
-                                <label class="form-label fw-bold small text-muted">DATA DA SESSÃO</label>
-                                <input type="date" class="form-control" id="dataSessao" required>
-                            </div>
-                        </div>
+        <div class="table-responsive">
+            <table class="table align-middle table-hover">
+                <thead>
+                    <tr>
+                        <th class="text-muted small">DATA</th>
+                        <th class="text-muted small">PACIENTE</th>
+                        <th class="text-muted small text-end">AÇÃO</th>
+                    </tr>
+                </thead>
+                <tbody id="listaBody">
+                    </tbody>
+            </table>
+        </div>
+    </div>
+</div>
 
-                        <div class="mb-3">
-                            <label class="form-label fw-bold small text-muted">RELATO</label>
-                            <textarea class="form-control" id="textoRelato" rows="12" placeholder="Digite o relato aqui..."></textarea>
+<div class="modal fade" id="modalRelato" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5 fw-bold text-primary" id="modalTitle">Visualizar Relato</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="formEdicao">
+                    <input type="hidden" id="editNomeArquivo">
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-8">
+                            <label class="form-label fw-bold small text-muted">PACIENTE</label>
+                            <input type="text" class="form-control text-uppercase fw-bold" id="editPaciente" required>
                         </div>
-
-                        <div class="mb-4">
-                            <label class="form-label fw-bold small text-muted">ANEXAR ARQUIVO (Opcional)</label>
-                            <input class="form-control" type="file" id="arquivoAnexo">
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold small text-muted">DATA</label>
+                            <input type="date" class="form-control" id="editData" required>
                         </div>
-
-                        <div class="row g-3 align-items-end bg-light rounded p-3" style="background-color: var(--bg-main) !important; border: 1px solid var(--border-color);">
-                            <div class="col-md-8">
-                                <label class="form-label fw-bold small text-danger"><i class="bi bi-shield-lock me-1"></i>SENHA DE SEGURANÇA</label>
-                                <input type="password" class="form-control border-danger" id="senhaSeguranca" required placeholder="Senha do sistema">
-                            </div>
-                            <div class="col-md-4">
-                                <button type="submit" class="btn btn-primary w-100 fw-bold" id="btnSalvar">
-                                    <i class="bi bi-cloud-arrow-up me-2"></i>Salvar Relato
-                                </button>
-                            </div>
-                        </div>
-                    </form>
-                    <div id="mensagemRetorno" class="mt-3"></div>
-                </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small text-muted">RELATO DA SESSÃO</label>
+                        <textarea class="form-control" id="editTextoRelato" rows="14"></textarea>
+                    </div>
+                </form>
+                <div id="modalMsg" class="mt-2 small"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-dismiss="modal">Fechar</button>
+                <button type="button" class="btn btn-sm btn-primary fw-bold" id="btnSalvarEdicao" onclick="salvarAlteracoes()">
+                    <i class="bi bi-cloud-arrow-up me-1"></i>Salvar Alterações
+                </button>
             </div>
         </div>
     </div>
 </div>
 
-<script>
-    // Configurações
-    const API_BASE_URL = 'https://salvar-relato.onrender.com/api';
-    const savedTheme = localStorage.getItem('theme_nath') || 'light';
-    document.body.setAttribute('data-theme', savedTheme);
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
-    document.getElementById('formRelato').addEventListener('submit', async function(e) {
-        e.preventDefault();
+<script>
+    const API_BASE_URL = 'https://salvar-relato.onrender.com/api';
+    let senhaSalva = ''; 
+    let modalBootstrap;
+
+    // Inicialização ao carregar a página
+    window.onload = () => {
+        document.body.setAttribute('data-theme', localStorage.getItem('theme_nath') || 'light');
+        modalBootstrap = new bootstrap.Modal(document.getElementById('modalRelato'));
+    };
+
+    // 1. Função para Autenticar e Listar
+    async function autenticarEBuscar() {
+        const senhaInput = document.getElementById('inputSenhaAcesso');
+        const msg = document.getElementById('authMsg');
+        const btn = document.getElementById('btnAcessar');
         
-        const btnSalvar = document.getElementById('btnSalvar');
-        const msgDiv = document.getElementById('mensagemRetorno');
-        
-        btnSalvar.disabled = true;
-        btnSalvar.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Enviando...';
+        senhaSalva = senhaInput.value;
+        if(!senhaSalva) {
+            msg.textContent = "Digite a senha.";
+            return;
+        }
+
+        msg.className = "mt-2 text-primary small";
+        msg.textContent = "Verificando...";
+        btn.disabled = true;
 
         try {
-            const arquivoInput = document.getElementById('arquivoAnexo');
-            let arquivoBase64 = null;
-            let nomeArquivo = null;
+            const response = await fetch(`${API_BASE_URL}/listar-relatos`, {
+                method: 'POST', 
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ senha: senhaSalva })
+            });
 
-            if(arquivoInput.files.length > 0) {
-                const file = arquivoInput.files[0];
-                nomeArquivo = file.name;
-                arquivoBase64 = await new Promise((resolve) => {
-                    const reader = new FileReader();
-                    reader.onload = () => resolve(reader.result.split(',')[1]);
-                    reader.readAsDataURL(file);
-                });
+            if(response.ok) {
+                const dados = await response.json(); 
+                document.getElementById('authSection').classList.add('d-none');
+                document.getElementById('contentSection').classList.remove('d-none');
+                renderizarTabela(dados);
+            } else {
+                msg.className = "mt-2 text-danger small";
+                msg.textContent = "Senha incorreta ou erro no servidor.";
+                btn.disabled = false;
             }
+        } catch(e) {
+            msg.className = "mt-2 text-danger small";
+            msg.textContent = "Erro ao conectar com o servidor.";
+            btn.disabled = false;
+        }
+    }
 
-            const payload = {
-                paciente: document.getElementById('nomePaciente').value,
-                data: document.getElementById('dataSessao').value,
-                relato: document.getElementById('textoRelato').value,
-                senha: document.getElementById('senhaSeguranca').value,
-                arquivoNome: nomeArquivo,
-                arquivoDados: arquivoBase64
-            };
+    // 2. Função para Renderizar a Tabela
+    function renderizarTabela(dados) {
+        const tbody = document.getElementById('listaBody');
+        tbody.innerHTML = '';
+        
+        if(!dados || dados.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="3" class="text-center text-muted py-4">Nenhum relato encontrado.</td></tr>';
+            return;
+        }
 
+        // Ordenar por data (mais recente primeiro)
+        dados.sort((a, b) => new Date(b.data) - new Date(a.data));
+
+        dados.forEach(item => {
+            const dataFormatada = item.data.split('-').reverse().join('/');
+            const pacienteNome = item.paciente.replace(/_/g, ' ');
+
+            tbody.innerHTML += `
+                <tr>
+                    <td class="fw-bold text-primary">${dataFormatada}</td>
+                    <td class="text-uppercase" style="font-size: 0.85rem;">${pacienteNome}</td>
+                    <td class="text-end">
+                        <button class="btn btn-sm btn-light border" onclick="abrirRelato('${item.nomeArquivo}')">
+                            <i class="bi bi-pencil-square me-1"></i> Visualizar / Editar
+                        </button>
+                    </td>
+                </tr>
+            `;
+        });
+    }
+
+    // 3. Função para Abrir o Conteúdo do Relato no Modal
+    async function abrirRelato(nomeArquivo) {
+        const modalTitle = document.getElementById('modalTitle');
+        const modalMsg = document.getElementById('modalMsg');
+        
+        modalTitle.textContent = "Carregando relato...";
+        modalMsg.textContent = "";
+        modalBootstrap.show();
+
+        try {
+            const response = await fetch(`${API_BASE_URL}/obter-relato`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ senha: senhaSalva, nomeArquivo })
+            });
+
+            if(response.ok) {
+                const relato = await response.json();
+                modalTitle.innerHTML = `<i class="bi bi-file-earmark-text me-2"></i>Paciente: ${relato.paciente}`;
+                
+                document.getElementById('editNomeArquivo').value = nomeArquivo;
+                document.getElementById('editPaciente').value = relato.paciente;
+                document.getElementById('editData').value = relato.data;
+                document.getElementById('editTextoRelato').value = relato.relato;
+            } else {
+                modalTitle.textContent = "Erro ao carregar conteúdo.";
+            }
+        } catch (error) {
+            modalTitle.textContent = "Erro de conexão.";
+        }
+    }
+
+    // 4. Função para Salvar as Alterações
+    async function salvarAlteracoes() {
+        const btnSalvar = document.getElementById('btnSalvarEdicao');
+        const modalMsg = document.getElementById('modalMsg');
+        
+        btnSalvar.disabled = true;
+        btnSalvar.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Salvando...';
+
+        const payload = {
+            paciente: document.getElementById('editPaciente').value,
+            data: document.getElementById('editData').value,
+            relato: document.getElementById('editTextoRelato').value,
+            senha: senhaSalva
+        };
+
+        try {
             const response = await fetch(`${API_BASE_URL}/salvar-relato`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload)
             });
 
-            const result = await response.json();
-
             if(response.ok) {
-                msgDiv.innerHTML = '<div class="alert alert-success">Relato salvo com sucesso!</div>';
-                document.getElementById('formRelato').reset();
+                modalMsg.innerHTML = '<div class="alert alert-success p-2 small">Relato atualizado com sucesso!</div>';
+                autenticarEBuscar(); // Atualiza a lista em segundo plano
+                setTimeout(() => modalBootstrap.hide(), 1500);
             } else {
-                msgDiv.innerHTML = `<div class="alert alert-danger">Erro: ${result.error || 'Falha ao salvar'}</div>`;
+                modalMsg.innerHTML = '<div class="alert alert-danger p-2 small">Erro ao salvar no GitHub.</div>';
             }
         } catch (error) {
-            msgDiv.innerHTML = '<div class="alert alert-danger">Erro de conexão com o servidor.</div>';
+            modalMsg.innerHTML = '<div class="alert alert-danger p-2 small">Erro de conexão.</div>';
         } finally {
             btnSalvar.disabled = false;
-            btnSalvar.innerHTML = '<i class="bi bi-cloud-arrow-up me-2"></i>Salvar Relato';
+            btnSalvar.innerHTML = '<i class="bi bi-cloud-arrow-up me-1"></i>Salvar Alterações';
         }
+    }
+
+    // Atalho Enter para login
+    document.getElementById('inputSenhaAcesso').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') autenticarEBuscar();
     });
 </script>
+
 </body>
 </html>
