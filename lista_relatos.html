@@ -7,29 +7,40 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <style>
-        /* COLE AQUI O MESMO BLOCO CSS <style> DA PÁGINA ANTERIOR PARA MANTER O TEMA */
-        :root { --bg-main: #f0f2f5; --card-bg: #ffffff; --text-main: #3c4043; --border-color: #dadce0; }
-        [data-theme="dark"] { --bg-main: #121212; --card-bg: #252525; --text-main: #e8eaed; --border-color: #3c4043; }
+        :root { 
+            --google-blue: #1a73e8;
+            --bg-main: #f0f2f5; 
+            --card-bg: #ffffff; 
+            --text-main: #3c4043; 
+            --border-color: #dadce0; 
+        }
+        [data-theme="dark"] { 
+            --bg-main: #121212; 
+            --card-bg: #252525; 
+            --text-main: #e8eaed; 
+            --border-color: #3c4043; 
+        }
         body { background-color: var(--bg-main); color: var(--text-main); font-family: 'Roboto', sans-serif; overflow-y: auto; }
-        .dash-card { background: var(--card-bg); border-radius: 12px; padding: 25px; border: 1px solid var(--border-color); }
+        .dash-card { background: var(--card-bg); border-radius: 12px; padding: 25px; border: 1px solid var(--border-color); box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
         .table { --bs-table-bg: transparent; --bs-table-color: var(--text-main); }
         .table>:not(caption)>*>* { border-bottom-color: var(--border-color); color: var(--text-main); }
+        .btn-primary { background-color: var(--google-blue); border: none; }
     </style>
 </head>
 <body data-theme="light">
 
-<div class="container mt-5 max-w-75">
+<div class="container mt-5">
     <div id="authSection" class="dash-card text-center mx-auto" style="max-width: 400px; margin-top: 10vh;">
-        <i class="bi bi-lock-fill text-primary" style="font-size: 3rem;"></i>
+        <i class="bi bi-shield-lock-fill text-primary" style="font-size: 3rem;"></i>
         <h4 class="fw-bold mt-3">Acesso Restrito</h4>
-        <p class="text-muted small">Insira sua senha de segurança para acessar os prontuários e relatos.</p>
+        <p class="text-muted small">Insira a senha de segurança para visualizar os relatos.</p>
         
         <input type="password" id="inputSenhaAcesso" class="form-control text-center mb-3" placeholder="Senha" autofocus>
-        <button class="btn btn-primary w-100 fw-bold" onclick="autenticarEBuscar()">Acessar</button>
+        <button id="btnAcessar" class="btn btn-primary w-100 fw-bold" onclick="autenticarEBuscar()">Acessar</button>
         <div id="authMsg" class="mt-2 text-danger small"></div>
     </div>
 
-    <div id="contentSection" class="dash-card d-none">
+    <div id="contentSection" class="dash-card d-none mx-auto" style="max-width: 900px;">
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h5 class="fw-bold mb-0 text-primary"><i class="bi bi-card-list me-2"></i>Histórico de Relatos</h5>
             <button class="btn btn-sm btn-outline-danger" onclick="location.reload()">Sair</button>
@@ -41,7 +52,6 @@
                     <tr>
                         <th class="text-muted small">DATA</th>
                         <th class="text-muted small">PACIENTE</th>
-                        <th class="text-muted small">ARQUIVO</th>
                         <th class="text-muted small text-end">AÇÃO</th>
                     </tr>
                 </thead>
@@ -53,20 +63,27 @@
 </div>
 
 <script>
-    // Carrega tema
+    // Sincroniza o tema com o dashboard principal
     document.body.setAttribute('data-theme', localStorage.getItem('theme_nath') || 'light');
 
     async function autenticarEBuscar() {
         const senha = document.getElementById('inputSenhaAcesso').value;
         const msg = document.getElementById('authMsg');
+        const btn = document.getElementById('btnAcessar');
         
-        msg.textContent = "Verificando...";
+        if(!senha) {
+            msg.textContent = "Por favor, digite a senha.";
+            return;
+        }
 
-        // URL DA SUA API NO RENDER QUE BUSCA OS ARQUIVOS DO GITHUB
-        const RENDER_API_URL = 'https://listar-relatos.onrender.com';
+        msg.textContent = "";
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Carregando...';
+
+        // URL CORRIGIDA: Usa o mesmo domínio do salvamento + a rota de listagem
+        const RENDER_API_URL = 'https://salvar-relato.onrender.com/api/listar-relatos';
 
         try {
-            // Mandamos a senha para a API. A API confere a senha e, se estiver ok, devolve a lista
             const response = await fetch(RENDER_API_URL, {
                 method: 'POST', 
                 headers: { 'Content-Type': 'application/json' },
@@ -74,18 +91,21 @@
             });
 
             if(response.ok) {
-                const dados = await response.json(); // Array com os dados
+                const dados = await response.json(); 
                 
-                // Esconde login, mostra tabela
                 document.getElementById('authSection').classList.add('d-none');
                 document.getElementById('contentSection').classList.remove('d-none');
                 
                 renderizarTabela(dados);
             } else {
                 msg.textContent = "Senha incorreta ou acesso negado.";
+                btn.disabled = false;
+                btn.innerHTML = "Acessar";
             }
         } catch(e) {
-            msg.textContent = "Erro ao conectar com o servidor Render.";
+            msg.textContent = "Erro ao conectar com o servidor.";
+            btn.disabled = false;
+            btn.innerHTML = "Acessar";
         }
     }
 
@@ -93,25 +113,37 @@
         const tbody = document.getElementById('listaBody');
         tbody.innerHTML = '';
         
-        if(dados.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="4" class="text-center text-muted">Nenhum relato encontrado.</td></tr>';
+        if(!dados || dados.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="3" class="text-center text-muted py-4">Nenhum relato encontrado no banco de dados.</td></tr>';
             return;
         }
 
+        // Ordenar por data (mais recente primeiro)
+        dados.sort((a, b) => new Date(b.data) - new Date(a.data));
+
         dados.forEach(item => {
-            // Supondo que a API retorna: { data: '2026-04-10', paciente: 'Nome', urlGithub: 'link', anexo: true/false }
+            // Formata a data de AAAA-MM-DD para DD/MM/AAAA
+            const dataFormatada = item.data.split('-').reverse().join('/');
+            const pacienteNome = item.paciente.replace(/_/g, ' ');
+
             tbody.innerHTML += `
                 <tr>
-                    <td class="fw-bold">${item.data}</td>
-                    <td>${item.paciente}</td>
-                    <td>${item.anexo ? '<i class="bi bi-paperclip text-primary"></i> Sim' : 'Não'}</td>
+                    <td class="fw-bold text-primary">${dataFormatada}</td>
+                    <td class="text-uppercase" style="font-size: 0.9rem;">${pacienteNome}</td>
                     <td class="text-end">
-                        <a href="${item.urlGithub}" target="_blank" class="btn btn-sm btn-light border">Ver Completo</a>
+                        <a href="${item.urlGithub}" target="_blank" class="btn btn-sm btn-light border">
+                            <i class="bi bi-eye me-1"></i> Abrir no GitHub
+                        </a>
                     </td>
                 </tr>
             `;
         });
     }
+
+    // Permitir "Enter" no campo de senha
+    document.getElementById('inputSenhaAcesso').addEventListener('keypress', function (e) {
+        if (e.key === 'Enter') autenticarEBuscar();
+    });
 </script>
 </body>
 </html>
