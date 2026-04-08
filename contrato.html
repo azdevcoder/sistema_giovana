@@ -790,7 +790,7 @@
         let githubOk = false;
         try {
           const base64 = await blobParaBase64(pdfBlob);
-          const caminhoGitHub = "contratos/contratos-assinados/" + nomeArquivoFinal;
+          const caminhoGitHub = "contratos/" + nomeArquivoFinal;
 
           const resp = await fetch('https://contratos-assinados.onrender.com/upload', {
             method: 'POST',
