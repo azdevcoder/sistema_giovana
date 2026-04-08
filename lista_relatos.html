@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Giovana Morais | Lista de Relatos</title>
+    <title>Giovana Morais | Histórico de Relatos</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <style>
@@ -20,34 +20,43 @@
             --text-main: #e8eaed; 
             --border-color: #3c4043; 
         }
-        body { background-color: var(--bg-main); color: var(--text-main); font-family: 'Roboto', sans-serif; overflow-y: auto; }
+        body { background-color: var(--bg-main); color: var(--text-main); font-family: 'Roboto', sans-serif; overflow-y: auto; transition: background 0.3s ease; }
         .dash-card { background: var(--card-bg); border-radius: 12px; padding: 25px; border: 1px solid var(--border-color); box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
         .table { --bs-table-bg: transparent; --bs-table-color: var(--text-main); }
         .table>:not(caption)>*>* { border-bottom-color: var(--border-color); color: var(--text-main); }
-        .btn-primary { background-color: var(--google-blue); border: none; }
+        
+        /* Ajuste do Modal para leitura */
+        .modal-content { background-color: var(--card-bg); color: var(--text-main); border-color: var(--border-color); }
+        .modal-header { border-bottom-color: var(--border-color); }
+        .modal-footer { border-top-color: var(--border-color); }
+        .form-control { background-color: transparent; border-color: var(--border-color); color: var(--text-main); }
+        .form-control:focus { background-color: transparent; color: var(--text-main); border-color: var(--google-blue); }
     </style>
 </head>
 <body data-theme="light">
 
-<div class="container mt-5">
+<div class="container mt-5 mb-5">
     <div id="authSection" class="dash-card text-center mx-auto" style="max-width: 400px; margin-top: 10vh;">
         <i class="bi bi-shield-lock-fill text-primary" style="font-size: 3rem;"></i>
         <h4 class="fw-bold mt-3">Acesso Restrito</h4>
-        <p class="text-muted small">Insira a senha de segurança para visualizar os relatos.</p>
+        <p class="text-muted small">Insira a senha de segurança para visualizar o histórico.</p>
         
         <input type="password" id="inputSenhaAcesso" class="form-control text-center mb-3" placeholder="Senha" autofocus>
         <button id="btnAcessar" class="btn btn-primary w-100 fw-bold" onclick="autenticarEBuscar()">Acessar</button>
         <div id="authMsg" class="mt-2 text-danger small"></div>
     </div>
 
-    <div id="contentSection" class="dash-card d-none mx-auto" style="max-width: 900px;">
+    <div id="contentSection" class="dash-card d-none mx-auto" style="max-width: 1000px;">
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h5 class="fw-bold mb-0 text-primary"><i class="bi bi-card-list me-2"></i>Histórico de Relatos</h5>
-            <button class="btn btn-sm btn-outline-danger" onclick="location.reload()">Sair</button>
+            <div class="d-flex gap-2">
+                <a href="relato_sessao.html" class="btn btn-sm btn-primary"><i class="bi bi-plus-lg me-1"></i>Novo Relato</a>
+                <button class="btn btn-sm btn-outline-danger" onclick="location.reload()">Sair</button>
+            </div>
         </div>
 
         <div class="table-responsive">
-            <table class="table align-middle">
+            <table class="table align-middle table-hover">
                 <thead>
                     <tr>
                         <th class="text-muted small">DATA</th>
@@ -62,88 +71,42 @@
     </div>
 </div>
 
+<div class="modal fade" id="modalRelato" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5 fw-bold text-primary" id="modalTitle">Visualizar Relato</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="formEdicao">
+                    <input type="hidden" id="editNomeArquivo">
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-8">
+                            <label class="form-label fw-bold small text-muted">PACIENTE</label>
+                            <input type="text" class="form-control text-uppercase fw-bold" id="editPaciente" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold small text-muted">DATA</label>
+                            <input type="date" class="form-control" id="editData" required>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small text-muted">RELATO DA SESSÃO</label>
+                        <textarea class="form-control" id="editTextoRelato" rows="16" placeholder="Digite o relato aqui..."></textarea>
+                    </div>
+                </form>
+                <div id="modalMsg" class="mt-2 small"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-dismiss="modal">Fechar</button>
+                <button type="button" class="btn btn-sm btn-primaryfw-bold" id="btnSalvarEdicao" onclick="salvarAlteracoes()">
+                    <i class="bi bi-cloud-arrow-up me-1"></i>Salvar Alterações
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-    // Sincroniza o tema com o dashboard principal
-    document.body.setAttribute('data-theme', localStorage.getItem('theme_nath') || 'light');
-
-    async function autenticarEBuscar() {
-        const senha = document.getElementById('inputSenhaAcesso').value;
-        const msg = document.getElementById('authMsg');
-        const btn = document.getElementById('btnAcessar');
-        
-        if(!senha) {
-            msg.textContent = "Por favor, digite a senha.";
-            return;
-        }
-
-        msg.textContent = "";
-        btn.disabled = true;
-        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Carregando...';
-
-        // URL CORRIGIDA: Usa o mesmo domínio do salvamento + a rota de listagem
-        const RENDER_API_URL = 'https://salvar-relato.onrender.com/api/listar-relatos';
-
-        try {
-            const response = await fetch(RENDER_API_URL, {
-                method: 'POST', 
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ senha: senha })
-            });
-
-            if(response.ok) {
-                const dados = await response.json(); 
-                
-                document.getElementById('authSection').classList.add('d-none');
-                document.getElementById('contentSection').classList.remove('d-none');
-                
-                renderizarTabela(dados);
-            } else {
-                msg.textContent = "Senha incorreta ou acesso negado.";
-                btn.disabled = false;
-                btn.innerHTML = "Acessar";
-            }
-        } catch(e) {
-            msg.textContent = "Erro ao conectar com o servidor.";
-            btn.disabled = false;
-            btn.innerHTML = "Acessar";
-        }
-    }
-
-    function renderizarTabela(dados) {
-        const tbody = document.getElementById('listaBody');
-        tbody.innerHTML = '';
-        
-        if(!dados || dados.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="3" class="text-center text-muted py-4">Nenhum relato encontrado no banco de dados.</td></tr>';
-            return;
-        }
-
-        // Ordenar por data (mais recente primeiro)
-        dados.sort((a, b) => new Date(b.data) - new Date(a.data));
-
-        dados.forEach(item => {
-            // Formata a data de AAAA-MM-DD para DD/MM/AAAA
-            const dataFormatada = item.data.split('-').reverse().join('/');
-            const pacienteNome = item.paciente.replace(/_/g, ' ');
-
-            tbody.innerHTML += `
-                <tr>
-                    <td class="fw-bold text-primary">${dataFormatada}</td>
-                    <td class="text-uppercase" style="font-size: 0.9rem;">${pacienteNome}</td>
-                    <td class="text-end">
-                        <a href="${item.urlGithub}" target="_blank" class="btn btn-sm btn-light border">
-                            <i class="bi bi-eye me-1"></i> Abrir no GitHub
-                        </a>
-                    </td>
-                </tr>
-            `;
-        });
-    }
-
-    // Permitir "Enter" no campo de senha
-    document.getElementById('inputSenhaAcesso').addEventListener('keypress', function (e) {
-        if (e.key === 'Enter') autenticarEBuscar();
-    });
-</script>
-</body>
-</html>
