@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Escolher Envio - Psicóloga Giovana</title>
+  
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+  
+  <style>
+    * { box-sizing: border-box; }
+    
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #f3e8db;
+      color: #4a3f35;
+      /* Centraliza o card na tela inteira */
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 16px;
+    }
+
+    .card {
+      background: #ffffff;
+      border-radius: 18px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+      padding: 32px;
+      max-width: 420px;
+      width: 100%;
+      text-align: center;
+    }
+
+    .icon-wrapper {
+      width: 64px;
+      height: 64px;
+      background: #faf6f1;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 16px;
+      color: #8b6f4e;
+      font-size: 28px;
+    }
+
+    h2.title {
+      font-size: 22px;
+      margin: 0 0 8px;
+      color: #5a4632;
+    }
+
+    p.subtitle {
+      font-size: 14px;
+      color: #8b6f4e;
+      margin-bottom: 28px;
+    }
+
+    .options-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    /* Transformei a classe em button para melhor semântica já que agora executa uma ação direta */
+    .option-btn {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      width: 100%;
+      padding: 16px 20px;
+      border-radius: 14px;
+      background: #faf6f1;
+      border: 1px solid #e0d5c7;
+      color: #5a4632;
+      font-weight: 600;
+      font-size: 15px;
+      text-decoration: none;
+      text-align: left;
+      transition: all 0.2s ease;
+      cursor: pointer;
+    }
+
+    .option-btn i {
+      font-size: 22px;
+      color: #8b6f4e;
+      transition: color 0.2s ease;
+    }
+
+    .option-btn:hover {
+      background: #5a4632;
+      color: #ffffff;
+      border-color: #5a4632;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 15px rgba(90,70,50,0.15);
+    }
+
+    .option-btn:hover i {
+      color: #ffffff;
+    }
+
+    .btn-voltar {
+      display: inline-block;
+      margin-top: 24px;
+      color: #8b6f4e;
+      font-size: 13px;
+      text-decoration: none;
+      font-weight: 500;
+    }
+    
+    .btn-voltar:hover {
+      text-decoration: underline;
+      color: #5a4632;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="card">
+    <div class="icon-wrapper">
+      <i class="bi bi-send-check"></i>
+    </div>
+    
+    <h2 class="title">Enviar Contrato</h2>
+    <p class="subtitle">Selecione o tipo de contrato que deseja enviar para o paciente ou responsável.</p>
+    
+    <div class="options-grid">
+      <button onclick="compartilharContrato('https://psigiovana.github.io/contratos-assinados/contrato.html', 'Convencional')" class="option-btn">
+        <i class="bi bi-file-earmark-text"></i>
+        <span>Contrato Convencional</span>
+      </button>
+      
+      <button onclick="compartilharContrato('https://psigiovana.github.io/contratos-assinados/contrato_social.html', 'Projeto Social')" class="option-btn">
+        <i class="bi bi-file-earmark-medical"></i>
+        <span>Contrato Projeto Social</span>
+      </button>
+
+    <button onclick="compartilharContrato('https://psigiovana.github.io/contratos-assinados/contrato_igreja.html', 'Projeto Social')" class="option-btn">
+    <i class="bi bi-file-earmark-medical"></i>
+    <span>Contrato Projeto Igreja</span>
+      </button>
+      
+      <button onclick="compartilharContrato('https://psigiovana.github.io/contratos-assinados/contrato_menor.html', 'Menores')" class="option-btn">
+        <i class="bi bi-file-earmark-person"></i>
+        <span>Contrato para Menores</span>
+      </button>
+    </div>
+
+    <a href="javascript:window.close();" class="btn-voltar">Cancelar e fechar aba</a>
+  </div>
+
+  <script>
+    // Aplicar tema salvo
+    const savedTheme = localStorage.getItem('theme_nath') || 'light';
+    document.body.setAttribute('data-theme', savedTheme);
+
+    // Função agora recebe a URL e o Tipo de contrato dinamicamente
+    function compartilharContrato(linkContrato, tipoContrato) {
+      try {
+        // Mensagem padrão formatada
+        const mensagem = `Olá! Segue o link para preenchimento e assinatura do seu contrato digital: ${linkContrato}`;
+
+        // Encode para URL segura
+        const msgFinal = encodeURIComponent(mensagem);
+
+        // URL do WhatsApp (sem número abre a lista de contatos para escolher)
+        const urlWhatsApp = `https://api.whatsapp.com/send?text=${msgFinal}`;
+
+        // Abre o WhatsApp direto em uma nova aba
+        window.open(urlWhatsApp, '_blank');
+      } catch (err) {
+        console.error("Erro ao abrir WhatsApp:", err);
+        alert("Ocorreu um erro ao tentar abrir o WhatsApp.");
+      }
+    }
+  </script>
+</body>
+</html>
