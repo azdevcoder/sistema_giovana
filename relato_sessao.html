@@ -10,7 +10,6 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
 
     <style>
-        /* Mesmas variáveis do seu index.html */
         :root {
             --google-blue: #1a73e8;
             --border-color: #dadce0;
@@ -41,18 +40,23 @@
             transition: background 0.3s ease, color 0.3s ease;
         }
 
+        /* AJUSTE DE CORES PARA LEITURA */
+        [data-theme="dark"] .form-control {
+            color: #ffffff !important;
+            background-color: rgba(255, 255, 255, 0.05) !important;
+        }
+        
+        [data-theme="dark"] .form-label {
+            color: #e8eaed !important;
+        }
+
+        [data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator {
+            filter: invert(1);
+        }
+
         .app-container { display: flex; height: 100vh; flex-direction: column; }
         .main-content { display: flex; flex: 1; overflow: hidden; }
         .content-scroll { flex: 1; overflow-y: auto; padding: 20px; }
-
-        .sidebar {
-            width: 260px;
-            border-right: 1px solid var(--border-color);
-            background: var(--sidebar-bg);
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-        }
 
         .header-top {
             height: 64px;
@@ -81,10 +85,6 @@
             border-color: var(--google-blue);
             box-shadow: 0 0 0 0.25rem rgba(26, 115, 232, 0.25);
         }
-        [data-theme="dark"] .form-control::-webkit-file-upload-button {
-            background-color: var(--border-color);
-            color: var(--text-main);
-        }
     </style>
 </head>
 <body data-theme="light">
@@ -93,7 +93,7 @@
     <header class="header-top shadow-sm">
         <div class="d-flex align-items-center">
             <i class="bi bi-journal-text text-primary fs-4 me-2"></i>
-            <h5 class="mb-0 fw-bold">Psicologa Giovana | <span class="text-secondary fw-normal">Novo Relato</span></h5>
+            <h5 class="mb-0 fw-bold">Psicóloga Giovana | <span class="text-secondary fw-normal">Novo Relato</span></h5>
         </div>
     </header>
 
@@ -116,12 +116,12 @@
                         </div>
 
                         <div class="mb-3">
-                            <label class="form-label fw-bold small text-muted">RELATO (Sem limite de linhas)</label>
-                            <textarea class="form-control" id="textoRelato" rows="12" placeholder="Digite as observações e o relato da sessão aqui..."></textarea>
+                            <label class="form-label fw-bold small text-muted">RELATO</label>
+                            <textarea class="form-control" id="textoRelato" rows="12" placeholder="Digite o relato aqui..."></textarea>
                         </div>
 
                         <div class="mb-4">
-                            <label class="form-label fw-bold small text-muted">ANEXAR ARQUIVO (Opcional - .txt, .doc, .docx, .pdf)</label>
+                            <label class="form-label fw-bold small text-muted">ANEXAR ARQUIVO (Opcional)</label>
                             <input class="form-control" type="file" id="arquivoAnexo" accept=".txt,.doc,.docx,.pdf">
                         </div>
 
@@ -130,7 +130,7 @@
                         <div class="row g-3 align-items-end bg-light rounded p-3" style="background-color: var(--bg-main) !important; border: 1px solid var(--border-color);">
                             <div class="col-md-8">
                                 <label class="form-label fw-bold small text-danger"><i class="bi bi-shield-lock me-1"></i>SENHA DE SEGURANÇA</label>
-                                <input type="password" class="form-control border-danger" id="senhaSeguranca" required placeholder="Digite a senha para autorizar o salvamento">
+                                <input type="password" class="form-control border-danger" id="senhaSeguranca" required placeholder="Digite a senha para salvar">
                             </div>
                             <div class="col-md-4">
                                 <button type="submit" class="btn btn-primary w-100 fw-bold" id="btnSalvar">
@@ -148,7 +148,6 @@
 </div>
 
 <script>
-    // Carrega o tema salvo
     const savedTheme = localStorage.getItem('theme_nath') || 'light';
     document.body.setAttribute('data-theme', savedTheme);
 
@@ -158,19 +157,13 @@
         const btnSalvar = document.getElementById('btnSalvar');
         const msgDiv = document.getElementById('mensagemRetorno');
         
-        const nome = document.getElementById('nomePaciente').value;
-        const data = document.getElementById('dataSessao').value;
-        const relato = document.getElementById('textoRelato').value;
-        const senha = document.getElementById('senhaSeguranca').value;
-        const arquivoInput = document.getElementById('arquivoAnexo');
-        
         btnSalvar.disabled = true;
         btnSalvar.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Salvando...';
 
         try {
-            // Lógica para converter o arquivo em Base64 (caso tenha arquivo)
             let arquivoBase64 = null;
             let nomeArquivo = null;
+            const arquivoInput = document.getElementById('arquivoAnexo');
             
             if(arquivoInput.files.length > 0) {
                 const file = arquivoInput.files[0];
@@ -183,17 +176,16 @@
                 });
             }
 
-            // Montar o payload para a sua API no Render
             const payload = {
-                paciente: nome,
-                data: data,
-                relato: relato,
-                senha: senha, // A API no Render deve validar esta senha!
+                paciente: document.getElementById('nomePaciente').value,
+                data: document.getElementById('dataSessao').value,
+                relato: document.getElementById('textoRelato').value,
+                senha: document.getElementById('senhaSeguranca').value,
                 arquivoNome: nomeArquivo,
                 arquivoDados: arquivoBase64
             };
 
-            // URL DA SUA API NO RENDER (Substitua pela sua URL real)
+            // CORREÇÃO DA URL: Adicionado /api/salvar-relato
             const RENDER_API_URL = 'https://salvar-relato.onrender.com/api/salvar-relato';
 
             const response = await fetch(RENDER_API_URL, {
@@ -202,15 +194,16 @@
                 body: JSON.stringify(payload)
             });
 
+            const dadosRetorno = await response.json();
+
             if(response.ok) {
                 msgDiv.innerHTML = '<div class="alert alert-success"><i class="bi bi-check-circle me-2"></i>Relato salvo com sucesso no GitHub!</div>';
                 document.getElementById('formRelato').reset();
             } else {
-                // Se a API retornar erro (ex: senha incorreta)
-                const erro = await response.json();
-                msgDiv.innerHTML = `<div class="alert alert-danger"><i class="bi bi-exclamation-triangle me-2"></i>Erro: ${erro.message || 'Falha ao salvar.'}</div>`;
+                msgDiv.innerHTML = `<div class="alert alert-danger"><i class="bi bi-exclamation-triangle me-2"></i>Erro: ${dadosRetorno.error || dadosRetorno.message || 'Falha ao salvar.'}</div>`;
             }
         } catch (error) {
+            console.error("Erro na conexão:", error);
             msgDiv.innerHTML = '<div class="alert alert-danger"><i class="bi bi-wifi-off me-2"></i>Erro de conexão. Verifique se o servidor Render está online.</div>';
         } finally {
             btnSalvar.disabled = false;
