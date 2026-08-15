@@ -1,0 +1,933 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Contrato Menores - Psicóloga Giovana</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #f3e8db;
+      color: #4a3f35;
+    }
+    .page {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    header {
+      background: rgba(255, 255, 255, 0.8);
+      backdrop-filter: blur(6px);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+      padding: 12px 16px;
+    }
+    .header-inner {
+      max-width: 960px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+    }
+    .logo-circle {
+      width: 40px;
+      height: 40px;
+      border-radius: 999px;
+      background: #f3e8db;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .logo-icon {
+      width: 22px;
+      height: 22px;
+      stroke: #8b6f4e;
+    }
+    .header-text h1 {
+      font-size: 16px;
+      margin: 0;
+      color: #5a4632;
+      font-weight: 600;
+      text-align: center;
+    }
+    .header-text p {
+      margin: 0;
+      font-size: 11px;
+      color: #8b6f4e;
+      text-align: center;
+    }
+
+    main {
+      flex: 1;
+      padding: 24px 16px 32px;
+    }
+    .container {
+      max-width: 960px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+    .card {
+      background: #ffffff;
+      border-radius: 18px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+      padding: 20px 18px;
+    }
+    @media (min-width: 640px) {
+      .card { padding: 28px 26px; }
+    }
+    @media (min-width: 768px) {
+      .card { padding: 32px 32px; }
+    }
+
+    h2.title {
+      font-size: 22px;
+      text-align: center;
+      margin: 0 0 4px;
+      color: #5a4632;
+    }
+    .subtitle {
+      font-size: 13px;
+      text-align: center;
+      color: #8b6f4e;
+      margin-bottom: 20px;
+    }
+
+    .section-title {
+      font-weight: 700;
+      color: #5a4632;
+      margin: 20px 0 12px;
+      font-size: 15px;
+      border-bottom: 1px solid #e0d5c7;
+      padding-bottom: 6px;
+    }
+
+    label {
+      display: block;
+      font-size: 13px;
+      font-weight: 500;
+      color: #5a4632;
+      margin-bottom: 4px;
+    }
+    .optional {
+      font-size: 11px;
+      color: #b8a898;
+      font-weight: 400;
+    }
+    .required {
+      color: #e26161;
+    }
+    input, select {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 12px;
+      border: 1px solid #e0d5c7;
+      background: #faf6f1;
+      color: #5a4632;
+      font-size: 14px;
+      outline: none;
+      transition: border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+      font-family: inherit;
+    }
+    input::placeholder {
+      color: #b8a898;
+    }
+    input:focus, select:focus {
+      border-color: #d4b896;
+      box-shadow: 0 0 0 2px rgba(212,184,150,0.35);
+      background: #fffaf3;
+    }
+    .field {
+      margin-bottom: 12px;
+    }
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+    .grid-3 {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+    @media (min-width: 640px) {
+      .grid-2 { grid-template-columns: 1fr 1fr; }
+      .grid-3 { grid-template-columns: 1fr 1fr 1fr; }
+    }
+
+    button {
+      border: none;
+      cursor: pointer;
+      font-family: inherit;
+    }
+    .btn-primary {
+      width: 100%;
+      margin-top: 20px;
+      padding: 12px 14px;
+      border-radius: 14px;
+      background: #5a4632;
+      color: #ffffff;
+      font-weight: 600;
+      font-size: 15px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      box-shadow: 0 12px 20px rgba(90,70,50,0.28);
+      transition: background 0.15s ease, transform 0.1s ease, box-shadow 0.15s ease, opacity 0.15s ease;
+    }
+    .btn-primary:hover {
+      background: #7a6352;
+      transform: translateY(-1px);
+      box-shadow: 0 16px 26px rgba(90,70,50,0.32);
+    }
+    .btn-primary:active {
+      transform: scale(0.98);
+      box-shadow: 0 8px 14px rgba(90,70,50,0.2);
+    }
+    .btn-primary[disabled] {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .btn-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      color: #5a4632;
+      font-size: 13px;
+      background: none;
+      padding: 0;
+      margin-bottom: 10px;
+    }
+    .btn-link:hover {
+      color: #8b6f4e;
+      text-decoration: underline;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: #fff6e0;
+      color: #8b6f4e;
+      margin-bottom: 6px;
+    }
+
+    .contract-text {
+      font-size: 14px;
+      line-height: 1.6;
+      color: #4a3f35;
+      text-align: justify;
+    }
+    .contract-text ul {
+      margin-top: 4px;
+      margin-bottom: 12px;
+      padding-left: 20px;
+    }
+    .contract-text li {
+      margin-bottom: 6px;
+    }
+    
+    .patient-box {
+      background: #faf6f1;
+      border-radius: 14px;
+      border: 1px solid #e0d5c7;
+      padding: 12px 14px;
+      font-size: 13px;
+      margin: 10px 0 14px;
+      text-align: left;
+    }
+    .patient-box p { margin: 4px 0; }
+
+    .alert {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      padding: 10px 12px;
+      border-radius: 12px;
+      font-size: 13px;
+      margin-bottom: 8px;
+    }
+    .alert-info { background: #fff7e6; border: 1px solid #ffe4a3; color: #8b6f4e; }
+    .alert-success { background: #ecfdf3; border: 1px solid #bbf7d0; color: #166534; }
+    .alert-warn { background: #fffbeb; border: 1px solid #facc15; color: #854d0e; }
+
+    .status-list {
+      margin-top: 10px;
+      display: grid;
+      gap: 6px;
+      font-size: 13px;
+      text-align: left;
+    }
+    .status-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 10px;
+      border-radius: 10px;
+    }
+    .status-ok { background: #ecfdf3; color: #166534; }
+    .status-warn { background: #fffbeb; color: #854d0e; }
+
+    .status-icon { width: 18px; height: 18px; flex-shrink: 0; }
+
+    .signature-row {
+      border-top: 2px solid #e0d5c7;
+      padding-top: 16px;
+      margin-top: 16px;
+      display: grid;
+      gap: 12px;
+      text-align: left;
+    }
+    @media (min-width: 640px) {
+      .signature-row { grid-template-columns: 1fr 1fr; }
+    }
+    .signature-box {
+      background: #faf6f1;
+      border-radius: 14px;
+      border: 1px solid #e0d5c7;
+      padding: 12px 14px;
+      font-size: 13px;
+    }
+    .signature-label { font-size: 11px; color: #8b6f4e; margin-bottom: 4px; }
+    .signature-name { font-weight: 600; color: #5a4632; }
+    .signature-sub { font-size: 11px; color: #b8a898; margin-top: 2px; }
+
+    .spinner {
+      width: 16px;
+      height: 16px;
+      border-radius: 999px;
+      border: 2px solid rgba(255,255,255,0.6);
+      border-top-color: #ffffff;
+      animation: spin 0.7s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .success-icon-wrap {
+      width: 72px;
+      height: 72px;
+      border-radius: 999px;
+      margin: 0 auto 10px;
+      background: #ecfdf3;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .success-icon { width: 40px; height: 40px; stroke: #16a34a; }
+    .center { text-align: center; }
+
+    footer {
+      text-align: center;
+      padding: 14px 8px 18px;
+      font-size: 11px;
+      color: #b8a898;
+    }
+  </style>
+
+  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+</head>
+<body>
+  <div class="page">
+    <header>
+      <div class="header-inner">
+        <div class="header-text">
+          <h1>Psicóloga Giovana de Morais</h1>
+          <p>CRP: 08/45995 • Assinatura de Contrato (Menores)</p>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <div class="container">
+        <div id="step-form" class="card">
+          <h2 class="title">Contrato para Menores</h2>
+          <p class="subtitle">Preencha os dados do responsável legal e do menor.</p>
+
+          <div class="badge">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75A2.25 2.25 0 0 0 14.25 4.5h-9A2.25 2.25 0 0 0 3 6.75v10.5A2.25 2.25 0 0 0 5.25 19.5h8.25m3-9 3 3m0 0-3 3m3-3h-9" />
+            </svg>
+            Seus dados serão usados apenas neste contrato, protegido por sigilo ético.
+          </div>
+
+          <form id="formContrato">
+            
+            <div class="section-title">Dados do Responsável Legal</div>
+            <div class="field">
+              <label>Nome completo do Responsável <span class="required">*</span></label>
+              <input id="respNome" type="text" placeholder="Nome do pai, mãe ou tutor legal" required />
+            </div>
+            
+            <div class="grid-2">
+              <div class="field">
+                <label>Vínculo com o menor <span class="required">*</span></label>
+                <select id="respRelacao" required>
+                  <option value="">Selecione...</option>
+                  <option value="pai">Pai</option>
+                  <option value="mãe">Mãe</option>
+                  <option value="responsável legal">Responsável Legal (Tutor)</option>
+                </select>
+              </div>
+              <div class="field">
+                <label>RG <span class="required">*</span></label>
+                <input id="respRG" type="text" placeholder="Apenas números ou com formatação" required />
+              </div>
+              <div class="field">
+                <label>CPF <span class="required">*</span></label>
+                <input id="respCPF" type="text" placeholder="000.000.000-00" required />
+              </div>
+              <div class="field">
+                <label>Telefone / WhatsApp <span class="required">*</span></label>
+                <input id="respTel" type="text" placeholder="(00) 00000-0000" required />
+              </div>
+            </div>
+            
+            <div class="field">
+              <label>E-mail <span class="optional">(opcional)</span></label>
+              <input id="respEmail" type="email" placeholder="seuemail@exemplo.com" />
+            </div>
+
+            <div class="section-title">Endereço do Responsável</div>
+            <div class="grid-3">
+              <div class="field">
+                <label>CEP <span class="required">*</span></label>
+                <input id="respCEP" type="text" placeholder="00000-000" required />
+              </div>
+              <div class="field" style="grid-column: span 2;">
+                <label>Rua/Avenida <span class="required">*</span></label>
+                <input id="respRua" type="text" placeholder="Ex: Rua das Flores" required />
+              </div>
+            </div>
+            
+            <div class="grid-3">
+              <div class="field">
+                <label>Número <span class="required">*</span></label>
+                <input id="respNum" type="text" placeholder="Ex: 123" required />
+              </div>
+              <div class="field">
+                <label>Bairro <span class="required">*</span></label>
+                <input id="respBairro" type="text" placeholder="Ex: Centro" required />
+              </div>
+              <div class="field">
+                <label>Cidade / Estado <span class="required">*</span></label>
+                <input id="respCidadeUF" type="text" placeholder="Ex: Maringá - PR" required />
+              </div>
+            </div>
+
+            <div class="section-title">Dados do(a) Menor Atendido(a)</div>
+            <div class="field">
+              <label>Nome completo do Menor <span class="required">*</span></label>
+              <input id="menorNome" type="text" placeholder="Nome da criança ou adolescente" required />
+            </div>
+            
+            <div class="grid-2">
+              <div class="field">
+                <label>Data de Nascimento <span class="required">*</span></label>
+                <input id="menorNasc" type="text" placeholder="DD/MM/AAAA" required />
+              </div>
+              <div class="field">
+                <label>Naturalidade <span class="required">*</span></label>
+                <input id="menorNaturalidade" type="text" placeholder="Cidade/Estado onde nasceu" required />
+              </div>
+            </div>
+
+            <button type="submit" class="btn-primary">
+              <span>Visualizar Contrato</span>
+            </button>
+          </form>
+        </div>
+
+        <div id="step-preview" class="card" style="display:none;">
+          <button type="button" class="btn-link" id="btnVoltar">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
+            </svg>
+            Voltar e editar dados
+          </button>
+
+          <div class="contract-text" id="previewContrato"></div>
+
+          <div class="alert alert-info" style="margin-top:18px;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75M12 3.75a8.25 8.25 0 1 1 0 16.5 8.25 8.25 0 0 1 0-16.5Zm0 9.75h.008v.008H12v-.008Z" />
+            </svg>
+            <div>
+              Ao clicar em <strong>"Assinar Contrato"</strong>, o PDF será gerado, salvo no Banco de Dados e baixado no seu dispositivo.
+            </div>
+          </div>
+
+          <button id="btnAssinar" type="button" class="btn-primary">
+            <span>Assinar Contrato</span>
+          </button>
+        </div>
+
+        <div id="step-success" class="card center" style="display:none;">
+          <div class="success-icon-wrap">
+            <svg class="success-icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+            </svg>
+          </div>
+          <h2 class="title" style="margin-bottom:2px;">Contrato assinado!</h2>
+          <p class="subtitle" id="successSubtitle">Seu contrato foi gerado em PDF, salvo e enviado com sucesso.</p>
+
+          <div class="status-list" id="statusList"></div>
+          <div id="extraActions" style="margin-top:18px;"></div>
+        </div>
+      </div>
+    </main>
+
+    <footer>
+      <div>Psicóloga Giovana de Morais • CRP 08/45995</div>
+      <div>Sistema de assinatura digital de contratos</div>
+      <div>Desenvolvido por: AzDev Coder</div>
+    </footer>
+  </div>
+
+  <script>
+    const { jsPDF } = window.jspdf;
+    const CONTATO_WHATSAPP = '5544997112467'; // WhatsApp da Giovana
+
+    // Elementos
+    const form = document.getElementById('formContrato');
+    const stepForm = document.getElementById('step-form');
+    const stepPreview = document.getElementById('step-preview');
+    const stepSuccess = document.getElementById('step-success');
+    const previewContrato = document.getElementById('previewContrato');
+    const btnVoltar = document.getElementById('btnVoltar');
+    const btnAssinar = document.getElementById('btnAssinar');
+    const statusList = document.getElementById('statusList');
+    const extraActions = document.getElementById('extraActions');
+
+    // Inputs
+    const iRespNome = document.getElementById('respNome');
+    const iRespRelacao = document.getElementById('respRelacao');
+    const iRespRG = document.getElementById('respRG');
+    const iRespCPF = document.getElementById('respCPF');
+    const iRespTel = document.getElementById('respTel');
+    const iRespEmail = document.getElementById('respEmail');
+    const iRespCEP = document.getElementById('respCEP');
+    const iRespRua = document.getElementById('respRua');
+    const iRespNum = document.getElementById('respNum');
+    const iRespBairro = document.getElementById('respBairro');
+    const iRespCidadeUF = document.getElementById('respCidadeUF');
+    
+    const iMenorNome = document.getElementById('menorNome');
+    const iMenorNasc = document.getElementById('menorNasc');
+    const iMenorNaturalidade = document.getElementById('menorNaturalidade');
+
+    let dadosGlobais = null;
+    let pdfBlobGlobal = null;
+    let nomeArquivoFinal = '';
+
+    // MÁSCARAS
+    iRespCPF.addEventListener('input', () => {
+      let v = iRespCPF.value.replace(/\D/g, '').slice(0, 11);
+      if (v.length > 9) v = v.slice(0,3)+'.'+v.slice(3,6)+'.'+v.slice(6,9)+'-'+v.slice(9);
+      else if (v.length > 6) v = v.slice(0,3)+'.'+v.slice(3,6)+'.'+v.slice(6);
+      else if (v.length > 3) v = v.slice(0,3)+'.'+v.slice(3);
+      iRespCPF.value = v;
+    });
+
+    iRespTel.addEventListener('input', () => {
+      let v = iRespTel.value.replace(/\D/g, '').slice(0, 11);
+      if (v.length > 6) v = '('+v.slice(0,2)+') '+v.slice(2,7)+'-'+v.slice(7);
+      else if (v.length > 2) v = '('+v.slice(0,2)+') '+v.slice(2);
+      else if (v.length > 0) v = '('+v;
+      iRespTel.value = v;
+    });
+
+    iRespCEP.addEventListener('input', () => {
+      let v = iRespCEP.value.replace(/\D/g, '').slice(0, 8);
+      if (v.length > 5) v = v.slice(0,5)+'-'+v.slice(5);
+      iRespCEP.value = v;
+    });
+
+    iMenorNasc.addEventListener('input', () => {
+      let v = iMenorNasc.value.replace(/\D/g, '').slice(0, 8);
+      if (v.length > 4) v = v.slice(0,2)+'/'+v.slice(2,4)+'/'+v.slice(4);
+      else if (v.length > 2) v = v.slice(0,2)+'/'+v.slice(2);
+      iMenorNasc.value = v;
+    });
+
+    // BUSCA CEP VIA API
+    iRespCEP.addEventListener('blur', async () => {
+      const cep = iRespCEP.value.replace(/\D/g, '');
+      if (cep.length === 8) {
+        try {
+          const res = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+          const data = await res.json();
+          if (!data.erro) {
+            iRespRua.value = data.logradouro;
+            iRespBairro.value = data.bairro;
+            iRespCidadeUF.value = `${data.localidade} - ${data.uf}`;
+            iRespNum.focus();
+          }
+        } catch (e) { console.error("Erro ao buscar CEP", e); }
+      }
+    });
+
+    function gerarHash5() {
+      return Math.floor(10000 + Math.random() * 90000);
+    }
+
+    // GERA PREVIEW HTML
+    function construirPreviewContrato(d) {
+      const dataAtual = new Date().toLocaleDateString('pt-BR');
+      let html = '';
+
+      // --- PARTE 1: AUTORIZAÇÃO ---
+      html += '<h2 class="title" style="margin-bottom:14px; font-size:18px;">AUTORIZAÇÃO PARA ATENDIMENTO PSICOLÓGICO ONLINE DE MENOR</h2>';
+      
+      html += `<p>Eu, <strong>${d.respNome}</strong>, portador(a) da carteira de identidade nº <strong>${d.respRG}</strong> e CPF nº <strong>${d.respCPF}</strong>, residente à Rua <strong>${d.respRua}</strong>, nº <strong>${d.respNum}</strong>, bairro <strong>${d.respBairro}</strong>, cidade/estado <strong>${d.respCidadeUF}</strong>, CEP <strong>${d.respCEP}</strong>, telefone para contato: <strong>${d.respTel}</strong>, na qualidade de <strong>${d.respRelacao}</strong>, AUTORIZO o(a) menor <strong>${d.menorNome}</strong>, nascido(a) em <strong>${d.menorNasc}</strong>, natural de <strong>${d.menorNaturalidade}</strong>, a participar de atendimento psicológico individual na modalidade on-line com a Psicóloga Giovana de Morais Gomes, inscrita no CRP sob o nº 08/45995.</p>`;
+      
+      html += '<p>Declaro estar ciente de que o atendimento será realizado de forma remota, comprometendo-me a:</p>';
+      html += '<ul>';
+      html += '<li>Disponibilizar os recursos tecnológicos necessários para a realização das sessões;</li>';
+      html += '<li>Garantir um ambiente adequado, com privacidade e sem interrupções durante os atendimentos;</li>';
+      html += '<li>Respeitar o sigilo profissional, conforme previsto no Código de Ética Profissional do Psicólogo;</li>';
+      html += '<li>Cumprir com os horários previamente agendados.</li>';
+      html += '</ul>';
+      html += '<p>Por ser verdade, firmo a presente autorização.</p>';
+
+      html += '<hr style="border:0; border-top:1px dashed #e0d5c7; margin: 30px 0;">';
+
+      // --- PARTE 2: CONTRATO ---
+      html += '<h2 class="title" style="margin-bottom:14px; font-size:18px;">CONTRATO DE PSICOTERAPIA PARA MENOR</h2>';
+      
+      html += '<div class="patient-box">';
+      html += '<p><strong>INFORMAÇÕES INICIAIS</strong></p>';
+      html += '<p><strong>Psicóloga (Contratada):</strong> Giovana de Morais Gomes – CRP nº 08/45995</p>';
+      html += '<p style="margin-top:8px;"><strong>Responsável legal (Contratante):</strong></p>';
+      html += `<p>Nome: ${d.respNome}</p>`;
+      html += `<p>RG: ${d.respRG} | CPF: ${d.respCPF}</p>`;
+      html += `<p>Endereço: ${d.respRua}, ${d.respNum} - ${d.respBairro} - ${d.respCidadeUF}</p>`;
+      html += `<p>Telefone: ${d.respTel} | E-mail: ${d.respEmail || 'Não informado'}</p>`;
+      html += '<p style="margin-top:8px;"><strong>Menor atendido(a):</strong></p>';
+      html += `<p>Nome: ${d.menorNome} | Nasc.: ${d.menorNasc} | Nat.: ${d.menorNaturalidade}</p>`;
+      html += '</div>';
+
+      html += '<p class="section-title">CLÁUSULA 1 – SOBRE O ATENDIMENTO</p>';
+      html += '<p>As sessões de psicoterapia terão duração aproximada de 50 minutos e poderão acontecer de forma semanal ou quinzenal, conforme o que for mais adequado e combinado entre as partes.</p>';
+      html += '<p>Os atendimentos poderão ser realizados presencialmente em Maringá-PR ou na modalidade on-line, sempre buscando oferecer um espaço confortável e seguro para o(a) menor.</p>';
+
+      html += '<p class="section-title">CLÁUSULA 2 – CANCELAMENTOS E FALTAS</p>';
+      html += '<p>Para que o processo terapêutico aconteça de forma cuidadosa e respeitosa para todos os envolvidos, é importante manter uma organização dos horários.</p>';
+      html += '<p>Caso seja necessário cancelar ou remarcar uma sessão, peço que o aviso seja feito com pelo menos 8 horas de antecedência. Cancelamentos realizados após esse período, assim como faltas sem aviso prévio, implicarão na cobrança integral da sessão, considerando que esse horário foi reservado especialmente para o atendimento.</p>';
+
+      html += '<p class="section-title">CLÁUSULA 3 – SIGILO E ÉTICA PROFISSIONAL</p>';
+      html += '<p>O espaço terapêutico é construído com base na confiança. Por isso, tudo o que for compartilhado durante as sessões será mantido em sigilo, conforme previsto no Código de Ética Profissional do Psicólogo.</p>';
+      html += '<p>Em atendimentos com menores, o responsável está ciente de que o sigilo também é importante para o vínculo terapêutico. Assim, algumas informações poderão não ser compartilhadas em detalhes, preservando o espaço do(a) menor. O sigilo poderá ser quebrado apenas em situações previstas por lei, especialmente quando houver risco à vida do(a) paciente ou de terceiros.</p>';
+      html += '<p>Nos atendimentos on-line, é importante que o(a) menor esteja em um ambiente: tranquilo, silencioso e reservado; com o uso de fones de ouvido, sempre que possível; com acesso à internet estável; com o dispositivo carregado ou conectado à energia.</p>';
+
+      html += '<p class="section-title">CLÁUSULA 4 – VALOR DAS SESSÕES</p>';
+      html += '<p>O valor de cada sessão será de R$ 50,00 (Para atendimento exclusivo a estudantes que venham do projeto Escuta Social Psi) e R$125,00 valor convencional. O pagamento poderá ser realizado de duas formas. Por sessão, sendo efetuado no dia do atendimento; Mensalmente, no início de cada período, considerando a quantidade de sessões previstas (PIX, Transferência ou Dinheiro).</p>';
+
+      html += '<p class="section-title">CLÁUSULA 5 – ENCERRAMENTO DO PROCESSO</p>';
+      html += '<p>Tanto a psicóloga quanto o responsável legal poderão solicitar o encerramento do acompanhamento, sempre priorizando o diálogo para que esse momento aconteça de forma cuidadosa e adequada.</p>';
+
+      html += `<p style="margin-top:16px;font-size:13px;color:#8b6f4e;">Local e data: Maringá, ${dataAtual}</p>`;
+
+      html += '<div class="signature-row">';
+      html += '<div class="signature-box">';
+      html += '<div class="signature-label">Assinatura do(a) Responsável:</div>';
+      html += `<div class="signature-name">${d.respNome}</div>`;
+      html += `<div class="signature-sub">Assinado digitalmente em ${dataAtual}</div>`;
+      html += '</div>';
+      html += '<div class="signature-box">';
+      html += '<div class="signature-label">Assinatura da Psicóloga:</div>';
+      html += '<div class="signature-name">Giovana de Morais</div>';
+      html += '<div class="signature-sub">CRP-08/45995</div>';
+      html += '</div>';
+      html += '</div>';
+
+      previewContrato.innerHTML = html;
+    }
+
+    // GERA PDF
+    function gerarPDF(d) {
+      const doc = new jsPDF({ unit: 'mm', format: 'a4' });
+      const pageWidth = doc.internal.pageSize.getWidth();
+      const marginLeft = 20;
+      const maxWidth = pageWidth - 40;
+      let y = 20;
+      const lh = 6;
+      const dataAtual = new Date().toLocaleDateString('pt-BR');
+
+      function addCenterTitle(text) {
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(13);
+        doc.text(text, pageWidth / 2, y, { align: 'center' });
+        y += lh + 4;
+      }
+      function addSubtitle(text) {
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(11);
+        doc.text(text, marginLeft, y);
+        y += lh + 1;
+      }
+      function addText(text) {
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(10);
+        const lines = doc.splitTextToSize(text, maxWidth);
+        lines.forEach(line => {
+          if (y > 275) { doc.addPage(); y = 20; }
+          doc.text(line, marginLeft, y, { maxWidth: maxWidth, align: 'justify' });
+          y += lh - 1;
+        });
+        y += 2;
+      }
+
+      // --- PÁGINA 1: AUTORIZAÇÃO ---
+      addCenterTitle('AUTORIZAÇÃO PARA ATENDIMENTO PSICOLÓGICO ONLINE DE MENOR');
+      
+      const txtAuto1 = `Eu, ${d.respNome}, portador(a) da carteira de identidade nº ${d.respRG} e CPF nº ${d.respCPF}, residente à Rua ${d.respRua}, nº ${d.respNum}, bairro ${d.respBairro}, cidade/estado ${d.respCidadeUF}, CEP ${d.respCEP}, telefone para contato: ${d.respTel}, na qualidade de ${d.respRelacao}, AUTORIZO o(a) menor ${d.menorNome}, nascido(a) em ${d.menorNasc}, natural de ${d.menorNaturalidade}, a participar de atendimento psicológico individual na modalidade on-line com a Psicóloga Giovana de Morais Gomes, inscrita no CRP sob o nº 08/45995.`;
+      addText(txtAuto1);
+      
+      y += 2;
+      addText('Declaro estar ciente de que o atendimento será realizado de forma remota, comprometendo-me a:');
+      addText('• Disponibilizar os recursos tecnológicos necessários para a realização das sessões;');
+      addText('• Garantir um ambiente adequado, com privacidade e sem interrupções durante os atendimentos;');
+      addText('• Respeitar o sigilo profissional, conforme previsto no Código de Ética Profissional do Psicólogo;');
+      addText('• Cumprir com os horários previamente agendados.');
+      y += 2;
+      addText('Por ser verdade, firmo a presente autorização.');
+      
+      y += 15;
+      doc.text(`Local e data: Maringá, ${dataAtual}`, marginLeft, y);
+      y += 15;
+      doc.setFont('helvetica', 'bold');
+      doc.text('Assinatura do responsável:', marginLeft, y);
+      y += 6;
+      doc.setFont('helvetica', 'normal');
+      doc.text(d.respNome, marginLeft, y);
+      y += 4;
+      doc.setFontSize(8);
+      doc.text(`Assinado digitalmente em ${dataAtual}`, marginLeft, y);
+      
+      // --- PÁGINA 2: CONTRATO ---
+      doc.addPage();
+      y = 20;
+
+      addCenterTitle('CONTRATO DE PSICOTERAPIA PARA MENOR');
+      addSubtitle('INFORMAÇÕES INICIAIS');
+      
+      doc.setFontSize(10);
+      doc.setFont('helvetica', 'bold'); doc.text('Psicóloga (Contratada): ', marginLeft, y);
+      doc.setFont('helvetica', 'normal'); doc.text('Giovana de Morais Gomes – CRP nº 08/45995', marginLeft + 42, y); y += lh;
+      
+      y+=2;
+      doc.setFont('helvetica', 'bold'); doc.text('Responsável legal (Contratante):', marginLeft, y); y += lh;
+      doc.setFont('helvetica', 'normal');
+      doc.text(`Nome: ${d.respNome}`, marginLeft, y); y += lh;
+      doc.text(`RG: ${d.respRG}    CPF: ${d.respCPF}`, marginLeft, y); y += lh;
+      doc.text(`Endereço: ${d.respRua}, ${d.respNum} - ${d.respBairro} - ${d.respCidadeUF}`, marginLeft, y); y += lh;
+      doc.text(`Telefone: ${d.respTel}    E-mail: ${d.respEmail || 'Não informado'}`, marginLeft, y); y += lh;
+      
+      y+=2;
+      doc.setFont('helvetica', 'bold'); doc.text('Menor atendido(a):', marginLeft, y); y += lh;
+      doc.setFont('helvetica', 'normal');
+      doc.text(`Nome: ${d.menorNome} Data de nascimento: ${d.menorNasc}    Naturalidade: ${d.menorNaturalidade}`, marginLeft, y); y += lh;
+
+      y+=4;
+      addSubtitle('CLÁUSULA 1 – SOBRE O ATENDIMENTO');
+      addText('As sessões de psicoterapia terão duração aproximada de 50 minutos e poderão acontecer de forma semanal ou quinzenal, conforme o que for mais adequado e combinado entre as partes. Os atendimentos poderão ser realizados presencialmente em Maringá-PR ou na modalidade on-line, sempre buscando oferecer um espaço confortável e seguro para o(a) menor.');
+
+      addSubtitle('CLÁUSULA 2 – CANCELAMENTOS E FALTAS');
+      addText('Para que o processo terapêutico aconteça de forma cuidadosa e respeitosa para todos os envolvidos, é importante manter uma organização dos horários. Caso seja necessário cancelar ou remarcar uma sessão, peço que o aviso seja feito com pelo menos 8 horas de antecedência. Cancelamentos realizados após esse período, assim como faltas sem aviso prévio, implicarão na cobrança integral da sessão, considerando que esse horário foi reservado especialmente para o atendimento.');
+
+      addSubtitle('CLÁUSULA 3 – SIGILO E ÉTICA PROFISSIONAL');
+      addText('O espaço terapêutico é construído com base na confiança. Por isso, tudo o que for compartilhado durante as sessões será mantido em sigilo, conforme previsto no Código de Ética Profissional do Psicólogo.');
+      addText('Em atendimentos com menores, o responsável está ciente de que o sigilo também é importante para o vínculo terapêutico. Assim, algumas informações poderão não ser compartilhadas em detalhes, preservando o espaço do(a) menor. O sigilo poderá ser quebrado apenas em situações previstas por lei, especialmente quando houver risco à vida do(a) paciente ou de terceiros.');
+      addText('Nos atendimentos on-line, é importante que o(a) menor esteja em um ambiente: tranquilo, silencioso e reservado; com o uso de fones de ouvido, sempre que possível; com acesso à internet estável; com o dispositivo carregado ou conectado à energia.');
+
+      if(y > 230) { doc.addPage(); y = 20; }
+
+      addSubtitle('CLÁUSULA 4 – VALOR DAS SESSÕES');
+      addText('O valor de cada sessão será de R$ 50,00 (cinquenta reais). O pagamento poderá ser realizado de duas formas, conforme preferência do responsável: por sessão, sendo efetuado no dia do atendimento; ou mensalmente, no início de cada período, considerando a quantidade de sessões previstas. Essa flexibilidade busca facilitar a organização e o acesso ao acompanhamento psicológico.');
+
+      addSubtitle('CLÁUSULA 5 – ENCERRAMENTO DO PROCESSO');
+      addText('Tanto a psicóloga quanto o responsável legal poderão solicitar o encerramento do acompanhamento, sempre priorizando o diálogo para que esse momento aconteça de forma cuidadosa e adequada.');
+
+      y += 5;
+      doc.setFontSize(10);
+      doc.text(`Local e data: Maringá, ${dataAtual}`, marginLeft, y);
+      y += 10;
+
+      doc.setFont('helvetica', 'bold');
+      doc.text('Assinatura do responsável legal:', marginLeft, y);
+      doc.text('Assinatura da psicóloga:', marginLeft + 90, y);
+      y += 6;
+      doc.setFont('helvetica', 'normal');
+      doc.text(d.respNome, marginLeft, y);
+      doc.text('Giovana de Morais – CRP-08/45995', marginLeft + 90, y);
+
+      // Rodapé em todas as páginas
+      const totalPages = doc.getNumberOfPages();
+      for (let i = 1; i <= totalPages; i++) {
+        doc.setPage(i);
+        doc.setFontSize(7);
+        doc.setTextColor(120, 120, 120);
+        doc.text(
+          `Documento assinado digitalmente por ${d.respNome} - CPF: ${d.respCPF} - ${dataAtual}`,
+          pageWidth / 2, 290, { align: 'center' }
+        );
+        doc.text(`Página ${i} de ${totalPages}`, pageWidth / 2, 294, { align: 'center' });
+        doc.setTextColor(0, 0, 0);
+      }
+
+      return doc;
+    }
+
+    function blobParaBase64(blob) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          const res = reader.result;
+          if (typeof res === 'string') resolve(res.split(',')[1]);
+          else reject(new Error('Falha ao ler o arquivo.'));
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(blob);
+      });
+    }
+
+    // EVENTOS
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      dadosGlobais = {
+        respNome: iRespNome.value.trim(),
+        respRelacao: iRespRelacao.value,
+        respRG: iRespRG.value.trim(),
+        respCPF: iRespCPF.value.trim(),
+        respTel: iRespTel.value.trim(),
+        respEmail: iRespEmail.value.trim(),
+        respCEP: iRespCEP.value.trim(),
+        respRua: iRespRua.value.trim(),
+        respNum: iRespNum.value.trim(),
+        respBairro: iRespBairro.value.trim(),
+        respCidadeUF: iRespCidadeUF.value.trim(),
+        menorNome: iMenorNome.value.trim(),
+        menorNasc: iMenorNasc.value.trim(),
+        menorNaturalidade: iMenorNaturalidade.value.trim()
+      };
+
+      construirPreviewContrato(dadosGlobais);
+
+      stepForm.style.display = 'none';
+      stepPreview.style.display = 'block';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+
+    btnVoltar.addEventListener('click', function() {
+      stepForm.style.display = 'block';
+      stepPreview.style.display = 'none';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+
+    btnAssinar.addEventListener('click', async function() {
+      if (!dadosGlobais) return;
+
+      btnAssinar.disabled = true;
+      const originalText = btnAssinar.textContent;
+      btnAssinar.innerHTML = '<span class="spinner"></span><span>Gerando contrato...</span>';
+      
+      try {
+        const doc = gerarPDF(dadosGlobais);
+        const pdfBlob = doc.output('blob');
+        pdfBlobGlobal = pdfBlob;
+
+        const hash = gerarHash5();
+        nomeArquivoFinal = `${hash}_${dadosGlobais.menorNome.replace(/\s+/g, '_')}_Menor.pdf`;
+
+        // Baixar no navegador
+        const url = URL.createObjectURL(pdfBlob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = nomeArquivoFinal;
+        a.click();
+
+        // Enviar para o Render / GitHub
+        let githubOk = false;
+        try {
+          const base64 = await blobParaBase64(pdfBlob);
+          const resp = await fetch('https://contratos-assinados.onrender.com/upload', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              nomeArquivo: "/contratos-assinados/contratos/contratos/" + nomeArquivoFinal,
+              conteudoBase64: base64
+            })
+          });
+          if (resp.ok) githubOk = true;
+        } catch (err) {
+          console.warn('Falha ao salvar no BD:', err);
+        }
+
+        // WhatsApp
+        const msg = encodeURIComponent(`Olá Giovana, segue o contrato assinado por ${dadosGlobais.respNome} referente ao menor ${dadosGlobais.menorNome}.`);
+        window.open('https://wa.me/' + CONTATO_WHATSAPP + '?text=' + msg, '_blank');
+
+        // Tela de Sucesso
+        statusList.innerHTML = '';
+        const addStatus = (text, type = 'ok') => {
+          const div = document.createElement('div');
+          div.className = `status-item status-${type}`;
+          const icon = type === 'ok' 
+            ? '<path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />'
+            : '<path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75M12 3.75a8.25 8.25 0 1 1 0 16.5 8.25 8.25 0 0 1 0-16.5Zm0 9.75h.008v.008H12v-.008Z" />';
+          div.innerHTML = `<svg class="status-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">${icon}</svg><span>${text}</span>`;
+          statusList.appendChild(div);
+        };
+
+        addStatus('PDF gerado e baixado no seu dispositivo.');
+        if (githubOk) {
+          addStatus(`Contrato salvo no Banco de Dados em <strong>contratos/${nomeArquivoFinal}</strong>.`);
+        } else {
+          addStatus('Não foi possível salvar no Banco de Dados. O PDF foi baixado.', 'warn');
+        }
+        addStatus('Mensagem preparada para o WhatsApp.');
+
+        // Botões extra
+        extraActions.innerHTML = '';
+        const btnDownload = document.createElement('a');
+        btnDownload.textContent = 'Baixar PDF novamente';
+        btnDownload.className = 'btn-primary';
+        btnDownload.style.marginTop = '0';
+        btnDownload.href = URL.createObjectURL(pdfBlobGlobal);
+        btnDownload.download = nomeArquivoFinal;
+        extraActions.appendChild(btnDownload);
+
+        const btnNovo = document.createElement('button');
+        btnNovo.type = 'button';
+        btnNovo.textContent = 'Assinar novo contrato';
+        btnNovo.className = 'btn-link';
+        btnNovo.style.display = 'block';
+        btnNovo.style.margin = '16px auto 0';
+        btnNovo.addEventListener('click', () => location.reload());
+        extraActions.appendChild(btnNovo);
+
+        stepPreview.style.display = 'none';
+        stepSuccess.style.display = 'block';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+
+      } catch (err) {
+        console.error(err);
+        alert('Erro ao gerar o contrato. Verifique o console.');
+      } finally {
+        btnAssinar.disabled = false;
+        btnAssinar.textContent = originalText;
+      }
+    });
+  </script>
+</body>
+</html>
