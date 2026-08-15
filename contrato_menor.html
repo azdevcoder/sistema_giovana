@@ -369,6 +369,10 @@
             
             <div class="grid-2">
               <div class="field">
+                <label>Data de Nascimento <span class="required">*</span></label>
+                <input id="respNasc" type="text" placeholder="DD/MM/AAAA" required />
+              </div>
+              <div class="field">
                 <label>Vínculo com o menor <span class="required">*</span></label>
                 <select id="respRelacao" required>
                   <option value="">Selecione...</option>
@@ -377,6 +381,9 @@
                   <option value="responsável legal">Responsável Legal (Tutor)</option>
                 </select>
               </div>
+            </div>
+
+            <div class="grid-3">
               <div class="field">
                 <label>RG <span class="required">*</span></label>
                 <input id="respRG" type="text" placeholder="Apenas números ou com formatação" required />
@@ -429,10 +436,14 @@
               <input id="menorNome" type="text" placeholder="Nome da criança ou adolescente" required />
             </div>
             
-            <div class="grid-2">
+            <div class="grid-3">
               <div class="field">
                 <label>Data de Nascimento <span class="required">*</span></label>
                 <input id="menorNasc" type="text" placeholder="DD/MM/AAAA" required />
+              </div>
+              <div class="field">
+                <label>RG <span class="optional">(se tiver)</span></label>
+                <input id="menorRG" type="text" placeholder="RG do menor" />
               </div>
               <div class="field">
                 <label>Naturalidade <span class="required">*</span></label>
@@ -509,6 +520,7 @@
 
     // Inputs
     const iRespNome = document.getElementById('respNome');
+    const iRespNasc = document.getElementById('respNasc');
     const iRespRelacao = document.getElementById('respRelacao');
     const iRespRG = document.getElementById('respRG');
     const iRespCPF = document.getElementById('respCPF');
@@ -522,6 +534,7 @@
     
     const iMenorNome = document.getElementById('menorNome');
     const iMenorNasc = document.getElementById('menorNasc');
+    const iMenorRG = document.getElementById('menorRG');
     const iMenorNaturalidade = document.getElementById('menorNaturalidade');
 
     let dadosGlobais = null;
@@ -549,6 +562,13 @@
       let v = iRespCEP.value.replace(/\D/g, '').slice(0, 8);
       if (v.length > 5) v = v.slice(0,5)+'-'+v.slice(5);
       iRespCEP.value = v;
+    });
+
+    iRespNasc.addEventListener('input', () => {
+      let v = iRespNasc.value.replace(/\D/g, '').slice(0, 8);
+      if (v.length > 4) v = v.slice(0,2)+'/'+v.slice(2,4)+'/'+v.slice(4);
+      else if (v.length > 2) v = v.slice(0,2)+'/'+v.slice(2);
+      iRespNasc.value = v;
     });
 
     iMenorNasc.addEventListener('input', () => {
@@ -585,16 +605,17 @@
       let html = '';
 
       // --- PARTE 1: AUTORIZAÇÃO ---
-      html += '<h2 class="title" style="margin-bottom:14px; font-size:18px;">AUTORIZAÇÃO PARA ATENDIMENTO PSICOLÓGICO ONLINE DE MENOR</h2>';
+      html += '<h2 class="title" style="margin-bottom:14px; font-size:18px;">AUTORIZAÇÃO PARA ACOMPANHAMENTO PSICOTERAPÊUTICO DE CRIANÇAS E ADOLESCENTES (MENORES DE 18 ANOS)</h2>';
       
-      html += `<p>Eu, <strong>${d.respNome}</strong>, portador(a) da carteira de identidade nº <strong>${d.respRG}</strong> e CPF nº <strong>${d.respCPF}</strong>, residente à Rua <strong>${d.respRua}</strong>, nº <strong>${d.respNum}</strong>, bairro <strong>${d.respBairro}</strong>, cidade/estado <strong>${d.respCidadeUF}</strong>, CEP <strong>${d.respCEP}</strong>, telefone para contato: <strong>${d.respTel}</strong>, na qualidade de <strong>${d.respRelacao}</strong>, AUTORIZO o(a) menor <strong>${d.menorNome}</strong>, nascido(a) em <strong>${d.menorNasc}</strong>, natural de <strong>${d.menorNaturalidade}</strong>, a participar de atendimento psicológico individual na modalidade on-line com a Psicóloga Giovana de Morais Gomes, inscrita no CRP sob o nº 08/45995.</p>`;
+      html += `<p>Eu, <strong>${d.respNome}</strong>, data de nascimento: <strong>${d.respNasc}</strong>, portador(a) do documento de identidade nº: <strong>${d.respRG}</strong>, domiciliada(o) à: <strong>${d.respRua}, ${d.respNum} - ${d.respBairro} - ${d.respCidadeUF}</strong>, responsável legal pela(o) criança/adolescente: <strong>${d.menorNome}</strong>, data de nascimento: <strong>${d.menorNasc}</strong>, portador(a) do documento de identidade nº: <strong>${d.menorRG || 'Não informado'}</strong>, autorizo a profissional <strong>Giovana de Morais Gomes</strong>, psicóloga, sob registro CRP/<strong>08/45995</strong> a realizar acompanhamento psicoterapêutico e os encaminhamentos cabíveis.</p>`;
       
-      html += '<p>Declaro estar ciente de que o atendimento será realizado de forma remota, comprometendo-me a:</p>';
+      html += '<p>Todas as intervenções e documentos produzidos serão regidos pelos dispositivos legais vigentes, em especial pela Resolução CFP nº 10, de 2005 (Código de Ética Profissional do Psicólogo). Em especial, serão garantidos à(s) criança(s) ou adolescente(s) o sigilo das informações e a preservação da dignidade durante a prestação dos serviços de que trata esta autorização.</p>';
+      
+      html += '<p>Declaro estar ciente de que o atendimento psicológico será realizado de forma presencial, comprometendo-me a:</p>';
       html += '<ul>';
-      html += '<li>Disponibilizar os recursos tecnológicos necessários para a realização das sessões;</li>';
-      html += '<li>Garantir um ambiente adequado, com privacidade e sem interrupções durante os atendimentos;</li>';
-      html += '<li>Respeitar o sigilo profissional, conforme previsto no Código de Ética Profissional do Psicólogo;</li>';
-      html += '<li>Cumprir com os horários previamente agendados.</li>';
+      html += '<li>Comparecer aos atendimentos nos dias e horários previamente agendados;</li>';
+      html += '<li>Comunicar previamente, sempre que possível, eventual impossibilidade de comparecimento;</li>';
+      html += '<li>Respeitar o espaço e o sigilo envolvidos no processo terapêutico.</li>';
       html += '</ul>';
       html += '<p>Por ser verdade, firmo a presente autorização.</p>';
 
@@ -616,12 +637,10 @@
       html += '</div>';
 
       html += '<p class="section-title">CLÁUSULA 1 – SOBRE O ATENDIMENTO</p>';
-      html += '<p>As sessões de psicoterapia terão duração aproximada de 50 minutos e poderão acontecer de forma semanal ou quinzenal, conforme o que for mais adequado e combinado entre as partes.</p>';
-      html += '<p>Os atendimentos poderão ser realizados presencialmente em Maringá-PR ou na modalidade on-line, sempre buscando oferecer um espaço confortável e seguro para o(a) menor.</p>';
+      html += '<p>As sessões de psicoterapia terão duração aproximada de 50 minutos e poderão ocorrer de forma semanal ou quinzenal, conforme a necessidade do processo e o que for acordado entre as partes. Os atendimentos poderão ser realizados presencialmente em Maringá-PR ou na modalidade on-line, buscando oferecer um espaço seguro e acolhedor para o(a) menor. Quando necessário, poderão ser realizadas orientações e conversas com o(a) responsável, com o objetivo de acompanhar o processo terapêutico, oferecer orientações pertinentes e favorecer o cuidado do(a) menor, respeitando sempre o sigilo profissional.</p>';
 
       html += '<p class="section-title">CLÁUSULA 2 – CANCELAMENTOS E FALTAS</p>';
-      html += '<p>Para que o processo terapêutico aconteça de forma cuidadosa e respeitosa para todos os envolvidos, é importante manter uma organização dos horários.</p>';
-      html += '<p>Caso seja necessário cancelar ou remarcar uma sessão, peço que o aviso seja feito com pelo menos 8 horas de antecedência. Cancelamentos realizados após esse período, assim como faltas sem aviso prévio, implicarão na cobrança integral da sessão, considerando que esse horário foi reservado especialmente para o atendimento.</p>';
+      html += '<p>Para que o processo terapêutico aconteça de forma cuidadosa e respeitosa para todos os envolvidos, é importante manter uma organização dos horários. Caso seja necessário cancelar ou remarcar uma sessão, peço que o aviso seja feito com pelo menos 12 horas de antecedência. Cancelamentos realizados após esse período, assim como faltas sem aviso prévio, implicarão na cobrança integral da sessão, considerando que esse horário foi reservado especialmente para o atendimento.</p>';
 
       html += '<p class="section-title">CLÁUSULA 3 – SIGILO E ÉTICA PROFISSIONAL</p>';
       html += '<p>O espaço terapêutico é construído com base na confiança. Por isso, tudo o que for compartilhado durante as sessões será mantido em sigilo, conforme previsto no Código de Ética Profissional do Psicólogo.</p>';
@@ -629,7 +648,7 @@
       html += '<p>Nos atendimentos on-line, é importante que o(a) menor esteja em um ambiente: tranquilo, silencioso e reservado; com o uso de fones de ouvido, sempre que possível; com acesso à internet estável; com o dispositivo carregado ou conectado à energia.</p>';
 
       html += '<p class="section-title">CLÁUSULA 4 – VALOR DAS SESSÕES</p>';
-      html += '<p>O valor de cada sessão será de R$ 50,00 (Para atendimento exclusivo a estudantes que venham do projeto Escuta Social Psi) e R$125,00 valor convencional. O pagamento poderá ser realizado de duas formas. Por sessão, sendo efetuado no dia do atendimento; Mensalmente, no início de cada período, considerando a quantidade de sessões previstas (PIX, Transferência ou Dinheiro).</p>';
+      html += '<p>O valor de cada sessão individual é R$ 125,00 e para o pacote mensal é R$ 430,00. O pagamento poderá ser realizado de duas formas. Por sessão, sendo efetuado no dia do atendimento; Mensalmente, no início de cada período, considerando a quantidade de sessões previstas no mês (PIX, Cartão de crédito ou Dinheiro).</p>';
 
       html += '<p class="section-title">CLÁUSULA 5 – ENCERRAMENTO DO PROCESSO</p>';
       html += '<p>Tanto a psicóloga quanto o responsável legal poderão solicitar o encerramento do acompanhamento, sempre priorizando o diálogo para que esse momento aconteça de forma cuidadosa e adequada.</p>';
@@ -665,8 +684,12 @@
       function addCenterTitle(text) {
         doc.setFont('helvetica', 'bold');
         doc.setFontSize(13);
-        doc.text(text, pageWidth / 2, y, { align: 'center' });
-        y += lh + 4;
+        const lines = doc.splitTextToSize(text, maxWidth);
+        lines.forEach(line => {
+          doc.text(line, pageWidth / 2, y, { align: 'center' });
+          y += lh;
+        });
+        y += 4;
       }
       function addSubtitle(text) {
         doc.setFont('helvetica', 'bold');
@@ -687,17 +710,20 @@
       }
 
       // --- PÁGINA 1: AUTORIZAÇÃO ---
-      addCenterTitle('AUTORIZAÇÃO PARA ATENDIMENTO PSICOLÓGICO ONLINE DE MENOR');
+      addCenterTitle('AUTORIZAÇÃO PARA ACOMPANHAMENTO PSICOTERAPÊUTICO DE CRIANÇAS E ADOLESCENTES (MENORES DE 18 ANOS)');
       
-      const txtAuto1 = `Eu, ${d.respNome}, portador(a) da carteira de identidade nº ${d.respRG} e CPF nº ${d.respCPF}, residente à Rua ${d.respRua}, nº ${d.respNum}, bairro ${d.respBairro}, cidade/estado ${d.respCidadeUF}, CEP ${d.respCEP}, telefone para contato: ${d.respTel}, na qualidade de ${d.respRelacao}, AUTORIZO o(a) menor ${d.menorNome}, nascido(a) em ${d.menorNasc}, natural de ${d.menorNaturalidade}, a participar de atendimento psicológico individual na modalidade on-line com a Psicóloga Giovana de Morais Gomes, inscrita no CRP sob o nº 08/45995.`;
+      const txtAuto1 = `Eu, ${d.respNome}, data de nascimento: ${d.respNasc}, portador(a) do documento de identidade nº: ${d.respRG}, domiciliada(o) à: ${d.respRua}, ${d.respNum} - ${d.respBairro} - ${d.respCidadeUF}, responsável legal pela(o) criança/adolescente: ${d.menorNome}, data de nascimento: ${d.menorNasc}, portador(a) do documento de identidade nº: ${d.menorRG || 'Não informado'}, autorizo a profissional Giovana de Morais Gomes, psicóloga, sob registro CRP/08/45995 a realizar acompanhamento psicoterapêutico e os encaminhamentos cabíveis.`;
       addText(txtAuto1);
       
+      const txtAuto2 = `Todas as intervenções e documentos produzidos serão regidos pelos dispositivos legais vigentes, em especial pela Resolução CFP nº 10, de 2005 (Código de Ética Profissional do Psicólogo). Em especial, serão garantidos à(s) criança(s) ou adolescente(s) o sigilo das informações e a preservação da dignidade durante a prestação dos serviços de que trata esta autorização.`;
+      addText(txtAuto2);
+
       y += 2;
-      addText('Declaro estar ciente de que o atendimento será realizado de forma remota, comprometendo-me a:');
-      addText('• Disponibilizar os recursos tecnológicos necessários para a realização das sessões;');
-      addText('• Garantir um ambiente adequado, com privacidade e sem interrupções durante os atendimentos;');
-      addText('• Respeitar o sigilo profissional, conforme previsto no Código de Ética Profissional do Psicólogo;');
-      addText('• Cumprir com os horários previamente agendados.');
+      addText('Declaro estar ciente de que o atendimento psicológico será realizado de forma presencial, comprometendo-me a:');
+      addText('• Comparecer aos atendimentos nos dias e horários previamente agendados;');
+      addText('• Comunicar previamente, sempre que possível, eventual impossibilidade de comparecimento;');
+      addText('• Respeitar o espaço e o sigilo envolvidos no processo terapêutico.');
+      
       y += 2;
       addText('Por ser verdade, firmo a presente autorização.');
       
@@ -739,10 +765,10 @@
 
       y+=4;
       addSubtitle('CLÁUSULA 1 – SOBRE O ATENDIMENTO');
-      addText('As sessões de psicoterapia terão duração aproximada de 50 minutos e poderão acontecer de forma semanal ou quinzenal, conforme o que for mais adequado e combinado entre as partes. Os atendimentos poderão ser realizados presencialmente em Maringá-PR ou na modalidade on-line, sempre buscando oferecer um espaço confortável e seguro para o(a) menor.');
+      addText('As sessões de psicoterapia terão duração aproximada de 50 minutos e poderão ocorrer de forma semanal ou quinzenal, conforme a necessidade do processo e o que for acordado entre as partes. Os atendimentos poderão ser realizados presencialmente em Maringá-PR ou na modalidade on-line, buscando oferecer um espaço seguro e acolhedor para o(a) menor. Quando necessário, poderão ser realizadas orientações e conversas com o(a) responsável, com o objetivo de acompanhar o processo terapêutico, oferecer orientações pertinentes e favorecer o cuidado do(a) menor, respeitando sempre o sigilo profissional.');
 
       addSubtitle('CLÁUSULA 2 – CANCELAMENTOS E FALTAS');
-      addText('Para que o processo terapêutico aconteça de forma cuidadosa e respeitosa para todos os envolvidos, é importante manter uma organização dos horários. Caso seja necessário cancelar ou remarcar uma sessão, peço que o aviso seja feito com pelo menos 8 horas de antecedência. Cancelamentos realizados após esse período, assim como faltas sem aviso prévio, implicarão na cobrança integral da sessão, considerando que esse horário foi reservado especialmente para o atendimento.');
+      addText('Para que o processo terapêutico aconteça de forma cuidadosa e respeitosa para todos os envolvidos, é importante manter uma organização dos horários. Caso seja necessário cancelar ou remarcar uma sessão, peço que o aviso seja feito com pelo menos 12 horas de antecedência. Cancelamentos realizados após esse período, assim como faltas sem aviso prévio, implicarão na cobrança integral da sessão, considerando que esse horário foi reservado especialmente para o atendimento.');
 
       addSubtitle('CLÁUSULA 3 – SIGILO E ÉTICA PROFISSIONAL');
       addText('O espaço terapêutico é construído com base na confiança. Por isso, tudo o que for compartilhado durante as sessões será mantido em sigilo, conforme previsto no Código de Ética Profissional do Psicólogo.');
@@ -752,7 +778,7 @@
       if(y > 230) { doc.addPage(); y = 20; }
 
       addSubtitle('CLÁUSULA 4 – VALOR DAS SESSÕES');
-      addText('O valor de cada sessão será de R$ 50,00 (cinquenta reais). O pagamento poderá ser realizado de duas formas, conforme preferência do responsável: por sessão, sendo efetuado no dia do atendimento; ou mensalmente, no início de cada período, considerando a quantidade de sessões previstas. Essa flexibilidade busca facilitar a organização e o acesso ao acompanhamento psicológico.');
+      addText('O valor de cada sessão individual é R$ 125,00 e para o pacote mensal é R$ 430,00. O pagamento poderá ser realizado de duas formas. Por sessão, sendo efetuado no dia do atendimento; Mensalmente, no início de cada período, considerando a quantidade de sessões previstas no mês (PIX, Cartão de crédito ou Dinheiro).');
 
       addSubtitle('CLÁUSULA 5 – ENCERRAMENTO DO PROCESSO');
       addText('Tanto a psicóloga quanto o responsável legal poderão solicitar o encerramento do acompanhamento, sempre priorizando o diálogo para que esse momento aconteça de forma cuidadosa e adequada.');
@@ -806,6 +832,7 @@
 
       dadosGlobais = {
         respNome: iRespNome.value.trim(),
+        respNasc: iRespNasc.value.trim(),
         respRelacao: iRespRelacao.value,
         respRG: iRespRG.value.trim(),
         respCPF: iRespCPF.value.trim(),
@@ -818,6 +845,7 @@
         respCidadeUF: iRespCidadeUF.value.trim(),
         menorNome: iMenorNome.value.trim(),
         menorNasc: iMenorNasc.value.trim(),
+        menorRG: iMenorRG.value.trim(),
         menorNaturalidade: iMenorNaturalidade.value.trim()
       };
 
