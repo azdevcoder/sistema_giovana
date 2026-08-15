@@ -14,6 +14,7 @@ const GITHUB_BRANCH = process.env.GITHUB_BRANCH || "main";
 
 app.use(cors());
 app.use(express.json({ limit: "50mb" }));
+app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
 async function salvarNoGithub(path, conteudoBase64, mensagem) {
     const url = `https://api.github.com/repos/${GITHUB_REPO}/contents/${path}`;
