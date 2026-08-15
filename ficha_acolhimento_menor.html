@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ficha de Acolhimento Menor - Psicóloga Giovana</title>
+<style>
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f3e8db; padding: 20px; text-align: center; color: #333; }
+    .container { background: #fff; padding: 40px; max-width: 800px; margin: auto; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); text-align: left; }
+    h2 { color: #d68c98; text-align: center; text-transform: uppercase; margin-bottom: 25px; letter-spacing: 1px; }
+    h3 { color: #555; border-bottom: 2px solid #f3e8db; padding-bottom: 8px; margin-top: 35px; font-size: 1.1em; }
+    label { font-size: 0.9em; font-weight: bold; display: block; margin-top: 12px; color: #444; }
+    input, select, textarea { padding: 12px; margin: 5px 0 15px 0; width: 100%; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; background-color: #fafafa; transition: 0.3s; }
+    input:focus, textarea:focus { border-color: #d68c98; outline: none; background-color: #fff; }
+    textarea { resize: vertical; height: 90px; font-family: inherit; }
+    .row { display: flex; gap: 20px; flex-wrap: wrap; }
+    .col-half { flex: 1; min-width: 200px; }
+    .col-third { flex: 1; min-width: 150px; }
+    button { width: 100%; padding: 16px; background: #f3e8db; color: #444; font-weight: bold; font-size: 16px; border: 1px solid #e0d0c0; border-radius: 6px; cursor: pointer; transition: 0.3s; margin-top: 30px; text-transform: uppercase; letter-spacing: 1px; }
+    button:hover { background: #a35e4c; color: white; border-color: #d68c98; }
+    button:disabled { background: #ccc; cursor: not-allowed; border-color: #ccc; }
+    .spinner { display: inline-block; width: 16px; height: 16px; border: 2px solid white; border-top: 2px solid #333; border-radius: 50%; animation: spin 0.8s linear infinite; vertical-align: middle; margin-right: 8px; }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    iframe { width: 100%; height: 700px; border: 1px solid #ddd; margin-top: 30px; border-radius: 8px; display: none; background: #eee; }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/pdf-lib/dist/pdf-lib.min.js"></script>
+</head>
+<body>
+
+<img src="banner_assinatura.png" alt="Banner" style="max-width: 500px; margin-bottom: 20px; border-radius: 5px;">
+
+<div class="container">
+    <h2>Ficha de Acolhimento (Menor) - Psicoterapia</h2>
+    <form id="formFicha">
+        
+        <h3>1. Identificação Pessoal</h3>
+        <label>Nome Completo do(a) Adolescente / Criança:</label>
+        <input type="text" id="nome" required placeholder="Digite o nome completo">
+        
+        <div class="row">
+            <div class="col-half"><label>Nome Social / Apelido:</label><input type="text" id="nomeSocial"></div>
+            <div class="col-half"><label>Data de Nascimento:</label><input type="date" id="nascimento" required></div>
+        </div>
+
+        <label>Endereço Completo:</label>
+        <input type="text" id="endereco" placeholder="Rua, número, bairro, cidade">
+
+        <div class="row">
+            <div class="col-half"><label>Telefone / WhatsApp de Contato:</label><input type="text" id="telefone" required placeholder="(XX) XXXXX-XXXX"></div>
+            <div class="col-half"><label>E-mail do Responsável:</label><input type="email" id="email" required></div>
+        </div>
+
+        <h3>2. Identificação dos Pais / Responsáveis</h3>
+        <label>Nome do Pai:</label>
+        <input type="text" id="paiNome">
+        <div class="row">
+            <div class="col-third"><label>Idade:</label><input type="number" id="paiIdade"></div>
+            <div class="col-third"><label>Profissão:</label><input type="text" id="paiProfissao"></div>
+            <div class="col-third"><label>Escolaridade:</label><input type="text" id="paiEscolaridade"></div>
+        </div>
+
+        <label>Nome da Mãe:</label>
+        <input type="text" id="maeNome">
+        <div class="row">
+            <div class="col-third"><label>Idade:</label><input type="number" id="maeIdade"></div>
+            <div class="col-third"><label>Profissão:</label><input type="text" id="maeProfissao"></div>
+            <div class="col-third"><label>Escolaridade:</label><input type="text" id="maeEscolaridade"></div>
+        </div>
+
+        <label>Endereço dos Pais (se diferente do adolescente):</label>
+        <input type="text" id="paisEndereco">
+
+        <h3>3. Contexto Familiar</h3>
+        <label>Com quem o(a) adolescente mora?</label>
+        <textarea id="comQuemMora" placeholder="Ex: Pai, mãe, irmãos, avós..."></textarea>
+
+        <label>Como são suas relações familiares?</label>
+        <textarea id="relacoesFamiliares" placeholder="Descreva a convivência e o clima familiar..."></textarea>
+
+        <label>Houve alguma mudança significativa recentemente?</label>
+        <textarea id="mudancaRecente" placeholder="Ex: Mudança de cidade, divórcio, luto, perda de emprego..."></textarea>
+
+        <h3>4. Escola e Relações</h3>
+        <label>Como está a experiência escolar?</label>
+        <textarea id="experienciaEscolar" placeholder="Descreva o desempenho, adaptação ou dificuldades..."></textarea>
+
+        <div class="row">
+            <div class="col-half">
+                <label>Onde estuda ? E em qual ano está?</label>
+                <input type="text" id="ondeEstudaAno" placeholder="Ex: Escola X - 8º ano do Ensino Fundamental">
+            </div>
+        </div>
+
+        <label>Como são as relações com colegas e professores?</label>
+        <textarea id="relacoesColegasProfessores" placeholder="Possui amigos? Relato de conflitos ou facilidades..."></textarea>
+
+        <h3>5. Rotina e Vivências Atuais</h3>
+        <label>Como é a rotina?</label>
+        <textarea id="rotina" placeholder="Descreva o dia a dia (horários, atividades extracurriculares)..."></textarea>
+
+        <label>Como estão sono, alimentação e lazer?</label>
+        <textarea id="sonoAlimentacaoLazer" placeholder="Ex: Dificuldade para dormir, apetite, hobbys..."></textarea>
+
+        <label>Quais mudanças emocionais ou comportamentais foram percebidas?</label>
+        <textarea id="mudancasEmocionais" placeholder="Ex: Irritabilidade, isolamento, ansiedade, choro frequente..."></textarea>
+
+        <h3>6. Expectativas</h3>
+        <label>O que mais preocupa o(a) responsável neste momento?</label>
+        <textarea id="preocupacaoResponsavel"></textarea>
+
+        <label>O que espera do processo terapêutico?</label>
+        <textarea id="expectativaTerapia"></textarea>
+
+        <label>Há algo importante que gostaria que a profissional soubesse?</label>
+        <textarea id="observacoesFinais"></textarea>
+
+        <h3>7. Medicamentos</h3>
+        <label>Faz uso de medicamentos?</label>
+        <select id="usoMedicamento" required>
+            <option value="Não">Não</option>
+            <option value="Sim">Sim</option>
+        </select>
+        <label>Se sim, qual(is)?</label>
+        <input type="text" id="quaisMedicamentos" placeholder="Nome dos medicamentos e dosagens">
+
+        <button type="submit" id="btnEnviar">Gerar Ficha e Enviar</button>
+    </form>
+    <iframe id="pdfViewer"></iframe>
+</div>
+
+<script>
+    const form = document.getElementById("formFicha");
+    const btn = document.getElementById("btnEnviar");
+    const pdfViewer = document.getElementById("pdfViewer");
+    const URL_BACKEND = "https://ficha-acolhimento.onrender.com"; 
+
+    function gerarHash() { return Math.floor(10000 + Math.random() * 9000); }
+
+    function wrapText(text, maxWidth, font, fontSize) {
+        if (!text) return [""];
+        const paragraphs = text.split('\n');
+        let lines = [];
+        for (const paragraph of paragraphs) {
+            const words = paragraph.split(' ');
+            let currentLine = "";
+            for (const word of words) {
+                const testLine = currentLine ? currentLine + " " + word : word;
+                const width = font.widthOfTextAtSize(testLine, fontSize);
+                if (width <= maxWidth) { currentLine = testLine; } 
+                else { if (currentLine) lines.push(currentLine); currentLine = word; }
+            }
+            if (currentLine) lines.push(currentLine);
+        }
+        return lines;
+    }
+
+    form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner"></span> Processando...';
+
+        try {
+            const pdfDoc = await PDFLib.PDFDocument.create();
+            let page = pdfDoc.addPage([595.28, 841.89]);
+            const fontBold = await pdfDoc.embedFont(PDFLib.StandardFonts.HelveticaBold);
+            const fontRegular = await pdfDoc.embedFont(PDFLib.StandardFonts.Helvetica);
+
+            let y = 790;
+            const margin = 50;
+            const contentWidth = 495;
+
+            const escreverLinhas = (text) => {
+                const linhas = wrapText(text, contentWidth, fontRegular, 10);
+                linhas.forEach(linha => {
+                    if (y < 40) { page = pdfDoc.addPage([595.28, 841.89]); y = 790; }
+                    page.drawText(linha, { x: margin, y, size: 10, font: fontRegular });
+                    y -= 14;
+                });
+                y -= 5;
+            };
+
+            const adicionarTituloSecao = (titulo) => {
+                if (y < 60) { page = pdfDoc.addPage([595.28, 841.89]); y = 790; }
+                page.drawText(titulo, { x: margin, y, size: 11, font: fontBold });
+                y -= 18;
+            };
+
+            page.drawText('FICHA DE ACOLHIMENTO (MENOR) - PSICOTERAPIA', { x: margin, y, size: 14, font: fontBold });
+            y -= 35;
+
+            // 1. IDENTIFICAÇÃO PESSOAL
+            adicionarTituloSecao('1. IDENTIFICAÇÃO PESSOAL');
+            escreverLinhas(`Nome Completo: ${document.getElementById("nome").value}`);
+            escreverLinhas(`Nome Social / Apelido: ${document.getElementById("nomeSocial").value || "Não informado"}`);
+            escreverLinhas(`Data de Nascimento: ${document.getElementById("nascimento").value}`);
+            escreverLinhas(`Endereço: ${document.getElementById("endereco").value || "Não informado"}`);
+            escreverLinhas(`Telefone: ${document.getElementById("telefone").value}`);
+            escreverLinhas(`E-mail do Responsável: ${document.getElementById("email").value}`);
+            y -= 10;
+
+            // 2. IDENTIFICAÇÃO DOS PAIS
+            adicionarTituloSecao('2. IDENTIFICAÇÃO DOS PAIS / RESPONSÁVEIS');
+            escreverLinhas(`Pai: ${document.getElementById("paiNome").value || "Não informado"} | Idade: ${document.getElementById("paiIdade").value || "-"} | Profissão: ${document.getElementById("paiProfissao").value || "-"} | Escolaridade: ${document.getElementById("paiEscolaridade").value || "-"}`);
+            escreverLinhas(`Mãe: ${document.getElementById("maeNome").value || "Não informado"} | Idade: ${document.getElementById("maeIdade").value || "-"} | Profissão: ${document.getElementById("maeProfissao").value || "-"} | Escolaridade: ${document.getElementById("maeEscolaridade").value || "-"}`);
+            escreverLinhas(`Endereço dos Pais: ${document.getElementById("paisEndereco").value || "Não informado"}`);
+            y -= 10;
+
+            // 3. CONTEXTO FAMILIAR
+            adicionarTituloSecao('3. CONTEXTO FAMILIAR');
+            escreverLinhas(`Com quem o(a) adolescente mora? ${document.getElementById("comQuemMora").value || "Não informado"}`);
+            escreverLinhas(`Como são suas relações familiares? ${document.getElementById("relacoesFamiliares").value || "Não informado"}`);
+            escreverLinhas(`Mudança significativa recente: ${document.getElementById("mudancaRecente").value || "Não informado"}`);
+            y -= 10;
+
+            // 4. ESCOLA E RELAÇÕES
+            adicionarTituloSecao('4. ESCOLA E RELAÇÕES');
+            escreverLinhas(`Como está a experiência escolar? ${document.getElementById("experienciaEscolar").value || "Não informado"}`);
+            escreverLinhas(`Onde estuda / Ano em que está: ${document.getElementById("ondeEstudaAno").value || "Não informado"}`);
+            escreverLinhas(`Relações com colegas e professores: ${document.getElementById("relacoesColegasProfessores").value || "Não informado"}`);
+            y -= 10;
+
+            // 5. ROTINA E VIVÊNCIAS ATUAIS
+            adicionarTituloSecao('5. ROTINA E VIVÊNCIAS ATUAIS');
+            escreverLinhas(`Como é a rotina? ${document.getElementById("rotina").value || "Não informado"}`);
+            escreverLinhas(`Sono, alimentação e lazer: ${document.getElementById("sonoAlimentacaoLazer").value || "Não informado"}`);
+            escreverLinhas(`Mudanças emocionais ou comportamentais percebidas: ${document.getElementById("mudancasEmocionais").value || "Não informado"}`);
+            y -= 10;
+
+            // 6. EXPECTATIVAS
+            adicionarTituloSecao('6. EXPECTATIVAS');
+            escreverLinhas(`O que mais preocupa o(a) responsável neste momento? ${document.getElementById("preocupacaoResponsavel").value || "Não informado"}`);
+            escreverLinhas(`O que espera do processo terapêutico? ${document.getElementById("expectativaTerapia").value || "Não informado"}`);
+            escreverLinhas(`Informações importantes para a profissional: ${document.getElementById("observacoesFinais").value || "Não informado"}`);
+            y -= 10;
+
+            // 7. MEDICAMENTOS
+            adicionarTituloSecao('7. MEDICAMENTOS');
+            escreverLinhas(`Faz uso de medicamentos? ${document.getElementById("usoMedicamento").value}`);
+            escreverLinhas(`Quais: ${document.getElementById("quaisMedicamentos").value || "Não informado"}`);
+
+            // Download Local
+            const pdfBytes = await pdfDoc.save();
+            const pdfBlob = new Blob([pdfBytes], { type: "application/pdf" });
+            const localUrl = URL.createObjectURL(pdfBlob);
+            const hash = gerarHash();
+            const nomeFinal = `${hash}_Ficha_Menor_${document.getElementById("nome").value.split(" ")[0]}.pdf`;
+            
+            const link = document.createElement('a');
+            link.href = localUrl;
+            link.download = nomeFinal;
+            link.click();
+
+            // Envio para o backend
+            const base64 = await new Promise(r => {
+                const reader = new FileReader();
+                reader.onloadend = () => r(reader.result.split(",")[1]);
+                reader.readAsDataURL(pdfBlob);
+            });
+
+            await fetch(`${URL_BACKEND}/upload-ficha`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ nomeArquivo: nomeFinal, conteudoBase64: base64 })
+            });
+
+            alert("Ficha salva no GitHub e baixada com sucesso!");
+        } catch (err) {
+            console.error(err);
+            alert("Erro técnico: " + err.message);
+        } finally {
+            btn.disabled = false;
+            btn.textContent = "Gerar Ficha e Enviar";
+        }
+    });
+</script>
+</body>
+</html>
